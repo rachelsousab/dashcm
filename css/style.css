@@ -1,0 +1,3120 @@
+/* ===========================================================
+   CLARO MÚSICA DASHBOARD
+   Version 1.0
+=========================================================== */
+
+/* ===========================================================
+   FONTS
+=========================================================== */
+
+@font-face{
+    font-family:"AMX";
+    src:url("../assets/AMX-Black.ttf") format("truetype");
+    font-weight:700;
+}
+
+@font-face{
+    font-family:"AMX Italic";
+    src:url("../assets/AMX-Italic.ttf") format("truetype");
+    font-style:italic;
+}
+
+/* ===========================================================
+   VARIABLES
+=========================================================== */
+
+:root{
+
+    --primary:#E30613;
+
+    --primary-dark:#B8000A;
+
+    --background:#F6F7FB;
+
+    --card:#FFFFFF;
+
+    --border:#E4E7EC;
+
+    --text:#2B2B2B;
+
+    --text-light:#707070;
+
+    --green:#21A366;
+
+    --yellow:#FFB400;
+
+    --red:#E53935;
+
+    --shadow:
+        0 10px 25px rgba(0,0,0,.06);
+
+    --radius:14px;
+
+}
+
+/* ===========================================================
+   RESET
+=========================================================== */
+
+*{
+
+    margin:0;
+
+    padding:0;
+
+    box-sizing:border-box;
+
+}
+
+body{
+
+    background:var(--background);
+
+    color:var(--text);
+
+    font-family:Inter,sans-serif;
+
+    font-size:14px;
+
+}
+
+/* ===========================================================
+   HEADER
+=========================================================== */
+
+.topbar{
+
+    height:80px;
+
+    background:#1F1F1F;
+
+    border-bottom:1px solid var(--border);
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    padding:0 35px;
+
+    position:fixed;
+
+    top:0;
+
+    left:0;
+
+    right:0;
+
+    z-index:1000;
+
+}
+
+.brand{
+
+    display:flex;
+
+    align-items:left;
+
+    gap:10px;
+
+}
+
+.brand img{
+
+    height:30px;
+
+}
+
+.brand h1{
+
+    font-family:"AMX Bold", sans-serif;
+    color:white;
+    font-size:1.35rem;
+    display:flex;
+    gap:18px;
+    margin-left:50px;
+
+}
+
+.brand span{
+
+    color:var(--text-light);
+
+    font-size:11px;
+        margin-left:50px;
+
+
+}
+
+.header-actions button{
+
+    border:none;
+
+    background:var(--primary);
+
+    color:white;
+
+    border-radius:8px;
+
+    padding:11px 22px;
+
+    cursor:pointer;
+
+    transition:.2s;
+
+}
+
+.header-actions button:hover{
+
+    background:var(--primary-dark);
+
+}
+
+/* ===========================================================
+   SIDEBAR
+=========================================================== */
+
+.sidebar{
+
+    position:fixed;
+
+    top:136px;
+
+    left:0;
+
+    width:200px;
+
+    bottom:0;
+
+    background:white;
+
+    border-right:1px solid var(--border);
+
+    overflow:auto;
+
+    padding:20px;
+
+}
+
+.sidebar h2{
+
+    font-family:"AMX";
+
+    color:var(--primary);
+
+    margin-bottom:18px;
+
+    font-size:.9rem;
+
+    letter-spacing:.3px;
+
+    text-transform:uppercase;
+
+}
+
+.filter{
+
+    margin-bottom:14px;
+
+}
+
+.filter label{
+
+    display:block;
+
+    margin-bottom:6px;
+
+    font-size:9.5px;
+
+    font-weight:500;
+
+    letter-spacing:.2px;
+
+    text-transform:uppercase;
+
+    color:var(--text-light);
+
+}
+
+.filter select{
+
+    width:100%;
+
+    height:34px;
+
+    border-radius:7px;
+
+    border:1px solid var(--border);
+
+    padding:0 8px;
+
+    background:white;
+
+    font-size:11.5px;
+
+    color:var(--text);
+
+    transition:border-color .15s;
+
+}
+
+.filter select:hover,
+.filter select:focus{
+
+    border-color:#C7CCD6;
+
+    outline:none;
+
+}
+
+/* ===========================================================
+   MAIN
+=========================================================== */
+
+main{
+
+    margin-left:220px;
+
+    margin-top:100px;
+
+    padding:24px;
+
+}
+
+/* ===========================================================
+   KPI GRID
+=========================================================== */
+
+.kpi-grid{
+
+    display:grid;
+
+    grid-template-columns:repeat(4,1fr);
+
+    gap:10px;
+
+}
+
+.kpi-card{
+
+    background:var(--card);
+
+    border-radius:var(--radius);
+
+    box-shadow:var(--shadow);
+
+    padding:10px;
+
+    min-height:66px;
+
+    transition:.25s;
+
+}
+
+.kpi-card:hover{
+
+    transform:translateY(-3px);
+
+}
+
+.kpi-card span{
+
+    font-size:11px;
+
+    color:var(--text-light);
+
+}
+
+.kpi-card h2{
+
+    margin-top:6px;
+
+    font-size:17px;
+
+    color:var(--primary);
+
+    font-family:"AMX";
+
+}
+
+/* KPI em destaque: Ações finalizadas/concluídas */
+
+.kpi-card.kpi-highlight{
+
+    background:linear-gradient(135deg,#21A366,#1B8A56);
+
+    box-shadow:0 10px 25px rgba(33,163,102,.28);
+
+}
+
+.kpi-card.kpi-highlight span{
+
+    color:rgba(255,255,255,.85);
+
+}
+
+.kpi-card.kpi-highlight h2{
+
+    color:white;
+
+}
+
+/* KPIs clicáveis (abrem o drill-down) */
+
+.clickable-kpi{
+
+    cursor:pointer;
+
+}
+
+.clickable-kpi:hover{
+
+    box-shadow:0 14px 30px rgba(0,0,0,.12);
+
+}
+
+.clickable-kpi:active{
+
+    transform:translateY(-1px);
+
+}
+
+/* ===========================================================
+   SUMMARY
+=========================================================== */
+
+.summary{
+
+    margin-top:30px;
+
+    background:white;
+
+    border-radius:var(--radius);
+
+    padding:20px;
+
+    box-shadow:var(--shadow);
+
+}
+
+.summary h2{
+
+    color:var(--primary);
+
+    margin-bottom:12px;
+
+    font-family:"AMX";
+
+}
+
+.summary p{
+
+    line-height:1.7;
+
+}
+
+/* ===========================================================
+   PANELS
+=========================================================== */
+
+.dashboard-grid{
+
+    margin-top:30px;
+
+    display:grid;
+
+    grid-template-columns:repeat(2,1fr);
+
+    gap:22px;
+
+}
+
+.panel{
+
+    background:white;
+
+    border-radius:var(--radius);
+
+    padding:24px;
+
+    box-shadow:var(--shadow);
+
+}
+
+.panel h3{
+
+    margin-bottom:18px;
+
+    color:var(--primary);
+
+    font-family:"AMX";
+
+}
+
+.panel canvas{
+
+    width:100%!important;
+
+    height:320px!important;
+
+}
+
+/* ===========================================================
+   GOALS
+=========================================================== */
+
+section{
+
+    margin-top:35px;
+
+}
+
+section h2{
+
+    margin-bottom:18px;
+
+    color:var(--primary);
+
+    font-family:"AMX";
+
+}
+
+#goalsContainer{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:36px;
+
+}
+
+#goalsByTypeContainer{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:20px;
+
+}
+
+/* ===========================================================
+   TABLES
+=========================================================== */
+
+table{
+
+    width:100%;
+
+    border-collapse:collapse;
+
+    background:white;
+
+    border-radius:var(--radius);
+
+    overflow:hidden;
+
+    box-shadow:var(--shadow);
+    border:1px solid #E6E8ED;
+
+}
+
+th{
+
+    background:var(--primary);
+
+    color:white;
+
+    padding:14px;
+
+}
+
+td{
+
+    padding:12px;
+
+    border-bottom:1px solid #EEE;
+
+}
+
+tr:hover{
+
+    background:#FAFAFA;
+
+}
+
+/* ===========================================================
+   BADGES
+=========================================================== */
+
+.badge{
+
+    display:inline-flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    border-radius:20px;
+
+    padding:3px 6px;
+
+    color:white;
+
+    font-size:.58rem;
+
+}
+
+.success{
+
+    background:#DDF4E5;
+
+    color:#215B34;
+
+}
+
+.warning{
+
+    background:#FFF3CD;
+
+    color:#6A5100;
+
+}
+
+.danger{
+
+    background:#FBE1E3;
+
+    color:#8B1E28;
+
+}
+
+/* ===========================================================
+   RESPONSIVE
+=========================================================== */
+
+@media(max-width:1400px){
+
+.kpi-grid{
+
+grid-template-columns:repeat(2,1fr);
+
+}
+
+}
+
+@media(max-width:1100px){
+
+.dashboard-grid{
+
+grid-template-columns:1fr;
+
+}
+
+}
+
+@media(max-width:500px){
+
+.sidebar{
+
+position:relative;
+
+width:100%;
+
+height:auto;
+
+top:0;
+
+}
+
+main{
+
+margin:0;
+
+}
+
+.topbar{
+
+position:relative;
+
+}
+
+.kpi-grid{
+
+grid-template-columns:1fr;
+
+}
+
+
+}
+.section-header{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin-top:24px;
+
+    margin-bottom:20px;
+
+}
+
+.summary-switch{
+
+    display:flex;
+
+    gap:10px;
+
+}
+
+.summary-button{
+
+    background:white;
+
+    border:1px solid #DDD;
+
+    border-radius:8px;
+
+    padding:8px 18px;
+
+    cursor:pointer;
+
+    transition:.2s;
+
+}
+
+.summary-button.active{
+
+    background:#DA291C;
+
+    color:white;
+
+    border-color:#DA291C;
+
+}
+/* =======================================================
+   GOALS
+======================================================= */
+
+.goals-section{
+
+    margin-top:32px;
+
+    background:#FFF;
+
+    border-radius:16px;
+
+    padding:24px;
+
+    box-shadow:0 2px 12px rgba(0,0,0,.05);
+    overflow-x:auto;
+
+        display:flex;
+
+    flex-direction:column;
+
+    gap:18px;
+
+}
+
+.goals-section--tight{
+
+    gap:8px;
+
+}
+
+.country-card{
+
+    overflow-x:auto;
+        margin-top:12px;
+
+    padding-top:8px;
+
+    padding-bottom:12px;
+
+    border-bottom:1px solid var(--border);
+
+}
+
+.country-card:last-child{
+
+    border-bottom:none;
+
+}
+
+.country-title{
+
+    color:white;
+
+    background:linear-gradient(90deg,var(--primary),var(--primary-dark));
+
+    padding:12px 18px;
+
+    border-radius:10px 10px 0 0;
+
+    font-size:.9rem;
+
+    letter-spacing:.3px;
+
+    margin-bottom:2px;
+
+}
+
+.country-card .goals-table{
+
+    border-radius:0 0 10px 10px;
+
+    overflow:hidden;
+
+}
+
+/* Cabeçalho de trimestre (mês a mês) */
+
+.quarter-header{
+
+    background:#1F1F1F;
+
+}
+
+/* Cabeçalho do bloco "Resultado anual" — mais claro/cinza,
+   para diferenciar visualmente do mês a mês */
+
+.quarter-header.annual-header{
+
+    background:#DCE0E6;
+
+    color:#2B2B2B;
+
+}
+
+.annual-subheader{
+
+    background:#EEF0F4;
+
+    color:#2B2B2B;
+
+    font-weight:700;
+
+}
+
+.q-total-header{
+
+    background:#F0F0F3;
+
+    font-weight:600;
+
+}
+
+/* Coluna de total do trimestre dentro do corpo da tabela */
+
+.q-total-cell{
+
+    font-weight:600;
+
+    color:white;
+
+    background:#C9CDD4;
+
+    transition:.2s;
+
+}
+
+.q-total-cell.success{
+
+    background:#DDF4E5;
+
+    color:#215B34;
+}
+
+.q-total-cell.warning{
+
+    background:#FFF3CD;
+
+    color:#6A5100;
+
+}
+
+.q-total-cell.danger{
+
+    background:#FBE1E3;
+
+    color:#8B1E28;
+
+}
+
+/* Quando a meta anual foi atingida, toda a linha permanece verde. */
+.goals-table tr.goal-achieved-row td:not(.area-name){
+
+    background:#DDF4E5;
+
+    color:#215B34;
+
+}
+
+.goals-table tr.goal-achieved-row .q-total-cell{
+
+    background:#C8ECD5;
+
+}
+
+.goals-table tr.goal-achieved-row .area-name{
+
+    background:#FFF;
+
+    color:var(--text-light);
+
+}
+
+.area-name{
+
+    text-align:left!important;
+
+    font-weight:600;
+
+    color:var(--text-light);
+
+    vertical-align:top;
+
+}
+
+.action-name{
+
+    text-align:left!important;
+
+    font-weight:600;
+
+}
+
+/* Setas de tendência mês a mês */
+
+.trend-up{
+
+    color:var(--green);
+
+    font-weight:700;
+
+}
+
+.trend-down{
+
+    color:var(--red);
+
+    font-weight:700;
+
+}
+
+.trend-flat{
+
+    color:var(--text-light);
+
+    font-weight:700;
+
+}
+
+.goals-table{
+
+    width:100%;
+
+    border-collapse:collapse;
+
+    font-size:.55rem;
+
+}
+
+.goals-table th{
+
+    background:#2C2C2C;
+
+    color:white;
+
+    padding:10px;
+
+    text-align:center;
+
+    border:1px solid #404040;
+
+}
+
+.goals-table td{
+
+    border-bottom:1px solid #ECECEC;
+
+    white-space:nowrap;
+
+overflow:hidden;
+
+text-overflow:ellipsis;
+    padding:10px 8px;
+
+    text-align:center;
+
+    border:1px solid #ECEFF3;
+
+}
+
+.goals-table tr:hover{
+
+    background:#FAFAFA;
+
+}
+
+.summary-row{
+
+    background:#F6F7FB;
+
+    font-weight:700;
+
+}
+
+.summary-row td{
+
+    border-top:2px solid #D8DCE3;
+
+    border-bottom:2px solid #D8DCE3;
+
+}
+
+/* Separador "Sem meta definida" dentro das tabelas de país */
+
+.subgroup-row td{
+
+    background:#E7EAF0;
+
+    color:#555B66;
+
+    font-size:.68rem;
+
+    font-weight:700;
+
+    text-transform:uppercase;
+
+    letter-spacing:.4px;
+
+    text-align:left;
+
+    white-space:nowrap;
+
+    padding:8px 10px;
+
+}
+
+/* ===========================================================
+   MODAL DE DRILL-DOWN
+=========================================================== */
+
+body.modal-open{
+
+    overflow:hidden;
+
+}
+
+.drilldown-modal{
+
+    display:none;
+
+    position:fixed;
+
+    inset:0;
+
+    background:rgba(20,20,20,.55);
+
+    z-index:2000;
+
+    align-items:center;
+
+    justify-content:center;
+
+    padding:30px;
+
+}
+
+.drilldown-modal.open{
+
+    display:flex;
+
+}
+
+.drilldown-box{
+
+    background:white;
+
+    border-radius:16px;
+
+    width:100%;
+
+    max-width:1200px;
+
+    max-height:85vh;
+
+    display:flex;
+
+    flex-direction:column;
+
+    box-shadow:0 25px 60px rgba(0,0,0,.3);
+
+    overflow:hidden;
+
+}
+
+.drilldown-header{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:flex-start;
+
+    padding:20px 24px;
+
+    border-bottom:1px solid var(--border);
+
+}
+
+.drilldown-header h3{
+
+    color:var(--primary);
+
+    font-family:"AMX";
+
+    margin-bottom:4px;
+
+}
+
+.drilldown-header span{
+
+    font-size:13px;
+
+    color:var(--text-light);
+
+}
+
+.drilldown-close{
+
+    border:none;
+
+    background:#F0F0F3;
+
+    color:var(--text);
+
+    width:32px;
+
+    height:32px;
+
+    border-radius:50%;
+
+    cursor:pointer;
+
+    font-size:14px;
+
+    transition:.2s;
+
+    flex-shrink:0;
+
+}
+
+.drilldown-close:hover{
+
+    background:#E4E7EC;
+
+}
+
+.drilldown-table-wrapper{
+
+    overflow:auto;
+
+    padding:0 24px 24px;
+
+}
+
+.drilldown-table{
+
+    width:100%;
+
+    border-collapse:collapse;
+
+    font-size:.78rem;
+
+}
+
+.drilldown-table th{
+
+    position:sticky;
+
+    top:0;
+
+    background:#2C2C2C;
+
+    color:white;
+
+    padding:10px 8px;
+
+    text-align:left;
+
+    white-space:nowrap;
+
+}
+
+.drilldown-table td{
+
+    padding:9px 8px;
+
+    border-bottom:1px solid #ECECEC;
+
+    text-align:left;
+
+    max-width:220px;
+
+}
+
+.drilldown-table tr:hover{
+
+    background:#FAFAFA;
+
+}
+
+.page-nav{
+
+    position:fixed;
+
+    top:80px;
+
+    left:0;
+
+    right:0;
+
+    height:48px;
+
+    background:#FFF;
+
+    border-bottom:1px solid #E5E7EB;
+
+    display:flex;
+
+    align-items:center;
+
+    padding:0 32px;
+
+    z-index:950;
+
+}
+
+.page-tab{
+
+    display:flex;
+
+    align-items:center;
+
+    height:100%;
+
+    padding:0 22px;
+
+    background:none;
+
+    border:none;
+
+    color:#555;
+
+    font-weight:600;
+
+    cursor:pointer;
+
+    transition:.2s;
+
+}
+
+.page-tab.active{
+
+    color:var(--primary);
+
+    border-bottom:3px solid var(--primary);
+
+    background: #feebeb
+
+}
+
+.page{
+
+    display:none;
+
+}
+
+.page.active{
+
+    display:block;
+
+}
+
+.page iframe{
+
+    width:100%;
+
+    height:calc(100vh - 180px);
+
+    border:none;
+
+    border-radius:12px;
+
+    background:white;
+
+}
+
+/* ==========================================
+   PÁGINAS - personalização da margem / menu de filtros lateral
+========================================== */
+
+main.full-width{
+
+    margin-left:0;
+
+}
+
+.social-table{
+
+    width:100%;
+
+    border-collapse:collapse;
+
+    font-size:.55rem;
+
+    background:white;
+
+    box-shadow:none;
+
+    border:none;
+
+}
+
+.social-table thead th{
+
+    background:#2C2C2C;
+
+    color:white;
+
+    padding:8px 6px;
+
+    text-align:center;
+
+    border:1px solid #404040;
+
+    white-space:nowrap;
+
+    font-size:.55rem;
+
+    letter-spacing:.2px;
+
+}
+
+.social-table tbody td{
+
+    border:1px solid #ECEFF3;
+
+    padding:6px 5px;
+
+    text-align:center;
+
+    white-space:nowrap;
+
+}
+
+.social-table tbody tr:hover{
+
+    background:#FAFAFA;
+
+}
+
+.social-table tbody td:first-child{
+
+    text-align:left;
+
+    font-weight:600;
+
+    color:var(--text-light);
+
+    white-space:nowrap;
+
+}
+
+/* Coluna "Tipo" (Total / Média por post) — sempre centralizada,
+   mesmo quando cai na 1ª célula física da linha (linhas de
+   continuação de um rowspan não têm a célula de rowspan antes
+   dela). Precisa vencer a regra :first-child acima. */
+.social-table tbody tr td.metric-type{
+
+    text-align:center!important;
+
+    font-weight:600;
+
+    color:var(--text-light);
+
+    white-space:nowrap;
+
+}
+
+.social-table .metric-value{
+
+    font-weight:600;
+
+    font-size:.55rem;
+
+    line-height:1.2;
+
+}
+
+.social-table .variation{
+
+    margin-left:4px;
+
+    position:relative;
+
+    display:inline-block;
+
+    font-size:.55rem;
+
+    font-weight:600;
+
+    line-height:1.2;
+
+    cursor:default;
+
+}
+
+/* Tooltip da porcentagem — só aparece com o mouse em cima,
+   balãozinho arredondado cinza claro, discreto. */
+.social-table .variation[data-tooltip]::after{
+
+    content:attr(data-tooltip);
+
+    position:absolute;
+
+    bottom:100%;
+
+    left:50%;
+
+    transform:translate(-50%, -6px);
+
+    background:#F0F0F3;
+
+    color:var(--text);
+
+    padding:3px 7px;
+
+    border-radius:8px;
+
+    font-size:.62rem;
+
+    font-weight:600;
+
+    white-space:nowrap;
+
+    box-shadow:0 4px 12px rgba(0,0,0,.14);
+
+    opacity:0;
+
+    visibility:hidden;
+
+    transition:opacity .15s, visibility .15s;
+
+    z-index:30;
+
+    pointer-events:none;
+
+}
+
+.social-table .variation[data-tooltip]::before{
+
+    content:"";
+
+    position:absolute;
+
+    bottom:100%;
+
+    left:50%;
+
+    transform:translate(-50%, 1px);
+
+    border:4px solid transparent;
+
+    border-top-color:#F0F0F3;
+
+    opacity:0;
+
+    visibility:hidden;
+
+    transition:opacity .15s, visibility .15s;
+
+    z-index:30;
+
+    pointer-events:none;
+
+}
+
+.social-table .variation[data-tooltip]:hover::after,
+.social-table .variation[data-tooltip]:hover::before{
+
+    opacity:1;
+
+    visibility:visible;
+
+}
+
+.social-table .variation.positive{
+
+    color:#16a34a;
+
+}
+
+.social-table .variation.negative{
+
+    color:#dc2626;
+
+}
+
+.social-table .variation.neutral{
+
+    color:#6b7280;
+
+}
+
+.social-table td.annual{
+
+    font-weight:700;
+
+    background:#F0F0F3;
+
+}
+
+/* ==========================================================
+   REDES SOCIAIS
+========================================================== */
+
+.chart-grid{
+
+    display:grid;
+
+    grid-template-columns:repeat(2,minmax(0,1fr));
+
+    gap:24px;
+
+}
+
+.chart-grid canvas{
+
+    width:100%!important;
+
+    height:320px!important;
+
+    max-height:320px!important;
+
+}
+
+.social-grid{
+
+    display:grid;
+
+    grid-template-columns:repeat(2,1fr);
+
+    gap:24px;
+
+    margin-top:32px;
+
+}
+
+.social-grid .card{
+
+    background:#fff;
+
+    border-radius:12px;
+
+    padding:20px;
+
+}
+
+.social-grid .card h2{
+
+    font-size:.95rem;
+
+    margin-bottom:12px;
+
+    color:var(--primary);
+
+    font-family:"AMX";
+
+}
+
+.social-grid .card canvas{
+
+    width:100%!important;
+
+    height:260px!important;
+
+    max-height:260px!important;
+
+}
+
+.chart-box-tall{
+
+    position:relative;
+
+    height:380px;
+
+}
+
+.chart-box-tall canvas{
+
+    width:100%!important;
+
+    height:380px!important;
+
+}
+
+/* ===========================================================
+   REDES SOCIAIS — gráficos de análise (barras com todas as
+   legendas visíveis + lista "ver mais" para a cauda longa)
+=========================================================== */
+
+.social-chart-grid{
+
+    display:grid;
+
+    grid-template-columns:repeat(2,minmax(0,1fr));
+
+    gap:24px;
+
+    margin-top:32px;
+
+}
+
+.social-chart-card{
+
+    background:#fff;
+
+    border-radius:12px;
+
+    padding:20px;
+
+}
+
+.social-chart-card h2{
+
+    font-size:.95rem;
+
+    margin-bottom:12px;
+
+    color:var(--primary);
+
+    font-family:"AMX";
+
+}
+
+.social-chart-canvas-wrap{
+
+    position:relative;
+
+    width:100%;
+
+    height:260px;
+
+}
+
+.social-chart-canvas-wrap canvas{
+
+    width:100%!important;
+
+    height:100%!important;
+
+}
+
+.social-chart-canvas-wrap--donut{
+
+    height:260px;
+
+}
+
+.chart-more-toggle{
+
+    display:none;
+
+    margin-top:10px;
+
+    background:none;
+
+    border:none;
+
+    color:var(--primary);
+
+    font-size:.82rem;
+
+    font-weight:600;
+
+    cursor:pointer;
+
+    padding:4px 0;
+
+}
+
+.chart-more-toggle:hover{
+
+    text-decoration:underline;
+
+}
+
+.chart-more-list{
+
+    display:none;
+
+    margin-top:8px;
+
+    border-top:1px solid #EEE;
+
+    padding-top:8px;
+
+    max-height:220px;
+
+    overflow-y:auto;
+
+}
+
+.chart-more-item{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    padding:6px 4px;
+
+    font-size:.82rem;
+
+    color:var(--text-light);
+
+    cursor:pointer;
+
+    border-radius:6px;
+
+}
+
+.chart-more-item:hover{
+
+    background:#F7F7F9;
+
+}
+
+.chart-more-label{
+
+    flex:1;
+
+    padding-right:10px;
+
+    overflow:hidden;
+
+    text-overflow:ellipsis;
+
+    white-space:nowrap;
+
+}
+
+.chart-more-value{
+
+    font-weight:600;
+
+    color:var(--text);
+
+    white-space:nowrap;
+
+}
+
+/* ===========================================================
+   DESTAQUES DE GRAVADORAS — tabela "Relação de destaques"
+   (linhas de disquera com scroll, Total geral fixo embaixo)
+=========================================================== */
+
+.hl-table-scroll{
+
+    max-height:210px;
+
+    overflow-y:auto;
+
+    border-radius:10px 10px 0 0;
+
+}
+
+/* table-layout:fixed com as MESMAS larguras nas duas tabelas
+   (a de scroll e a de Total geral, separadas pra poder congelar
+   o cabeçalho) — sem isso cada tabela calcula a largura das
+   colunas sozinha, a partir do próprio conteúdo, e as colunas
+   ficam desalinhadas entre as duas. */
+#hlDisqueraTable table{
+
+    table-layout:fixed;
+
+}
+
+#hlDisqueraTable th:nth-child(1),
+#hlDisqueraTable td:nth-child(1){
+
+    width:40%;
+
+}
+
+#hlDisqueraTable th:nth-child(2),
+#hlDisqueraTable td:nth-child(2),
+#hlDisqueraTable th:nth-child(3),
+#hlDisqueraTable td:nth-child(3),
+#hlDisqueraTable th:nth-child(4),
+#hlDisqueraTable td:nth-child(4){
+
+    width:20%;
+
+}
+
+#hlDisqueraTable th{
+
+    text-align:left;
+
+}
+
+.hl-table-scroll table{
+
+    box-shadow:none;
+
+    /* A regra global "table{overflow:hidden}" (usada pra recortar
+       cantos arredondados) quebra o position:sticky do <th> — a
+       tabela vira o "container de scroll" da sticky em vez do
+       wrapper .hl-table-scroll. Sem isso o cabeçalho não congela. */
+    overflow:visible;
+
+    border-collapse:separate;
+
+    border-spacing:0;
+
+}
+
+.hl-table-scroll th,
+.hl-table-scroll td{
+
+    border-top-width:0;
+
+}
+
+.hl-table-scroll thead th{
+
+    border-top-width:1px;
+
+}
+
+.hl-table-scroll thead th{
+
+    position:sticky;
+
+    top:0;
+
+    z-index:1;
+
+}
+
+.hl-total-table{
+
+    /* Mesmo modelo de bordas da tabela de cima (.hl-table-scroll
+       table) — collapse vs. separate calcula a largura das
+       colunas de um jeito ligeiramente diferente, o suficiente
+       pra desalinhar as duas tabelas coluna a coluna. */
+    border-collapse:separate;
+
+    border-spacing:0;
+
+    margin-top:0;
+
+    border-radius:0 0 10px 10px;
+
+    overflow:hidden;
+
+    box-shadow:none;
+
+}
+
+.hl-total-row td{
+
+    background:#54565C;
+
+    color:white;
+
+    font-weight:700;
+
+    border-color:#333;
+
+    text-align:left;
+
+}
+
+.hl-total-row td.action-name{
+
+    color:white;
+
+}
+
+/* ===========================================================
+   DESTAQUES DE GRAVADORAS — gráfico de evolução mais discreto
+=========================================================== */
+
+.hl-evolucao-box{
+
+    position:relative;
+
+    height:240px;
+
+    background:#F1F2F5;
+
+    border-radius:12px;
+
+    padding:14px;
+
+}
+
+.hl-evolucao-box canvas{
+
+    width:100%!important;
+
+    height:212px!important;
+
+}
+
+/* ===========================================================
+   TELA DE LOGIN
+=========================================================== */
+
+.auth-overlay{
+
+    display:none;
+
+    position:fixed;
+
+    inset:0;
+
+    z-index:5000;
+
+    background:var(--background);
+
+    align-items:center;
+
+    justify-content:center;
+
+    padding:20px;
+
+}
+
+.auth-overlay.open{
+
+    display:flex;
+
+}
+
+.auth-card{
+
+    background:#1F1F1F;
+
+    border-radius:var(--radius);
+
+    box-shadow:0 25px 60px rgba(0,0,0,.22);
+
+    padding:40px 36px;
+
+    width:100%;
+
+    max-width:360px;
+
+    text-align:center;
+
+    display:flex;
+
+    flex-direction:column;
+
+    align-items:center;
+
+}
+
+.auth-logo{
+
+    height:32px;
+
+    margin-bottom:14px;
+
+}
+
+.auth-card h1{
+
+    font-family:"AMX";
+
+    color:var(--primary);
+
+    font-size:1.2rem;
+
+    margin-bottom:6px;
+
+}
+
+.auth-card p{
+
+    color:rgba(255,255,255,.6);
+
+    font-size:.8rem;
+
+    margin-bottom:18px;
+
+}
+
+.auth-card input{
+
+    width:100%;
+
+    height:42px;
+
+    border-radius:9px;
+
+    border:1px solid transparent;
+
+    padding:0 14px;
+
+    font-size:.9rem;
+
+    margin-bottom:14px;
+
+    text-align:center;
+
+    font-family:inherit;
+
+    background:white;
+
+    color:var(--text);
+
+}
+
+.auth-card input:focus{
+
+    outline:none;
+
+    border-color:var(--primary);
+
+}
+
+.auth-card button{
+
+    width:100%;
+
+    border:none;
+
+    background:var(--primary);
+
+    color:white;
+
+    border-radius:9px;
+
+    padding:12px;
+
+    font-size:.9rem;
+
+    font-weight:600;
+
+    cursor:pointer;
+
+    transition:.2s;
+
+    font-family:inherit;
+
+}
+
+.auth-card button:hover{
+
+    background:var(--primary-dark);
+
+}
+
+.auth-error{
+
+    display:block;
+
+    color:#ff8f8a;
+
+    font-size:.75rem;
+
+    min-height:16px;
+
+    margin-top:12px;
+
+}
+
+body.auth-locked{
+
+    overflow:hidden;
+
+}
+
+/* ===========================================================
+   VISÃO GERAL
+=========================================================== */
+
+.page-subtitle{
+
+    color:var(--text-light);
+
+    font-size:.85rem;
+
+    margin:0 0 22px;
+
+    max-width:760px;
+
+}
+
+#page-overview{
+
+    max-width:1400px;
+
+    margin:0 auto;
+
+    padding:0 40px;
+
+}
+
+#page-overview .kpi-grid{
+
+    grid-template-columns:repeat(5,1fr);
+
+    gap:14px;
+
+}
+
+#page-overview .kpi-card{
+
+    padding:14px 12px;
+
+    min-height:78px;
+
+}
+
+#page-overview .kpi-card span{
+
+    font-size:11.5px;
+
+}
+
+#page-overview .kpi-card h2{
+
+    font-size:21px;
+
+}
+
+.kpi-goal-indicator{
+
+    transition:background-color .3s;
+
+}
+
+.kpi-goal-indicator h2{
+
+    transition:color .3s;
+
+}
+
+@media(max-width:1300px){
+
+    #page-overview .kpi-grid{
+
+        grid-template-columns:repeat(3,1fr);
+
+    }
+
+}
+
+@media(max-width:800px){
+
+    #page-overview{
+
+        padding:0 16px;
+
+    }
+
+    #page-overview .kpi-grid{
+
+        grid-template-columns:repeat(2,1fr);
+
+    }
+
+}
+
+/* ===========================================================
+   LEGENDA CUSTOMIZADA DOS DONUTS (Destaques de gravadoras)
+=========================================================== */
+
+.chart-legend{
+
+    margin-top:10px;
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:6px;
+
+    max-height:170px;
+
+    overflow-y:auto;
+
+}
+
+.chart-legend-item{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:8px;
+
+    font-size:.7rem;
+
+    color:var(--text);
+
+}
+
+.chart-legend-dot{
+
+    width:9px;
+
+    height:9px;
+
+    border-radius:50%;
+
+    flex-shrink:0;
+
+}
+
+.chart-legend-label{
+
+    flex:1;
+
+    overflow:hidden;
+
+    text-overflow:ellipsis;
+
+    white-space:nowrap;
+
+}
+
+.chart-legend-value{
+
+    font-weight:600;
+
+    color:var(--text-light);
+
+}
+
+.chart-legend-more{
+
+    font-size:.66rem;
+
+    color:var(--text-light);
+
+    font-style:italic;
+
+}
+
+/* ===========================================================
+   FILTRO: CAMPO DE BUSCA + BOTÃO LIMPAR
+=========================================================== */
+
+.filter input[type="search"],
+.filter input[type="text"]{
+
+    width:100%;
+
+    height:34px;
+
+    border-radius:7px;
+
+    border:1px solid var(--border);
+
+    padding:0 8px;
+
+    background:white;
+
+    font-size:11.5px;
+
+    color:var(--text);
+
+    font-family:inherit;
+
+}
+
+.filter input[type="search"]:hover,
+.filter input[type="search"]:focus{
+
+    border-color:#C7CCD6;
+
+    outline:none;
+
+}
+
+.filter-clear-btn{
+
+    width:100%;
+
+    border:1px solid var(--border);
+
+    background:white;
+
+    color:var(--text-light);
+
+    border-radius:7px;
+
+    padding:9px;
+
+    font-size:11px;
+
+    cursor:pointer;
+
+    transition:.2s;
+
+    font-family:inherit;
+
+}
+
+.filter-clear-btn:hover{
+
+    border-color:var(--primary);
+
+    color:var(--primary);
+
+}
+
+/* ===========================================================
+   BADGES: Destaque (Capa / Inclusão / Instagram)
+=========================================================== */
+
+.badge.capa{
+
+    background:#DCE9FB;
+
+    color:#1D4ED8;
+
+}
+
+.badge.inclusao{
+
+    background:#FDE7DA;
+
+    color:#C2410C;
+
+}
+
+.badge.instagram{
+
+    background:#F3E8FF;
+
+    color:#7C3AED;
+
+}
+
+/* ===========================================================
+   ANÁLISES 360
+=========================================================== */
+
+.analises-market{
+
+    margin-top:32px;
+
+}
+
+.analises-market:first-child{
+
+    margin-top:8px;
+
+}
+
+/* Faixa vermelha do país fixa no topo enquanto rolamos pelas
+   análises daquele mercado — solta assim que o próximo
+   .analises-market (próximo país) entra em cena. */
+.analises-market .country-title{
+
+    position:sticky;
+
+    top:128px;
+
+    z-index:100;
+
+}
+
+/* Sem espaço entre a faixa do país e a primeira seção. */
+.analises-market .country-title + .goals-section{
+
+    margin-top:0;
+
+}
+
+.analises-market .goals-section{
+
+    gap:10px;
+
+}
+
+.analises-market .hl-table-scroll{
+
+    max-height:420px;
+
+}
+
+.analises-caption-inline{
+
+    font-size:.75rem;
+
+    font-weight:400;
+
+    opacity:.85;
+
+    margin-left:8px;
+
+}
+
+.analises-caption{
+
+    font-size:.78rem;
+
+    color:var(--text-light);
+
+    margin:0 0 14px;
+
+    line-height:1.5;
+
+}
+
+.analises-empty{
+
+    font-size:.85rem;
+
+    color:var(--text-light);
+
+    padding:12px 0;
+
+}
+
+.analises-table-toolbar{
+
+    display:flex;
+
+    justify-content:flex-end;
+
+    margin-bottom:10px;
+
+}
+
+.analises-table-search{
+
+    border:1px solid var(--border);
+
+    border-radius:8px;
+
+    padding:7px 12px;
+
+    font-size:.8rem;
+
+    width:220px;
+
+    max-width:100%;
+
+}
+
+.analises-table-search:focus{
+
+    outline:none;
+
+    border-color:var(--primary);
+
+}
+
+.analises-interactive-table thead th{
+
+    cursor:pointer;
+
+    user-select:none;
+
+}
+
+.analises-sort-icon{
+
+    opacity:.55;
+
+    font-size:.75em;
+
+    margin-left:2px;
+
+}
+
+.analises-cell-link{
+
+    cursor:pointer;
+
+}
+
+.analises-cell-link:hover{
+
+    background:#F7F7F9;
+
+}
+
+.analises-stat-row{
+
+    display:grid;
+
+    grid-template-columns:repeat(4,minmax(0,1fr));
+
+    gap:16px;
+
+}
+
+.analises-stat-card{
+
+    background:#F6F7FB;
+
+    border-radius:12px;
+
+    padding:16px;
+
+    cursor:pointer;
+
+    transition:.15s;
+
+}
+
+.analises-stat-card:hover{
+
+    background:#EFEFF4;
+
+}
+
+.analises-stat-card--muted{
+
+    opacity:.65;
+
+    cursor:default;
+
+}
+
+.analises-stat-card--muted:hover{
+
+    background:#F6F7FB;
+
+}
+
+.analises-stat-card span{
+
+    font-size:.75rem;
+
+    color:var(--text-light);
+
+    font-weight:600;
+
+}
+
+.analises-stat-card h3{
+
+    font-size:1.5rem;
+
+    margin:6px 0 4px;
+
+    color:var(--text);
+
+    font-family:"AMX";
+
+}
+
+.analises-stat-card small{
+
+    font-size:.68rem;
+
+    color:var(--text-light);
+
+    display:block;
+
+    line-height:1.3;
+
+}
+
+.analises-chart-wrap{
+
+    position:relative;
+
+    width:100%;
+
+    max-width:640px;
+
+    height:190px;
+
+    margin-bottom:16px;
+
+}
+
+.analises-chart-wrap canvas{
+
+    width:100%!important;
+
+    height:100%!important;
+
+}
+
+.analises-opp-cell{
+
+    text-align:center;
+
+    width:34px;
+
+    font-size:.95rem;
+
+}
+
+.analises-opp-dot{
+
+    cursor:default;
+
+}
+
+.analises-opp-dot--none{
+
+    color:var(--text-light);
+
+    opacity:.5;
+
+}
+
+.goals-table td.analises-status-cell{
+
+    text-align:left;
+
+}
+
+@media (max-width:900px){
+
+    .analises-stat-row{
+
+        grid-template-columns:repeat(2,minmax(0,1fr));
+
+    }
+
+}
+
+/* ===========================================================
+   DATA TABLE (tabela genérica: ordenar, paginar, exportar CSV)
+=========================================================== */
+
+.data-table-card{
+
+    background:white;
+
+    border-radius:var(--radius);
+
+    overflow:hidden;
+
+}
+
+.data-table-head{
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+    gap:10px;
+
+    padding:0 0 14px;
+
+    flex-wrap:wrap;
+
+}
+
+.data-table-count{
+
+    font-size:.75rem;
+
+    color:var(--text-light);
+
+}
+
+.data-table-csv-btn{
+
+    border:1px solid var(--border);
+
+    background:white;
+
+    color:var(--text);
+
+    border-radius:8px;
+
+    padding:7px 14px;
+
+    font-size:.75rem;
+
+    cursor:pointer;
+
+    transition:.2s;
+
+    font-family:inherit;
+
+}
+
+.data-table-csv-btn:hover{
+
+    border-color:var(--primary);
+
+    color:var(--primary);
+
+}
+
+.data-table-link-btn{
+
+    display:inline-flex;
+
+    align-items:center;
+
+    border:1px solid var(--primary);
+
+    background:var(--primary);
+
+    color:white;
+
+    border-radius:8px;
+
+    padding:7px 14px;
+
+    font-size:.75rem;
+
+    font-weight:600;
+
+    cursor:pointer;
+
+    transition:.2s;
+
+    font-family:inherit;
+
+    text-decoration:none;
+
+}
+
+.data-table-link-btn:hover{
+
+    background:var(--primary-dark);
+
+    border-color:var(--primary-dark);
+
+}
+
+.data-table-scroll{
+
+    overflow:auto;
+
+    max-height:520px;
+
+}
+
+table.data-table{
+
+    width:100%;
+
+    border-collapse:collapse;
+
+    font-size:.72rem;
+
+}
+
+.data-table thead th{
+
+    position:sticky;
+
+    top:0;
+
+    background:#2C2C2C;
+
+    color:white;
+
+    text-align:left;
+
+    padding:9px 10px;
+
+    white-space:nowrap;
+
+    cursor:pointer;
+
+    user-select:none;
+
+    font-weight:600;
+
+}
+
+.data-table thead th:hover{
+
+    background:#1F1F1F;
+
+}
+
+.data-table-sort-icon{
+
+    opacity:.5;
+
+    font-size:.65rem;
+
+}
+
+.data-table tbody td{
+
+    padding:8px 10px;
+
+    border-bottom:1px solid #ECECEC;
+
+    max-width:260px;
+
+    overflow:hidden;
+
+    text-overflow:ellipsis;
+
+    white-space:nowrap;
+
+}
+
+.data-table tbody td.num{
+
+    text-align:right;
+
+}
+
+.data-table tbody tr:hover{
+
+    background:#FAFAFA;
+
+}
+
+.data-table-empty{
+
+    padding:30px;
+
+    text-align:center;
+
+    color:var(--text-light);
+
+}
+
+.data-table-pager{
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    gap:12px;
+
+    padding:12px;
+
+    border-top:1px solid var(--border);
+
+}
+
+.data-table-pager button{
+
+    border:1px solid var(--border);
+
+    background:white;
+
+    color:var(--text-light);
+
+    border-radius:8px;
+
+    padding:6px 12px;
+
+    font-size:.75rem;
+
+    cursor:pointer;
+
+    font-family:inherit;
+
+}
+
+.data-table-pager button:disabled{
+
+    opacity:.4;
+
+    cursor:default;
+
+}
+
+.data-table-pager-info{
+
+    font-size:.75rem;
+
+    color:var(--text-light);
+
+}
+
+@media (max-width:900px){
+
+    .chart-grid{
+
+        grid-template-columns:1fr;
+
+    }
+
+}
+
+/* ===========================================================
+   GERADOR DE REPORTE SEMANAL
+=========================================================== */
+
+/* Margens laterais um pouco maiores que o padrão do <main>,
+   pra deixar o conteúdo mais central em telas largas — só
+   nesta página. */
+#page-report{
+
+    max-width:1500px;
+
+    margin:0 auto;
+
+    padding-left:24px;
+
+    padding-right:24px;
+
+}
+
+#page-report .page-subtitle{
+
+    max-width:none;
+
+}
+
+.report-toolbar{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:flex-start;
+
+    gap:24px;
+
+    flex-wrap:wrap;
+
+    margin-top:20px;
+
+}
+
+.report-filters{
+
+    display:flex;
+
+    gap:20px;
+
+    flex-wrap:wrap;
+
+}
+
+.report-filters .filter{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:6px;
+
+    min-width:190px;
+
+}
+
+.report-filters label{
+
+    font-size:.75rem;
+
+    font-weight:600;
+
+    color:var(--text-light);
+
+    text-transform:uppercase;
+
+    letter-spacing:.3px;
+
+}
+
+.report-filters select{
+
+    border:1px solid var(--border);
+
+    border-radius:8px;
+
+    padding:8px 10px;
+
+    font-size:.82rem;
+
+    background:white;
+
+    font-family:inherit;
+
+}
+
+.report-hint{
+
+    font-size:.68rem;
+
+    color:var(--text-light);
+
+    line-height:1.4;
+
+    max-width:260px;
+
+}
+
+.report-folder-btn{
+
+    white-space:nowrap;
+
+    flex-shrink:0;
+
+}
+
+.report-actions{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:14px;
+
+    margin:20px 0 14px;
+
+    flex-wrap:wrap;
+
+}
+
+.report-toggle{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:8px;
+
+    font-size:.78rem;
+
+    color:var(--text);
+
+    cursor:pointer;
+
+    user-select:none;
+
+}
+
+.report-toggle input{
+
+    width:16px;
+
+    height:16px;
+
+    cursor:pointer;
+
+}
+
+.report-count{
+
+    font-size:.78rem;
+
+    color:var(--text-light);
+
+    margin-left:auto;
+
+}
+
+.report-table-wrapper{
+
+    background:white;
+
+    border-radius:var(--radius);
+
+    box-shadow:var(--shadow);
+
+    padding:16px;
+
+    overflow:auto;
+
+    max-height:560px;
+
+}
+
+table.report-table{
+
+    border-collapse:collapse;
+
+    font-family:Arial, Helvetica, sans-serif;
+
+    font-size:8pt;
+
+    color:#000;
+
+    background:#fff;
+
+    white-space:nowrap;
+
+}
+
+table.report-table th,
+table.report-table td{
+
+    border:1px solid #cccccc;
+
+    padding:4px 8px;
+
+    text-align:left;
+
+    font-family:Arial, Helvetica, sans-serif;
+
+    font-size:8pt;
+
+}
+
+table.report-table thead th{
+
+    background:#990000;
+
+    color:#ffffff;
+
+    text-transform:uppercase;
+
+    font-weight:bold;
+
+}
+
+table.report-table td.report-capa{
+
+    background:#d9ead3;
+
+}
+
+table.report-table td.report-inclusao{
+
+    background:#fff2cc;
+
+}
+
+table.report-table td.report-instagram{
+
+    background:#ead1dc;
+
+}
+
+table.report-table td a{
+
+    color:#1155cc;
+
+    text-decoration:underline;
+
+    font-family:Arial, Helvetica, sans-serif;
+
+    font-size:8pt;
+
+}
