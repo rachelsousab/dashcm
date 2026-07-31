@@ -718,7 +718,7 @@ const ReportDashboard = {
        tabela já filtrada (Semana/Território/Gravadora/Idioma).
     ====================================================== */
 
-    COVER_PROMPT_INTRO: "Encontre, nessa pasta, as imagens referentes as capas das playlists listadas abaixo, por país.",
+    COVER_PROMPT_INTRO: "Encontre, nessa pasta, as imagens referentes às capas das playlists listadas abaixo, por país.",
 
     copyCoverPrompt() {
 
