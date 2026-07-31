@@ -26,7 +26,8 @@ const ReportDashboard = {
         territorio: "Brasil",
         gravadora: "",
         idioma: "pt",
-        includeCountry: false
+        includeCountry: false,
+        includeHeader: true
 
     },
 
@@ -188,6 +189,12 @@ const ReportDashboard = {
 
         });
 
+        document.getElementById("reportIncludeHeader").addEventListener("change", (event) => {
+
+            this.filters.includeHeader = event.target.checked;
+
+        });
+
         document.getElementById("reportCopyBtn").addEventListener("click", () => {
 
             this.copyToClipboard();
@@ -197,6 +204,12 @@ const ReportDashboard = {
         document.getElementById("reportDownloadBtn").addEventListener("click", () => {
 
             this.downloadSpreadsheet();
+
+        });
+
+        document.getElementById("reportCoverPromptBtn").addEventListener("click", () => {
+
+            this.copyCoverPrompt();
 
         });
 
@@ -440,13 +453,6 @@ const ReportDashboard = {
     },
 
     /**
-     * Monta o HTML da tabela. fullTable = true -> tela (7
-     * colunas, sem estilos inline — usa o CSS da página).
-     * fullTable = false -> versão de exportação (cópia/
-     * download), sempre sem Gravadora, com País opcional,
-     * TODO estilo inline (pro destino preservar a formatação).
-     */
-    /**
      * "Brasil" -> "Brazil" só quando o idioma selecionado é
      * inglês — nos outros dois fica igual (é o mesmo nome em
      * português e espanhol).
@@ -461,9 +467,19 @@ const ReportDashboard = {
 
     },
 
+    /**
+     * Monta o HTML da tabela. fullTable = true -> tela (7
+     * colunas, sem estilos inline — usa o CSS da página, sempre
+     * com cabeçalho). fullTable = false -> versão de exportação
+     * (cópia/download), sempre sem Gravadora, com País e
+     * cabeçalho opcionais, TODO estilo inline (pro destino
+     * preservar a formatação).
+     */
     buildTableHtml(rows, langDef, { fullTable, inline = false } = {}) {
 
         const includeCountry = fullTable ? true : this.filters.includeCountry;
+
+        const includeHeader = fullTable ? true : this.filters.includeHeader;
 
         const headers = [];
 
@@ -481,13 +497,21 @@ const ReportDashboard = {
             ? ` style="border-collapse:collapse;font-family:Arial,Helvetica,sans-serif;font-size:8pt;color:#000000;background:#ffffff;"`
             : "";
 
-        let html = `<table class="report-table"${tableStyle}><thead><tr>`;
+        let html = `<table class="report-table"${tableStyle}>`;
 
-        headers.forEach(h => {
-            html += `<th${thStyle}>${String(h).toUpperCase()}</th>`;
-        });
+        if (includeHeader) {
 
-        html += "</tr></thead><tbody>";
+            html += "<thead><tr>";
+
+            headers.forEach(h => {
+                html += `<th${thStyle}>${String(h).toUpperCase()}</th>`;
+            });
+
+            html += "</tr></thead>";
+
+        }
+
+        html += "<tbody>";
 
         rows.forEach(row => {
 
@@ -671,6 +695,106 @@ const ReportDashboard = {
         a.click();
 
         URL.revokeObjectURL(a.href);
+
+    },
+
+    /* ======================================================
+       COPIAR PROMPT DE CAPAS (texto puro, pra colar no Gemini
+       do Google Drive) — só os destaques CAPA/PORTADA/COVER da
+       tabela já filtrada (Semana/Território/Gravadora/Idioma).
+    ====================================================== */
+
+    COVER_PROMPT_INTRO: "Encontre, nessa pasta, as imagens referentes as capas das playlists listadas abaixo, por país.",
+
+    copyCoverPrompt() {
+
+        const lang = this.filters.idioma;
+
+        if (!lang) {
+
+            alert("Selecione um idioma antes de copiar.");
+
+            return;
+
+        }
+
+        const rows = this.getFilteredRows().filter(row => row.destaque === "CAPA");
+
+        if (!rows.length) {
+
+            alert("Nenhuma capa (Capa/Portada/Cover) encontrada para esse recorte.");
+
+            return;
+
+        }
+
+        const lines = rows.map(row => `${this.formatCountry(row.pais)} - ${row.playlist} - ${row.artist}`);
+
+        const text = `${this.COVER_PROMPT_INTRO}\n\n${lines.join("\n")}`;
+
+        this.copyPlainText(text, "reportCoverPromptBtn");
+
+    },
+
+    copyPlainText(text, buttonId) {
+
+        const btn = document.getElementById(buttonId);
+
+        const finish = (ok) => {
+
+            if (!btn) return;
+
+            const original = btn.textContent;
+
+            btn.textContent = ok ? "✔ Copiado!" : "Não foi possível copiar";
+
+            setTimeout(() => { btn.textContent = original; }, 1800);
+
+        };
+
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+
+            navigator.clipboard.writeText(text)
+                .then(() => finish(true))
+                .catch(() => finish(this.copyPlainTextFallback(text)));
+
+        }
+        else {
+
+            finish(this.copyPlainTextFallback(text));
+
+        }
+
+    },
+
+    copyPlainTextFallback(text) {
+
+        const textarea = document.createElement("textarea");
+
+        textarea.value = text;
+        textarea.style.position = "fixed";
+        textarea.style.left = "-9999px";
+
+        document.body.appendChild(textarea);
+
+        textarea.select();
+
+        let ok = false;
+
+        try {
+
+            ok = document.execCommand("copy");
+
+        }
+        catch (error) {
+
+            ok = false;
+
+        }
+
+        document.body.removeChild(textarea);
+
+        return ok;
 
     }
 
