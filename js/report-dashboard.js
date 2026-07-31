@@ -489,9 +489,13 @@ const ReportDashboard = {
 
         if (fullTable) headers.push(langDef.headers[6]);
 
-        const thStyle = inline
-            ? ` style="background:#990000;color:#ffffff;text-transform:uppercase;font-weight:bold;border:1px solid #cccccc;padding:4px 8px;font-family:Arial,Helvetica,sans-serif;font-size:8pt;text-align:left;"`
-            : "";
+        // white-space:nowrap em tudo evita que qualquer coluna quebre
+        // linha ao colar no corpo do e-mail; o Link ainda ganha uma
+        // largura mínima maior, já que é o texto mais longo da tabela
+        // e o que mais desconfigurava ao quebrar em duas linhas.
+        const thStyleBase = "background:#990000;color:#ffffff;text-transform:uppercase;font-weight:bold;border:1px solid #cccccc;padding:4px 8px;font-family:Arial,Helvetica,sans-serif;font-size:8pt;text-align:left;white-space:nowrap;";
+
+        const thStyle = inline ? ` style="${thStyleBase}"` : "";
 
         const tableStyle = inline
             ? ` style="border-collapse:collapse;font-family:Arial,Helvetica,sans-serif;font-size:8pt;color:#000000;background:#ffffff;"`
@@ -504,7 +508,17 @@ const ReportDashboard = {
             html += "<thead><tr>";
 
             headers.forEach(h => {
-                html += `<th${thStyle}>${String(h).toUpperCase()}</th>`;
+
+                const isLinkHeader = h === langDef.headers[3];
+
+                if (inline) {
+                    const style = isLinkHeader ? `${thStyleBase}min-width:320px;` : thStyleBase;
+                    html += `<th style="${style}">${String(h).toUpperCase()}</th>`;
+                }
+                else {
+                    html += `<th${isLinkHeader ? ' class="report-link-col"' : ""}>${String(h).toUpperCase()}</th>`;
+                }
+
             });
 
             html += "</tr></thead>";
@@ -522,7 +536,7 @@ const ReportDashboard = {
             const destaqueLabel = langDef.destaqueMap[row.destaque] || row.destaque;
 
             const tdStyle = inline
-                ? `border:1px solid #cccccc;padding:4px 8px;font-family:Arial,Helvetica,sans-serif;font-size:8pt;color:#000000;text-align:left;`
+                ? `border:1px solid #cccccc;padding:4px 8px;font-family:Arial,Helvetica,sans-serif;font-size:8pt;color:#000000;text-align:left;white-space:nowrap;`
                 : "";
 
             const highlightBg = isCapa ? "#d9ead3" : (isInstagram ? "#ead1dc" : "#fff2cc");
@@ -534,8 +548,8 @@ const ReportDashboard = {
                 : `<td class="${highlightClass}">${destaqueLabel}</td>`;
 
             const linkTd = inline
-                ? `<td style="${tdStyle}"><a href="${row.link}" style="color:#1155cc;text-decoration:underline;">${row.link}</a></td>`
-                : `<td><a href="${row.link}" target="_blank" rel="noopener">${row.link}</a></td>`;
+                ? `<td style="${tdStyle}min-width:320px;"><a href="${row.link}" style="color:#1155cc;text-decoration:underline;">${row.link}</a></td>`
+                : `<td class="report-link-col"><a href="${row.link}" target="_blank" rel="noopener">${row.link}</a></td>`;
 
             html += "<tr>";
 
@@ -736,6 +750,16 @@ const ReportDashboard = {
 
     },
 
+    /**
+     * IMPORTANTE: tenta o método síncrono (execCommand) primeiro
+     * — mesma estratégia que já funciona no botão "Copiar
+     * tabela". A Clipboard API assíncrona (navigator.clipboard)
+     * às vezes rejeita silenciosamente dependendo da origem/
+     * navegador (ex.: GitHub Pages), e nesse caso, como o
+     * fallback só rodaria dentro do .catch() (fora do gesto de
+     * clique original), o execCommand também falha — por isso
+     * ele precisa ser o método principal, não o fallback.
+     */
     copyPlainText(text, buttonId) {
 
         const btn = document.getElementById(buttonId);
@@ -752,16 +776,21 @@ const ReportDashboard = {
 
         };
 
-        if (navigator.clipboard && navigator.clipboard.writeText) {
+        if (this.copyPlainTextFallback(text)) {
+
+            finish(true);
+
+        }
+        else if (navigator.clipboard && navigator.clipboard.writeText) {
 
             navigator.clipboard.writeText(text)
                 .then(() => finish(true))
-                .catch(() => finish(this.copyPlainTextFallback(text)));
+                .catch(() => finish(false));
 
         }
         else {
 
-            finish(this.copyPlainTextFallback(text));
+            finish(false);
 
         }
 
