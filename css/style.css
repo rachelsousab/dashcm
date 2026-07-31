@@ -3118,3 +3118,10 @@ table.report-table td a{
     font-size:8pt;
 
 }
+
+table.report-table th.report-link-col,
+table.report-table td.report-link-col{
+
+    min-width:320px;
+
+}
