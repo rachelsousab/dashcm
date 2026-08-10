@@ -599,6 +599,40 @@ const phraseologies = data.filter(
 
     },
 
+    /* Status editável direto na mini-tabela (igual ao Canal 500) —
+       rows travadas (Barker/Trilho/Banner/BG, Fraseologias),
+       fundidas (vários canais) ou sem ID mostram só o texto. */
+    buildMiniStatusColumn(rowsRef) {
+
+        return {
+
+            key: "status",
+            label: "Status",
+
+            render: (value, row, index) => {
+
+                const locked =
+                    row._merged ||
+                    !row.id ||
+                    (typeof ManualActionsForm !== "undefined" && ManualActionsForm.isDetailLocked(row.detail)) ||
+                    (typeof Metrics !== "undefined" && Metrics.isPhraseology(row));
+
+                if (locked) {
+                    return row.status || "—";
+                }
+
+                return `<select class="mini-status-select c500-status-select" data-rows-ref="${rowsRef}" data-index="${index}">` +
+                    CONFIG.MANUAL_ACTIONS.statuses.map(s =>
+                        `<option value="${s}" ${s === row.status ? "selected" : ""}>${s}</option>`
+                    ).join("") +
+                    `</select>`;
+
+            }
+
+        };
+
+    },
+
     buildMiniColumns({ dateKey, dateLabel, hideGravadora, rowsRef }) {
 
         return [
@@ -613,7 +647,7 @@ const phraseologies = data.filter(
 
             { key: "owner", label: "Responsável" },
 
-            { key: "status", label: "Status" },
+            this.buildMiniStatusColumn(rowsRef),
 
             this.buildMiniEditColumn(rowsRef)
 
@@ -647,9 +681,10 @@ const phraseologies = data.filter(
 
     },
 
-    /* Clique nos botões de editar das mini-tabelas — delegado
-       uma vez só; lê sempre o array ATUAL guardado em
-       this._miniRows, então funciona mesmo depois de re-render. */
+    /* Clique nos botões de editar e mudança no select de Status das
+       mini-tabelas — delegado uma vez só; lê sempre o array ATUAL
+       guardado em this._miniRows, então funciona mesmo depois de
+       re-render. */
     bindMiniTableEditButtons() {
 
         [document.getElementById("inProgressBox"), document.getElementById("recentCompletedBox")]
@@ -675,6 +710,42 @@ const phraseologies = data.filter(
                         ManualActionsForm.openEditForm(row);
 
                     }
+
+                });
+
+                box.addEventListener("change", (event) => {
+
+                    const select = event.target.closest(".mini-status-select");
+
+                    if (!select) return;
+
+                    const rows = this._miniRows && this._miniRows[select.dataset.rowsRef];
+
+                    const row = rows && rows[Number(select.dataset.index)];
+
+                    if (!row || typeof ManualActionsForm === "undefined") return;
+
+                    const previousStatus = row.status;
+                    const newStatus = select.value;
+
+                    select.disabled = true;
+
+                    ManualActionsForm.updateStatusQuick(row, newStatus)
+                        .then(() => {
+
+                            row.status = newStatus;
+                            this.renderMiniActionTables(getData());
+
+                        })
+                        .catch(error => {
+
+                            console.error(error);
+                            alert(error.message || "Não foi possível atualizar o status. Tente de novo.");
+
+                            select.value = previousStatus;
+                            select.disabled = false;
+
+                        });
 
                 });
 

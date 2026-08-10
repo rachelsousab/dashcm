@@ -922,7 +922,16 @@ const ManualActionsForm = {
 
         const query = (searchEl?.value || "").toLowerCase().trim();
 
+        // Ao CRIAR uma ação nova (sem editContext), os Detalhes que
+        // são atualizados automaticamente por outras fontes (Canal
+        // 500, redes sociais, Barker/Trilho/Banner/BG, postagens da
+        // Colômbia) não aparecem como opção — só entram fundidos a
+        // partir da ação original, via "Editar ação existente".
+        const autoManagedDetails = Object.keys(CONFIG.MANUAL_ACTIONS.detailEditRules || {});
+
         const items = CONFIG.MANUAL_ACTIONS.details.filter(item => {
+
+            if (!this.editContext && autoManagedDetails.includes(item.value)) return false;
 
             const matchesTag = this.detalheActiveTag === "todos" || item.tags.includes(this.detalheActiveTag);
 
@@ -1646,6 +1655,67 @@ const ManualActionsForm = {
             body: JSON.stringify(payload)
 
         });
+
+    },
+
+    /**
+     * Muda o Status de uma ação direto pela mini-tabela ("Acontecendo
+     * agora" / "Últimas ações concluídas" na Área de Marketing), sem
+     * abrir o formulário inteiro — mesma ideia do status editável do
+     * Canal 500. Como o Apps Script sobrescreve a linha inteira no
+     * modo "update", reconstrói o estado completo a partir da linha
+     * (igual o formulário de edição faz) e reenvia tudo, só trocando
+     * o Status — assim nenhum outro campo se perde.
+     */
+    updateStatusQuick(row, newStatus) {
+
+        if (row._merged) {
+            return Promise.reject(new Error("Ação fundida — abra o detalhamento pra editar cada canal separadamente."));
+        }
+
+        if (this.isDetailLocked(row.detail) || (typeof Metrics !== "undefined" && Metrics.isPhraseology(row))) {
+            return Promise.reject(new Error("Ação não editável por aqui."));
+        }
+
+        if (!row.id) {
+            return Promise.reject(new Error("Essa linha não tem ID — não dá pra atualizar por aqui."));
+        }
+
+        const state = this.buildStateFromRow(row);
+
+        state.status = newStatus;
+
+        if (newStatus === "Concluída" && !state.dataFinal) {
+            return Promise.reject(new Error("Ação sem Data final — abra \"Editar ação\" pra preencher a data de conclusão antes de marcar como Concluída."));
+        }
+
+        const gravadoraValues = [...state.gravadora];
+        if (state.gravadoraImusica) gravadoraValues.push("iMusica (ott)");
+
+        const payload = {
+
+            token: CONFIG.MANUAL_ACTIONS.sharedSecret,
+
+            pais: [...state.pais],
+            area: state.area,
+            detalhe: [...state.detalhe],
+            dataProposta: this.formatDateForSheet(state.dataProposta),
+            resumo: state.resumo,
+            gravadora: state.gravadoraNaoSeAplica ? ["Não se aplica"] : gravadoraValues,
+            regional: state.regionalNaoSeAplica ? ["Não se aplica"] : [...state.regional],
+            status: state.status,
+            responsavel: [...state.responsavel],
+            dataFinal: this.formatDateForSheet(state.dataFinal),
+            informacoesExtras: state.informacoesExtras,
+            evidenciasTexto: state.evidenciasTexto,
+            imagens: [],
+
+            id: row.id,
+            mode: "update"
+
+        };
+
+        return this.sendPayload(payload);
 
     },
 
