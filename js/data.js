@@ -53,14 +53,18 @@ class DataLoader {
 
             APP.rawData = this.rows;
 
-            APP.filteredData = [...this.rows];
+            APP.mergedData = ActionsMerge.getMergedRows(this.rows);
+
+            APP.filteredData = [...APP.mergedData];
 
             this.loaded = true;
 
             console.log(
                 "✔",
                 this.rows.length,
-                "ações carregadas."
+                "linhas carregadas,",
+                APP.mergedData.length,
+                "ações após fusão."
             );
 
             return this.rows;
@@ -262,6 +266,18 @@ country: this.normalizeCountry(
 
                 status,
 
+                id:
+
+                    this.clean(
+                        row[CONFIG.COLUMNS.id]
+                    ),
+
+                createdTimestamp:
+
+                    this.clean(
+                        row[CONFIG.COLUMNS.createdTimestamp]
+                    ),
+
                 initiative:
 
                     this.clean(
@@ -352,6 +368,18 @@ normalizeCountry(value) {
         country === "co"
     ) {
         return "Colômbia";
+    }
+
+    if (country === "ar") {
+        return "Argentina";
+    }
+
+    if (country === "py") {
+        return "Paraguai";
+    }
+
+    if (country === "uy") {
+        return "Uruguai";
     }
 
     return value.trim();
@@ -670,7 +698,7 @@ if (
     applyFilters() {
 
         APP.filteredData =
-            APP.rawData.filter(row => {
+            APP.mergedData.filter(row => {
 
                 if (
                     APP.filters.year !== "Todos" &&
@@ -821,6 +849,16 @@ function getData() {
 function getRawData() {
 
     return APP.rawData;
+
+}
+
+/* Linhas já fundidas (ações duplicadas/espelho compiladas em 1),
+   mas sem os filtros da sidebar aplicados — usado por telas sem
+   filtro próprio (ex.: Visão Geral) que ainda assim não podem
+   contar uma ação fundida mais de uma vez. */
+function getMergedData() {
+
+    return APP.mergedData;
 
 }
 

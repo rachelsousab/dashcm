@@ -111,13 +111,13 @@
     <nav class="page-nav">
 
     <button class="page-tab active"
-            data-page="overview">
-        Visão Geral
+            data-page="marketing">
+        Área de Marketing
     </button>
 
     <button class="page-tab"
-            data-page="marketing">
-        Marketing
+            data-page="canal500">
+        Canal 500
     </button>
 
     <button class="page-tab"
@@ -139,6 +139,11 @@
             data-page="report">
         Gerador de reporte
     </button>
+
+    <button class="page-tab"
+            data-page="manual">
+        Manual
+    </button>
     <br>
 
 
@@ -156,6 +161,10 @@
             Filtros
 
         </h2>
+
+        <button type="button" id="clearFiltersBtn" class="clear-filters-btn">
+            Limpar filtros
+        </button>
 
         <div id="marketingFilterGroup" class="filter-group">
 
@@ -485,6 +494,70 @@
 
         </div>
 
+        <div id="canal500FilterGroup" class="filter-group" style="display:none">
+
+        <div class="filter">
+
+            <label>
+
+                Ano
+
+            </label>
+
+            <select id="filterC500Year"></select>
+
+        </div>
+
+        <div class="filter">
+
+            <label>
+
+                Gravadora
+
+            </label>
+
+            <select id="filterC500Label"></select>
+
+        </div>
+
+        <div class="filter">
+
+            <label>
+
+                Regional
+
+            </label>
+
+            <select id="filterC500Regional"></select>
+
+        </div>
+
+        <div class="filter">
+
+            <label>
+
+                Responsável
+
+            </label>
+
+            <select id="filterC500Owner"></select>
+
+        </div>
+
+        <div class="filter">
+
+            <label>
+
+                Status
+
+            </label>
+
+            <select id="filterC500Status"></select>
+
+        </div>
+
+        </div>
+
     </aside>
 
     
@@ -494,289 +567,468 @@
 
     <main class="full-width">
 
-<!--VISÃO GERAL - PANORAMA DAS 3 FRENTES-->
-<div id="page-overview" class="page active">
-
-<div class="section-header">
-
-    <h2>Visão Geral</h2>
-
-    <div class="summary-switch">
-
-        <button
-            id="overviewMonthly"
-            class="summary-button active">
-
-            Mês atual
-
-        </button>
-
-        <button
-            id="overviewTotal"
-            class="summary-button">
-
-            Total
-
-        </button>
-
-    </div>
-
-</div>
-
-<p class="page-subtitle">
-    Resumo das frentes de marketing do Claro música. Use as abas acima para explorar cada área em detalhe.
-</p>
-
-<section class="kpi-grid">
-
-    <article class="kpi-card">
-
-        <span>Ações concluídas</span>
-
-        <h2 id="ovKpiAcoes">—</h2>
-
-    </article>
-
-    <article class="kpi-card">
-
-        <span>Posts Instagram</span>
-
-        <h2 id="ovKpiPosts">—</h2>
-
-    </article>
-
-    <article class="kpi-card">
-
-        <span>Canal 500</span>
-
-        <h2 id="ovKpiCanal500">—</h2>
-
-    </article>
-
-    <article class="kpi-card">
-
-        <span>Banners</span>
-
-        <h2 id="ovKpiBanners">—</h2>
-
-    </article>
-
-    <article class="kpi-card kpi-goal-indicator" id="ovKpiGoalCard">
-
-        <span>% de cumprimento de metas do ano</span>
-
-        <h2 id="ovKpiGoalPct">—</h2>
-
-    </article>
-
-</section>
-
-<section class="chart-grid">
-
-    <div class="card">
-
-        <h2>Ações de marketing por status</h2>
-
-        <canvas id="chart-ov-marketing-status"></canvas>
-
-    </div>
-
-    <div class="card">
-
-        <h2>Volume por área</h2>
-
-        <canvas id="chart-ov-volume-area"></canvas>
-
-    </div>
-
-</section>
-
-</div>
-
 <!--DASHBOARD - DADOS DA ÁREA / METAS-->
-<div id="page-marketing" class="page">
+<div id="page-marketing" class="page active">
 
 <div class="section-header">
 
-    <h2>Marketing</h2>
+    <h2>Área de Marketing</h2>
 
-    <div class="summary-switch">
-
-        <button
-            id="summaryYear"
-            class="summary-button active">
-
-            Ano Atual
-
-        </button>
-
-        <button
-            id="summaryTotal"
-            class="summary-button">
-
-            Total
-
-        </button>
-
-    </div>
 </div>
-        <!-- ===================================================== -->
-        <!-- KPIs -->
-        <!-- ===================================================== -->
 
-        <section class="kpi-grid">
+<nav class="marketing-subnav">
 
-            <article class="kpi-card kpi-highlight">
+    <button type="button" class="marketing-subtab active" data-subtab="actions">Ações</button>
+    <button type="button" class="marketing-subtab" data-subtab="goals">Metas do ano</button>
 
-                <span>Ações finalizadas/concluídas</span>
+</nav>
 
-                <h2 id="kpiDone">
+<!-- ===================================================== -->
+<!-- SUB-ABA: AÇÕES -->
+<!-- ===================================================== -->
 
-                    —
+<div id="marketing-subpage-actions" class="marketing-subpage active">
 
-                </h2>
+    <div class="section-header-actions">
 
-            </article>
+        <button type="button" id="manualActionsBtn" class="data-table-link-btn">
+            ✏️ Editar ou Adicionar nova ação
+        </button>
 
-            <article class="kpi-card">
+        <button type="button" id="manualActionsHistoryBtn" class="data-table-csv-btn">
+            🕓 Últimas ações enviadas
+        </button>
 
-                <span>Fraseologias feitas</span>
+    </div>
 
-                <h2 id="kpiPhraseologies">
+    <!-- ===================================================== -->
+    <!-- KPIs -->
+    <!-- ===================================================== -->
 
-                    â€”
+    <section class="kpi-grid">
 
-                </h2>
+        <article class="kpi-card kpi-highlight">
 
-            </article>
+            <span>Ações finalizadas/concluídas</span>
 
-            <article class="kpi-card">
+            <h2 id="kpiDone">
 
-                <span>Total de ações propostas</span>
+                —
 
-                <h2 id="kpiTotal">
+            </h2>
 
-                    —
+        </article>
 
-                </h2>
+        <article class="kpi-card">
 
-            </article>
+            <span>Total de ações propostas</span>
 
-            <article class="kpi-card">
+            <h2 id="kpiTotal">
 
-                <span>Ações em andamento</span>
+                —
 
-                <h2 id="kpiProgress">
+            </h2>
 
-                    —
+        </article>
 
-                </h2>
+        <article class="kpi-card">
 
-            </article>
+            <span>Ações em andamento</span>
 
-            <article class="kpi-card">
+            <h2 id="kpiProgress">
 
-                <span>Ações em standby</span>
+                —
 
-                <h2 id="kpiStandby">
+            </h2>
 
-                    —
+        </article>
 
-                </h2>
+        <article class="kpi-card">
 
-            </article>
+            <span>Ações em standby</span>
 
-            <article class="kpi-card">
+            <h2 id="kpiStandby">
 
-                <span>Ações canceladas</span>
+                —
 
-                <h2 id="kpiCanceled">
+            </h2>
 
-                    —
+        </article>
 
-                </h2>
+        <article class="kpi-card">
 
-            </article>
+            <span>Ações canceladas</span>
 
-            <article class="kpi-card">
+            <h2 id="kpiCanceled">
 
-                <span>Relação de propostas enviadas/concluídas</span>
-            
+                —
 
-                <h2 id="kpiConversion">
+            </h2>
 
-                    —
+        </article>
 
-                </h2>
+        <article class="kpi-card">
 
-            </article>
+            <span>Taxa de conclusão</span>
 
-            <article class="kpi-card">
 
-                <span>Tempo médio de execução</span>
+            <h2 id="kpiConversion">
 
-                <h2 id="kpiTime">
+                —
 
-                    —
+            </h2>
 
-                </h2>
+        </article>
 
-            </article>
+        <article class="kpi-card">
 
-        </section>
+            <span>Tempo médio de execução</span>
 
-<section class="goals-section">
+            <h2 id="kpiTime">
 
-    <div class="section-title">
+                —
 
-        <h2>Metas</h2>
-        <p>
-            Evolução mensal das ações por país
+            </h2>
 
+        </article>
+
+    </section>
+
+    <section class="kpi-grid kpi-grid--secondary">
+
+        <article class="kpi-card kpi-card--secondary" id="kpiCardPhraseologies">
+
+            <span>Fraseologias feitas</span>
+
+            <h2 id="kpiPhraseologies">—</h2>
+
+        </article>
+
+        <article class="kpi-card kpi-card--secondary" id="kpiCardSocialContent">
+
+            <span>Conteúdos para redes sociais</span>
+
+            <h2 id="kpiSocialContent">—</h2>
+
+        </article>
+
+        <article class="kpi-card kpi-card--secondary" id="kpiCardCanal500">
+
+            <span>Canal 500</span>
+
+            <h2 id="kpiCanal500">—</h2>
+
+        </article>
+
+        <article class="kpi-card kpi-card--secondary" id="kpiCardTV">
+
+            <span>TV</span>
+
+            <h2 id="kpiTV">—</h2>
+
+        </article>
+
+        <article class="kpi-card kpi-card--secondary" id="kpiCardClaroActions">
+
+            <span>Ações com a Claro</span>
+
+            <h2 id="kpiClaroActions">—</h2>
+
+        </article>
+
+    </section>
+
+    <section class="goals-section goals-section--tight">
+
+        <div class="section-title">
+
+            <h2>Acontecendo agora</h2>
+
+        </div>
+
+        <div id="inProgressBox" class="mini-table-box">
+
+        </div>
+
+    </section>
+
+    <section class="goals-section goals-section--tight">
+
+        <div class="section-title">
+
+            <h2>Últimas ações concluídas</h2>
+
+        </div>
+
+        <div class="summary-switch" id="recentCompletedFilter">
+
+            <button type="button" class="summary-button active" data-filter="marketing">Ações de marketing</button>
+            <button type="button" class="summary-button" data-filter="tv">TV</button>
+            <button type="button" class="summary-button" data-filter="fraseologias">Fraseologias</button>
+            <button type="button" class="summary-button" data-filter="licenciamento">Licenciamento</button>
+
+        </div>
+
+        <div id="recentCompletedBox" class="mini-table-box">
+
+        </div>
+
+    </section>
+
+    <section class="goals-section goals-section--tight">
+
+        <div class="section-title">
+
+            <h2>Fraseologias</h2>
+
+        </div>
+
+        <div id="phraseologiesContainer">
+
+        </div>
+
+    </section>
+
+    <!-- ===================================================== -->
+    <!-- RESUMO -->
+    <!-- ===================================================== -->
+
+    <section class="summary">
+
+        <h2>
+
+            Resumo
+
+        </h2>
+
+        <p id="summaryText">
         </p>
 
-    </div>
+    </section>
 
-    <div id="goalsContainer">
+</div>
 
-    </div>
+<!-- ===================================================== -->
+<!-- SUB-ABA: METAS DO ANO -->
+<!-- ===================================================== -->
 
-</section>
+<div id="marketing-subpage-goals" class="marketing-subpage">
 
-<section class="goals-section">
+    <div class="section-header-actions">
 
-    <div class="section-title">
+        <div class="summary-switch" id="goalsYearSwitch">
 
-        <h2>Fraseologias</h2>
-        <p>
-            Fraseologias concluídas por país
-
-        </p>
+        </div>
 
     </div>
 
-    <div id="phraseologiesContainer">
+    <div id="goalsCompletionIndicator">
 
     </div>
 
-</section>
+    <section class="goals-section">
 
-        <!-- ===================================================== -->
-        <!-- RESUMO -->
-        <!-- ===================================================== -->
+        <div class="section-title">
 
-<section class="summary">
+            <h2>Metas</h2>
+            <p>
+                Evolução mensal das ações por país
 
-    <h2>
+            </p>
 
-        Resumo
+        </div>
 
-    </h2>
+        <div id="goalsContainer">
 
-<p id="summaryText">
-    </p>
+        </div>
 
-</section>
+    </section>
+
+    <section class="goals-section">
+
+        <div class="section-title">
+
+            <h2>Áreas mais críticas</h2>
+            <p>
+                Metas mais distantes de serem batidas neste ano
+
+            </p>
+
+        </div>
+
+        <div id="criticalAreasContainer">
+
+        </div>
+
+    </section>
+
+</div>
+
+</div>
+
+<!--CANAL 500-->
+<div id="page-canal500" class="page">
+
+    <div class="section-header">
+
+        <h2>Canal 500</h2>
+
+        <div class="section-header-actions">
+
+            <button type="button" id="canal500RegisterBtn" class="data-table-link-btn c500-register-btn">
+                📺 Enviar para Canal 500
+            </button>
+
+        </div>
+
+    </div>
+
+    <section class="kpi-grid" id="canal500KpiGrid">
+
+        <article class="kpi-card kpi-highlight">
+
+            <span>Total enviado no ano</span>
+
+            <h2 id="c500KpiTotalAno">—</h2>
+
+        </article>
+
+        <article class="kpi-card">
+
+            <span>Vídeos em veiculação agora</span>
+
+            <h2 id="c500KpiEmVeiculacao">—</h2>
+
+        </article>
+
+    </section>
+
+    <section class="goals-section goals-section--tight">
+
+        <div class="section-title">
+
+            <h2><span class="c500-live-dot"></span>Em veiculação agora</h2>
+
+        </div>
+
+        <div id="c500EmVeiculacaoBox" class="mini-table-box">
+
+        </div>
+
+    </section>
+
+    <section class="goals-section goals-section--tight">
+
+        <div class="section-title">
+
+            <h2>Vídeos enviados, aguardando início</h2>
+
+        </div>
+
+        <div id="c500EnviadosBox" class="mini-table-box">
+
+        </div>
+
+    </section>
+
+    <section class="goals-section goals-section--tight">
+
+        <div class="section-title">
+
+            <h2>Últimos vídeos veiculados</h2>
+
+        </div>
+
+        <div id="c500ForaDoArBox" class="mini-table-box">
+
+        </div>
+
+    </section>
+
+</div>
+
+<!-- ========================================================= -->
+<!-- MODAL: Canal 500 - Escolha do tipo de envio -->
+<!-- ========================================================= -->
+
+<div id="canal500ChoiceModal" class="drilldown-modal">
+
+    <div class="drilldown-box maf-choice-box">
+
+        <div class="drilldown-header">
+            <h3>Enviar para Canal 500</h3>
+            <button id="canal500ChoiceClose" class="drilldown-close" aria-label="Fechar">✕</button>
+        </div>
+
+        <div class="maf-choice-body">
+
+            <button type="button" id="canal500ChoiceEmail" class="maf-choice-option maf-choice-option--primary">
+                <strong>Enviar para Canal 500</strong>
+                <span>Enviar para time do Canal Like</span>
+            </button>
+
+            <button type="button" id="canal500ChoiceManual" class="maf-choice-option">
+                <strong>Apenas registrar</strong>
+                <span>Registrar envio já realizado por e-mail</span>
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- ========================================================= -->
+<!-- MODAL: Canal 500 - Registrar envio -->
+<!-- ========================================================= -->
+
+<div id="canal500FormModal" class="drilldown-modal">
+
+    <div class="drilldown-box maf-form-box">
+
+        <div class="drilldown-header">
+            <h3 id="canal500FormTitle">Registrar envio — Canal 500</h3>
+            <button id="canal500FormClose" class="drilldown-close" aria-label="Fechar">✕</button>
+        </div>
+
+        <div id="canal500FormBody" class="maf-form-body">
+        </div>
+
+        <div class="maf-form-footer">
+            <button type="button" id="canal500CancelBtn" class="data-table-csv-btn">Cancelar</button>
+            <button type="button" id="canal500SubmitBtn" class="data-table-link-btn" disabled>Salvar envio</button>
+        </div>
+
+    </div>
+
+</div>
+
+<!-- ========================================================= -->
+<!-- MODAL: Canal 500 - Enviar evidência (linha existente) -->
+<!-- ========================================================= -->
+
+<div id="canal500EvidenceModal" class="drilldown-modal">
+
+    <div class="drilldown-box maf-form-box" style="max-width:520px;">
+
+        <div class="drilldown-header">
+            <div class="maf-form-header-left">
+                <h3>Enviar evidência</h3>
+                <span id="canal500EvidenceSubtitle" class="maf-form-subtitle"></span>
+            </div>
+            <button id="canal500EvidenceClose" class="drilldown-close" aria-label="Fechar">✕</button>
+        </div>
+
+        <div id="canal500EvidenceBody" class="maf-form-body">
+        </div>
+
+        <div class="maf-form-footer">
+            <button type="button" id="canal500EvidenceCancelBtn" class="data-table-csv-btn">Cancelar</button>
+            <button type="button" id="canal500EvidenceSubmitBtn" class="data-table-link-btn" disabled>Enviar</button>
+        </div>
+
+    </div>
+
 </div>
 
 <!--NOVA PÁGINA - REPORT GRAVADORAS (NATIVO)-->
@@ -1435,6 +1687,11 @@
 
                     <span id="drilldownCount"></span>
 
+                    <label id="drilldownPhraseologyToggle" class="dd-phraseology-toggle" style="display:none;">
+                        <input type="checkbox" id="drilldownPhraseologyCheckbox">
+                        Ocultar fraseologias da lista abaixo
+                    </label>
+
                 </div>
 
                 <button id="drilldownClose" class="drilldown-close" aria-label="Fechar">
@@ -1451,12 +1708,178 @@
 
     </div>
 
+    <!-- ========================================================= -->
+    <!-- MODAL DE ESCOLHA: Editar existente / Adicionar nova ação -->
+    <!-- ========================================================= -->
+
+    <div id="manualActionChoiceModal" class="drilldown-modal">
+
+        <div class="drilldown-box maf-choice-box">
+
+            <div class="drilldown-header">
+                <h3>O que você quer fazer?</h3>
+                <button id="manualActionChoiceClose" class="drilldown-close" aria-label="Fechar">✕</button>
+            </div>
+
+            <div class="maf-choice-body">
+
+                <button type="button" id="manualActionChoiceEdit" class="maf-choice-option">
+                    <strong>Editar ação existente</strong>
+                    <span>Buscar uma ação já registrada</span>
+                </button>
+
+                <button type="button" id="manualActionChoiceAdd" class="maf-choice-option maf-choice-option--primary">
+                    <strong>Adicionar nova ação</strong>
+                    <span>Registrar uma ação pontual/manual nova</span>
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- ========================================================= -->
+    <!-- MODAL: Editar ação existente (lista) -->
+    <!-- ========================================================= -->
+
+    <div id="manualActionEditListModal" class="drilldown-modal">
+
+        <div class="drilldown-box maf-editlist-box">
+
+            <div class="drilldown-header">
+                <div>
+                    <h3 id="manualActionEditListTitle">Editar ação existente</h3>
+                    <span id="manualActionEditListSubtitle"></span>
+                </div>
+                <button id="manualActionEditListClose" class="drilldown-close" aria-label="Fechar">✕</button>
+            </div>
+
+            <p class="maf-editlist-notice"></p>
+
+            <input type="search" class="maf-search" id="manualActionEditListSearch" placeholder="Buscar por resumo, gravadora, detalhe...">
+
+            <div id="manualActionEditListBody" class="maf-editlist-body">
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- ========================================================= -->
+    <!-- MODAL DO FORMULÁRIO: Adicionar / Editar / Duplicar ação -->
+    <!-- ========================================================= -->
+
+    <div id="manualActionFormModal" class="drilldown-modal">
+
+        <div class="drilldown-box maf-form-box">
+
+            <div class="drilldown-header">
+                <div class="maf-form-header-left">
+                    <button type="button" id="manualActionFormBack" class="maf-editlist-back" style="display:none;padding:0 0 4px;">← Voltar pra lista</button>
+                    <h3 id="manualActionFormTitle">Adicionar nova ação</h3>
+                    <span id="manualActionFormSubtitle" class="maf-form-subtitle" style="display:none;"></span>
+                </div>
+                <button id="manualActionFormClose" class="drilldown-close" aria-label="Fechar">✕</button>
+            </div>
+
+            <div id="manualActionFormWarning" class="maf-warning" style="display:none;"></div>
+
+            <div id="manualActionFormBody" class="maf-form-body">
+            </div>
+
+            <div class="maf-form-footer">
+                <button type="button" id="manualActionCancelBtn" class="data-table-csv-btn">Cancelar</button>
+                <button type="button" id="manualActionSubmitBtn" class="data-table-link-btn" disabled>Salvar ação</button>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- ========================================================= -->
+    <!-- MODAL: Últimas ações enviadas -->
+    <!-- ========================================================= -->
+
+    <div id="manualActionHistoryModal" class="drilldown-modal">
+
+        <div class="drilldown-box maf-form-box">
+
+            <div class="drilldown-header">
+                <div>
+                    <h3>Últimas ações enviadas</h3>
+                    <span>Guardado só neste navegador — use "Forçar reenvio" se uma ação não aparecer na planilha depois de alguns minutos.</span>
+                </div>
+                <button id="manualActionHistoryClose" class="drilldown-close" aria-label="Fechar">✕</button>
+            </div>
+
+            <div id="manualActionHistoryBody" class="maf-form-body">
+            </div>
+
+        </div>
+
+    </div>
+
+    <!--MANUAL DO DASHBOARD-->
+    <div id="page-manual" class="page">
+
+        <div class="section-header">
+            <h2>Manual</h2>
+        </div>
+
+        <p class="page-subtitle">
+            Guia de uso do dashboard para o time. Página em construção — conteúdo ainda será revisado e completado.
+        </p>
+
+        <div class="manual-content">
+
+            <section class="manual-block">
+                <h3>Visão Geral</h3>
+                <p>Em breve.</p>
+            </section>
+
+            <section class="manual-block">
+                <h3>Área de Marketing</h3>
+                <p>Em breve.</p>
+            </section>
+
+            <section class="manual-block">
+                <h3>Destaques de gravadoras</h3>
+                <p>Em breve.</p>
+            </section>
+
+            <section class="manual-block">
+                <h3>Redes sociais</h3>
+                <p>Em breve.</p>
+            </section>
+
+            <section class="manual-block">
+                <h3>Análises</h3>
+                <p>Em breve.</p>
+            </section>
+
+            <section class="manual-block">
+                <h3>Gerador de reporte</h3>
+                <p>Em breve.</p>
+            </section>
+
+            <section class="manual-block">
+                <h3>Adicionar / editar ação (Área de Marketing)</h3>
+                <p>Em breve — aqui vão entrar os avisos por tipo de Detalhe (o que é editável direto, o que gera uma ação duplicada, etc.).</p>
+            </section>
+
+        </div>
+
+    </div>
+
 
     <!-- ========================================================= -->
     <!-- JAVASCRIPT -->
     <!-- ========================================================= -->
 
     <script src="js/config.js"></script>
+
+    <script src="js/actions-merge.js"></script>
 
     <script src="js/data.js"></script>
 
@@ -1486,13 +1909,17 @@
 
     <script src="js/highlights-dashboard.js"></script>
 
-    <script src="js/overview-dashboard.js"></script>
-
     <script src="js/analises-metrics.js"></script>
 
     <script src="js/analises-dashboard.js"></script>
 
     <script src="js/report-dashboard.js"></script>
+
+    <script src="js/manual-actions.js"></script>
+
+    <script src="js/canal500-data.js"></script>
+
+    <script src="js/canal500-form.js"></script>
 
     <script src="js/auth.js"></script>
 

@@ -213,6 +213,44 @@ body{
 
 }
 
+.clear-filters-btn{
+
+    display:block;
+
+    width:100%;
+
+    margin:-6px 0 16px;
+
+    padding:7px 10px;
+
+    background:none;
+
+    border:1px solid var(--border);
+
+    border-radius:8px;
+
+    color:var(--text-light);
+
+    font-size:.75rem;
+
+    font-family:inherit;
+
+    cursor:pointer;
+
+    transition:.15s;
+
+}
+
+.clear-filters-btn:hover{
+
+    background:#F6F7FB;
+
+    color:var(--primary);
+
+    border-color:var(--primary);
+
+}
+
 .filter{
 
     margin-bottom:14px;
@@ -357,6 +395,128 @@ main{
 .kpi-card.kpi-highlight h2{
 
     color:white;
+
+}
+
+/* ===========================================================
+   KPIs DA ÁREA DE MARKETING — grade unificada
+
+   Os KPIs gerais (7) cabem numa linha só, os secundários
+   (roxos, 5) numa linha logo abaixo, levemente menores. Os
+   dois grupos dividem uma régua comum de 35 unidades (mínimo
+   múltiplo comum de 7 e 5), cada card só declara quantas
+   unidades ocupa — assim as bordas de cima e de baixo sempre
+   caem no mesmo lugar, não importa a contagem de cards.
+=========================================================== */
+
+#marketing-subpage-actions .kpi-grid,
+#marketing-subpage-actions .kpi-grid--secondary{
+
+    grid-template-columns:repeat(35,1fr);
+
+    gap:8px;
+
+}
+
+/* 35 / 5 = 7 cards por linha */
+#marketing-subpage-actions .kpi-grid > .kpi-card{
+
+    grid-column:span 5;
+
+}
+
+#marketing-subpage-actions .kpi-grid--secondary{
+
+    margin-top:16px;
+
+}
+
+/* 35 / 7 = 5 cards por linha */
+#marketing-subpage-actions .kpi-grid--secondary > .kpi-card{
+
+    grid-column:span 7;
+
+}
+
+/* KPIs gerais menores, proporcionalmente, pra caberem numa
+   linha só sem espremer o texto. */
+#marketing-subpage-actions .kpi-grid:not(.kpi-grid--secondary) .kpi-card{
+
+    padding:8px 7px;
+
+    min-height:52px;
+
+}
+
+#marketing-subpage-actions .kpi-grid:not(.kpi-grid--secondary) .kpi-card span{
+
+    font-size:9.5px;
+
+}
+
+#marketing-subpage-actions .kpi-grid:not(.kpi-grid--secondary) .kpi-card h2{
+
+    margin-top:4px;
+
+    font-size:14px;
+
+}
+
+/* KPIs secundários (Fraseologias, Conteúdos p/ redes sociais,
+   Canal 500, TV, Ações com a Claro) — um tom diferente (roxo)
+   pra ficar claro que são um segundo nível de detalhe, e um
+   pouco menores que os gerais pra reforçar a hierarquia. */
+.kpi-card--secondary{
+
+    background:#F3F1FB;
+
+    border:1px solid #E4DEF7;
+
+    box-shadow:none;
+
+    padding:6px 7px;
+
+    min-height:44px;
+
+    display:flex;
+
+    flex-direction:column;
+
+    justify-content:center;
+
+}
+
+.kpi-card--secondary span{
+
+    font-size:8.5px;
+
+}
+
+.kpi-card--secondary h2{
+
+    margin-top:3px;
+
+    font-size:12px;
+
+    color:#5B4FCF;
+
+}
+
+@media(max-width:1400px){
+
+    #marketing-subpage-actions .kpi-grid,
+    #marketing-subpage-actions .kpi-grid--secondary{
+
+        grid-template-columns:repeat(2,1fr);
+
+    }
+
+    #marketing-subpage-actions .kpi-grid > .kpi-card,
+    #marketing-subpage-actions .kpi-grid--secondary > .kpi-card{
+
+        grid-column:span 1;
+
+    }
 
 }
 
@@ -727,6 +887,18 @@ grid-template-columns:1fr;
 
 }
 
+.section-title h2{
+
+    margin:0 0 2px;
+
+}
+
+.section-title p{
+
+    margin:0;
+
+}
+
 .country-card{
 
     overflow-x:auto;
@@ -767,6 +939,16 @@ grid-template-columns:1fr;
 .country-card .goals-table{
 
     border-radius:0 0 10px 10px;
+
+    overflow:hidden;
+
+}
+
+/* Fraseologias não tem título dentro do card (o "Fraseologias"
+   já está no cabeçalho da seção), então arredonda os 4 cantos. */
+#phraseologiesContainer .goals-table{
+
+    border-radius:10px;
 
     overflow:hidden;
 
@@ -1134,9 +1316,26 @@ body.modal-open{
 
     width:100%;
 
-    border-collapse:collapse;
+    /* separate (não collapse) — position:sticky no <th> não
+       funciona com border-collapse:collapse na maioria dos
+       navegadores. border-spacing:0 evita qualquer gap visual. */
+    border-collapse:separate;
+
+    border-spacing:0;
 
     font-size:.78rem;
+
+    /* A regra global "table{overflow:hidden}" também quebra o
+       sticky (o <table> vira o "container de scroll" errado em
+       vez do wrapper que realmente rola). O arredondamento fica
+       por conta do wrapper (.mini-table-box / .drilldown-box). */
+    overflow:visible;
+
+    border-radius:0;
+
+    box-shadow:none;
+
+    border:none;
 
 }
 
@@ -1145,6 +1344,8 @@ body.modal-open{
     position:sticky;
 
     top:0;
+
+    z-index:2;
 
     background:#2C2C2C;
 
@@ -1155,6 +1356,11 @@ body.modal-open{
     text-align:left;
 
     white-space:nowrap;
+
+    /* Sem isso, um fio de 1px da linha de baixo "vaza" por baixo
+       do cabeçalho fixo durante o scroll (bug clássico de sticky
+       th com border-collapse:separate). */
+    box-shadow:0 1px 0 #2C2C2C;
 
 }
 
@@ -1173,6 +1379,70 @@ body.modal-open{
 .drilldown-table tr:hover{
 
     background:#FAFAFA;
+
+}
+
+.dd-longtext-content{
+
+    display:-webkit-box;
+
+    -webkit-line-clamp:2;
+
+    -webkit-box-orient:vertical;
+
+    overflow:hidden;
+
+    white-space:pre-line;
+
+}
+
+.dd-longtext-expanded .dd-longtext-content{
+
+    -webkit-line-clamp:unset;
+
+    display:block;
+
+}
+
+.dd-phraseology-toggle{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:6px;
+
+    margin-top:6px;
+
+    font-size:.76rem;
+
+    color:var(--text-light);
+
+    cursor:pointer;
+
+}
+
+.dd-phraseology-toggle input{
+
+    cursor:pointer;
+
+}
+
+.dd-longtext-toggle{
+
+    background:none;
+
+    border:none;
+
+    color:var(--primary);
+
+    font-size:.7rem;
+
+    font-weight:600;
+
+    cursor:pointer;
+
+    padding:2px 0 0;
 
 }
 
@@ -1239,6 +1509,501 @@ body.modal-open{
 .page{
 
     display:none;
+
+}
+
+/* ===========================================================
+   ÁREA DE MARKETING — SUB-ABAS (Ações / Metas do ano)
+=========================================================== */
+
+.marketing-subnav{
+
+    display:flex;
+
+    gap:6px;
+
+    border-bottom:1px solid var(--border);
+
+    margin-bottom:20px;
+
+}
+
+.marketing-subtab{
+
+    padding:10px 18px;
+
+    background:none;
+
+    border:none;
+
+    border-bottom:3px solid transparent;
+
+    color:var(--text-light);
+
+    font-weight:600;
+
+    font-size:.9rem;
+
+    cursor:pointer;
+
+    transition:.2s;
+
+}
+
+.marketing-subtab:hover{
+
+    color:var(--text);
+
+}
+
+.marketing-subtab.active{
+
+    color:var(--primary);
+
+    border-bottom-color:var(--primary);
+
+}
+
+.marketing-subpage{
+
+    display:none;
+
+}
+
+.marketing-subpage.active{
+
+    display:block;
+
+}
+
+/* Caixinhas "Acontecendo agora" / "Últimas ações concluídas":
+   altura fixa (~5 linhas), rolagem interna. */
+.mini-table-box{
+
+    max-height:280px;
+
+    overflow-y:auto;
+
+    border:1px solid var(--border);
+
+    border-radius:var(--radius);
+
+}
+
+.mini-table-box .drilldown-table{
+
+    font-size:.76rem;
+
+}
+
+.mini-table-box .drilldown-table th{
+
+    position:sticky;
+
+    top:0;
+
+}
+
+.mini-edit-btn{
+
+    background:none;
+
+    border:none;
+
+    cursor:pointer;
+
+    font-size:.85rem;
+
+    padding:2px 4px;
+
+    border-radius:6px;
+
+}
+
+.mini-edit-btn:hover{
+
+    background:#F0F0F0;
+
+}
+
+.mini-edit-locked{
+
+    opacity:.5;
+
+    font-size:.8rem;
+
+}
+
+/* ===========================================================
+   CANAL 500 — identidade "TV"
+
+   Mantém a paleta do dashboard, só acrescenta uns toques que
+   remetem a televisão: cabeçalho das tabelas com friso vermelho
+   (como uma faixa de canal), indicador "AO VIVO" piscando na
+   seção "Em veiculação agora", cantos mais arredondados nas
+   caixas (como uma moldura de TV).
+=========================================================== */
+
+#page-canal500 .section-header{
+
+    margin-bottom:10px;
+
+}
+
+#canal500KpiGrid{
+
+    grid-template-columns:repeat(4, 160px);
+
+    gap:10px;
+
+    margin-top:0;
+
+    margin-bottom:6px;
+
+}
+
+#canal500KpiGrid .kpi-card{
+
+    background:#F3F1FB;
+
+    border:1px solid #E4DEF7;
+
+    box-shadow:none;
+
+    padding:7px 9px;
+
+    min-height:46px;
+
+    border-radius:10px;
+
+    position:relative;
+
+    overflow:hidden;
+
+}
+
+#canal500KpiGrid .kpi-card::before{
+
+    content:"";
+
+    position:absolute;
+
+    top:0;
+
+    left:0;
+
+    right:0;
+
+    height:2px;
+
+    background:linear-gradient(90deg, var(--primary), #2C2C2C);
+
+}
+
+#canal500KpiGrid .kpi-card span{
+
+    font-size:9px;
+
+}
+
+#canal500KpiGrid .kpi-card h2{
+
+    font-size:14px;
+
+    margin-top:3px;
+
+    margin-bottom:0;
+
+    color:#5B4FCF;
+
+}
+
+#canal500KpiGrid .kpi-card.kpi-highlight{
+
+    background:#F3F1FB;
+
+    box-shadow:none;
+
+}
+
+#canal500KpiGrid .kpi-card.kpi-highlight span{
+
+    color:var(--text-light);
+
+}
+
+#canal500KpiGrid .kpi-card.kpi-highlight h2{
+
+    color:#5B4FCF;
+
+}
+
+#canal500KpiGrid .kpi-card.kpi-highlight::before{
+
+    background:linear-gradient(90deg, #21A366, #2C2C2C);
+
+}
+
+.data-table-link-btn.c500-register-btn{
+
+    font-size:.95rem;
+
+    padding:12px 22px;
+
+    font-weight:700;
+
+}
+
+.c500-live-dot{
+
+    display:inline-block;
+
+    width:8px;
+
+    height:8px;
+
+    border-radius:50%;
+
+    background:var(--primary);
+
+    margin-right:6px;
+
+    animation:c500-pulse 1.6s ease-in-out infinite;
+
+    vertical-align:middle;
+
+}
+
+@keyframes c500-pulse{
+
+    0%, 100%{ opacity:1; transform:scale(1); }
+    50%{ opacity:.35; transform:scale(.75); }
+
+}
+
+/* Mesma moldura leve das caixas da Área de Marketing — o toque
+   "TV" fica só no friso vermelho do cabeçalho da tabela, não
+   numa borda externa pesada. */
+#page-canal500 .mini-table-box{
+
+    box-shadow:0 4px 14px rgba(0,0,0,.06);
+
+}
+
+#page-canal500 .drilldown-table th{
+
+    background:#1C1C1C;
+
+    border-bottom:2px solid var(--primary);
+
+}
+
+.c500-progress-wrap{
+
+    width:100%;
+
+    min-width:90px;
+
+    height:7px;
+
+    background:#EEE;
+
+    border-radius:6px;
+
+    overflow:hidden;
+
+}
+
+.c500-progress-bar{
+
+    display:block;
+
+    height:100%;
+
+    background:linear-gradient(90deg, #21A366, #1B8A56);
+
+    border-radius:6px;
+
+    transition:width .3s ease;
+
+}
+
+.c500-progress-bar--overdue{
+
+    background:linear-gradient(90deg, var(--primary), #8B1E28);
+
+}
+
+.c500-progress-label{
+
+    display:block;
+
+    margin-top:3px;
+
+    font-size:.65rem;
+
+    color:var(--text-light);
+
+    white-space:nowrap;
+
+}
+
+.c500-progress-label--overdue{
+
+    color:var(--primary);
+
+    font-weight:600;
+
+    white-space:normal;
+
+}
+
+.c500-status-select{
+
+    border:1px solid var(--border);
+
+    border-radius:6px;
+
+    padding:3px 6px;
+
+    font-size:.72rem;
+
+    font-family:inherit;
+
+    background:white;
+
+    cursor:pointer;
+
+}
+
+.c500-status-select:disabled{
+
+    opacity:.5;
+
+    cursor:wait;
+
+}
+
+/* Sidebar desabilitada na sub-aba de Metas */
+.filter-group.filters-disabled{
+
+    opacity:.45;
+
+    pointer-events:none;
+
+    position:relative;
+
+}
+
+.goals-completion-card{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    background:var(--card);
+
+    border-radius:var(--radius);
+
+    box-shadow:var(--shadow);
+
+    padding:16px 22px;
+
+    margin-bottom:20px;
+
+}
+
+.goals-completion-label{
+
+    font-size:.85rem;
+
+    color:var(--text-light);
+
+    font-weight:600;
+
+}
+
+.goals-completion-value{
+
+    font-size:1.6rem;
+
+    font-weight:700;
+
+}
+
+.goals-completion-card.success .goals-completion-value{ color:#1B8A3D; }
+.goals-completion-card.warning .goals-completion-value{ color:#B7791F; }
+.goals-completion-card.danger .goals-completion-value{ color:var(--primary); }
+
+.critical-areas-list{
+
+    list-style:none;
+
+    padding:0;
+
+    margin:0;
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:10px;
+
+}
+
+.critical-areas-list li{
+
+    display:grid;
+
+    grid-template-columns:220px 1fr 50px;
+
+    align-items:center;
+
+    gap:12px;
+
+    font-size:.8rem;
+
+}
+
+.critical-areas-name small{
+
+    color:var(--text-light);
+
+    font-weight:400;
+
+}
+
+.critical-areas-bar-wrap{
+
+    background:#EEE;
+
+    border-radius:6px;
+
+    height:8px;
+
+    overflow:hidden;
+
+}
+
+.critical-areas-bar{
+
+    display:block;
+
+    height:100%;
+
+    background:var(--primary);
+
+    border-radius:6px;
+
+}
+
+.critical-areas-pct{
+
+    text-align:right;
+
+    font-weight:600;
 
 }
 
@@ -2054,8 +2819,54 @@ body.auth-locked{
 }
 
 /* ===========================================================
-   VISÃO GERAL
+   MANUAL
 =========================================================== */
+
+.manual-content{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:18px;
+
+    max-width:900px;
+
+}
+
+.manual-block{
+
+    background:var(--card);
+
+    border-radius:var(--radius);
+
+    box-shadow:var(--shadow);
+
+    padding:20px 24px;
+
+}
+
+.manual-block h3{
+
+    margin:0 0 8px;
+
+    font-size:1rem;
+
+    color:var(--text);
+
+}
+
+.manual-block p{
+
+    margin:0;
+
+    color:var(--text-light);
+
+    font-size:.85rem;
+
+    line-height:1.5;
+
+}
 
 .page-subtitle{
 
@@ -2066,82 +2877,6 @@ body.auth-locked{
     margin:0 0 22px;
 
     max-width:760px;
-
-}
-
-#page-overview{
-
-    max-width:1400px;
-
-    margin:0 auto;
-
-    padding:0 40px;
-
-}
-
-#page-overview .kpi-grid{
-
-    grid-template-columns:repeat(5,1fr);
-
-    gap:14px;
-
-}
-
-#page-overview .kpi-card{
-
-    padding:14px 12px;
-
-    min-height:78px;
-
-}
-
-#page-overview .kpi-card span{
-
-    font-size:11.5px;
-
-}
-
-#page-overview .kpi-card h2{
-
-    font-size:21px;
-
-}
-
-.kpi-goal-indicator{
-
-    transition:background-color .3s;
-
-}
-
-.kpi-goal-indicator h2{
-
-    transition:color .3s;
-
-}
-
-@media(max-width:1300px){
-
-    #page-overview .kpi-grid{
-
-        grid-template-columns:repeat(3,1fr);
-
-    }
-
-}
-
-@media(max-width:800px){
-
-    #page-overview{
-
-        padding:0 16px;
-
-    }
-
-    #page-overview .kpi-grid{
-
-        grid-template-columns:repeat(2,1fr);
-
-    }
 
 }
 
@@ -3123,5 +3858,1063 @@ table.report-table th.report-link-col,
 table.report-table td.report-link-col{
 
     min-width:320px;
+
+}
+
+/* ===========================================================
+   AÇÕES MANUAIS — botão + modais (Área de Marketing)
+=========================================================== */
+
+.section-header-actions{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:14px;
+
+    flex-wrap:wrap;
+
+}
+
+.maf-choice-box{
+
+    max-width:460px;
+
+}
+
+.maf-choice-body{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:12px;
+
+    padding:20px 24px 24px;
+
+}
+
+.maf-choice-option{
+
+    display:flex;
+
+    flex-direction:column;
+
+    align-items:flex-start;
+
+    gap:4px;
+
+    text-align:left;
+
+    background:#F6F7FB;
+
+    border:1px solid var(--border);
+
+    border-radius:12px;
+
+    padding:16px 18px;
+
+    cursor:pointer;
+
+    transition:.15s;
+
+    font-family:inherit;
+
+}
+
+.maf-choice-option:hover{
+
+    background:#EFEFF4;
+
+}
+
+.maf-choice-option strong{
+
+    font-size:.95rem;
+
+    color:var(--text);
+
+}
+
+.maf-choice-option span{
+
+    font-size:.78rem;
+
+    color:var(--text-light);
+
+}
+
+.maf-choice-option--primary{
+
+    background:#FEEBEB;
+
+    border-color:var(--primary);
+
+}
+
+.maf-choice-option--primary:hover{
+
+    background:#FDDCDC;
+
+}
+
+.maf-choice-option--primary strong{
+
+    color:var(--primary);
+
+}
+
+.maf-form-box{
+
+    max-width:900px;
+
+}
+
+.maf-prefixed-input{
+
+    display:flex;
+
+    align-items:stretch;
+
+    border:1px solid var(--border);
+
+    border-radius:7px;
+
+    overflow:hidden;
+
+}
+
+.maf-input-prefix{
+
+    display:flex;
+
+    align-items:center;
+
+    padding:5px 8px;
+
+    background:#F2F2F5;
+
+    color:var(--text-light);
+
+    font-size:.76rem;
+
+    white-space:nowrap;
+
+    border-right:1px solid var(--border);
+
+    user-select:none;
+
+}
+
+.maf-prefixed-input-field{
+
+    border:none !important;
+
+    border-radius:0 !important;
+
+    flex:1;
+
+    min-width:0;
+
+}
+
+.maf-prefixed-input-field:focus{
+
+    outline:none;
+
+}
+
+.maf-email-step{
+
+    display:flex;
+
+    flex-direction:column;
+
+    align-items:center;
+
+    text-align:center;
+
+    gap:18px;
+
+    padding:24px 12px;
+
+}
+
+.maf-email-step-msg{
+
+    font-size:.95rem;
+
+    color:var(--text);
+
+}
+
+.maf-email-step-btn{
+
+    font-size:.95rem;
+
+    padding:12px 22px;
+
+    font-weight:700;
+
+}
+
+.maf-form-body{
+
+    overflow-y:auto;
+
+    padding:14px 24px;
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:12px;
+
+}
+
+.maf-form-footer{
+
+    display:flex;
+
+    justify-content:flex-end;
+
+    gap:12px;
+
+    padding:16px 24px;
+
+    border-top:1px solid var(--border);
+
+    flex-shrink:0;
+
+}
+
+.maf-form-footer button:disabled{
+
+    opacity:.5;
+
+    cursor:not-allowed;
+
+}
+
+/* ===========================================================
+   EDITAR AÇÃO EXISTENTE — LISTA
+=========================================================== */
+
+.maf-editlist-box{
+
+    max-width:960px;
+
+}
+
+.maf-editlist-notice{
+
+    margin:0 24px 10px;
+
+    padding:6px 12px;
+
+    background:#FBF6EC;
+
+    border:1px solid #EEE0BE;
+
+    border-radius:6px;
+
+    color:#8A6D1D;
+
+    font-size:.68rem;
+
+    line-height:1.4;
+
+}
+
+#manualActionEditListSearch{
+
+    margin:0 24px 10px;
+
+    width:calc(100% - 48px);
+
+}
+
+.maf-editlist-body{
+
+    overflow-y:auto;
+
+    max-height:56vh;
+
+    padding:0 24px 16px;
+
+    display:flex;
+
+    flex-direction:column;
+
+}
+
+.maf-editlist-row{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:2px;
+
+    padding:9px 8px;
+
+    border-bottom:1px solid var(--border);
+
+    cursor:pointer;
+
+    transition:background .12s ease;
+
+}
+
+.maf-editlist-row:first-child{
+
+    border-top:1px solid var(--border);
+
+}
+
+.maf-editlist-row:hover{
+
+    background:#F7F7F9;
+
+}
+
+.maf-editlist-row--locked{
+
+    cursor:not-allowed;
+
+    opacity:.45;
+
+}
+
+.maf-editlist-row--locked:hover{
+
+    background:none;
+
+}
+
+.maf-editlist-row-top{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    gap:8px;
+
+    font-size:.8rem;
+
+    font-weight:600;
+
+    color:var(--text);
+
+}
+
+.maf-editlist-row-top span:first-child{
+
+    overflow:hidden;
+
+    text-overflow:ellipsis;
+
+    white-space:nowrap;
+
+}
+
+.maf-editlist-row-meta{
+
+    font-size:.7rem;
+
+    color:var(--text-light);
+
+    overflow:hidden;
+
+    text-overflow:ellipsis;
+
+    white-space:nowrap;
+
+}
+
+.maf-editlist-badge{
+
+    font-size:.62rem;
+
+    font-weight:600;
+
+    padding:1px 7px;
+
+    border-radius:999px;
+
+    background:#EEECFB;
+
+    color:#6357C9;
+
+    white-space:nowrap;
+
+    flex-shrink:0;
+
+}
+
+.maf-editlist-badge--locked{
+
+    background:#EEE;
+
+    color:#999;
+
+}
+
+.maf-editlist-empty{
+
+    text-align:center;
+
+    color:var(--text-light);
+
+    font-size:.85rem;
+
+    padding:30px 0;
+
+}
+
+.maf-editlist-back{
+
+    background:none;
+
+    border:none;
+
+    color:var(--primary);
+
+    font-size:.8rem;
+
+    cursor:pointer;
+
+    padding:0 24px 10px;
+
+    text-align:left;
+
+}
+
+.maf-form-header-left{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:2px;
+
+}
+
+.maf-form-subtitle{
+
+    font-size:.72rem;
+
+    color:var(--text-light);
+
+    overflow:hidden;
+
+    text-overflow:ellipsis;
+
+    white-space:nowrap;
+
+    max-width:420px;
+
+}
+
+.maf-warning{
+
+    margin:0 24px 2px;
+
+    padding:6px 12px;
+
+    background:#FBF6EC;
+
+    border-left:3px solid #D9A441;
+
+    border-radius:4px;
+
+    color:#7A5E14;
+
+    font-size:.7rem;
+
+    line-height:1.4;
+
+}
+
+.maf-locked-note{
+
+    display:block;
+
+    margin-top:4px;
+
+    font-size:.72rem;
+
+    color:var(--text-light);
+
+}
+
+.maf-locked{
+
+    opacity:.65;
+
+    pointer-events:none;
+
+}
+
+input.maf-locked, textarea.maf-locked{
+
+    opacity:.7;
+
+    background:#F2F2F2;
+
+    cursor:not-allowed;
+
+    pointer-events:auto;
+
+}
+
+.maf-field{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:4px;
+
+}
+
+.maf-field-row{
+
+    display:flex;
+
+    gap:20px;
+
+}
+
+.maf-field-row .maf-field{
+
+    flex:1;
+
+}
+
+.maf-label{
+
+    font-size:.74rem;
+
+    font-weight:600;
+
+    color:var(--text);
+
+}
+
+.maf-required{
+
+    color:var(--primary);
+
+}
+
+.maf-hint{
+
+    font-size:.68rem;
+
+    color:var(--text-light);
+
+    margin-top:-2px;
+
+}
+
+.maf-input,
+.maf-textarea,
+.maf-search{
+
+    border:1px solid var(--border);
+
+    border-radius:7px;
+
+    padding:5px 9px;
+
+    font-size:.76rem;
+
+    font-family:inherit;
+
+    width:100%;
+
+}
+
+.maf-textarea{
+
+    min-height:48px;
+
+    resize:vertical;
+
+}
+
+.maf-charcount{
+
+    font-size:.68rem;
+
+    color:var(--text-light);
+
+    text-align:right;
+
+}
+
+.maf-chip-group{
+
+    display:flex;
+
+    flex-wrap:wrap;
+
+    gap:8px;
+
+}
+
+.maf-chip{
+
+    border:1px solid var(--border);
+
+    background:white;
+
+    border-radius:16px;
+
+    padding:4px 11px;
+
+    font-size:.74rem;
+
+    cursor:pointer;
+
+    transition:.15s;
+
+    font-family:inherit;
+
+}
+
+.maf-chip:hover{
+
+    background:#F6F7FB;
+
+}
+
+.maf-chip.active{
+
+    background:var(--primary);
+
+    border-color:var(--primary);
+
+    color:white;
+
+}
+
+.maf-radio-group{
+
+    display:flex;
+
+    flex-wrap:wrap;
+
+    gap:12px;
+
+}
+
+.maf-radio{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:5px;
+
+    font-size:.76rem;
+
+    cursor:pointer;
+
+}
+
+.maf-radio input{
+
+    cursor:pointer;
+
+}
+
+.maf-selected-chips{
+
+    display:flex;
+
+    flex-wrap:wrap;
+
+    gap:6px;
+
+}
+
+.maf-selected-chip{
+
+    display:inline-flex;
+
+    align-items:center;
+
+    gap:5px;
+
+    background:#FEEBEB;
+
+    color:var(--primary-dark);
+
+    border-radius:12px;
+
+    padding:2px 8px;
+
+    font-size:.7rem;
+
+}
+
+.maf-selected-chip button{
+
+    border:none;
+
+    background:none;
+
+    color:var(--primary-dark);
+
+    cursor:pointer;
+
+    font-size:.7rem;
+
+    padding:0;
+
+    line-height:1;
+
+}
+
+.maf-tag-chips{
+
+    display:flex;
+
+    flex-wrap:wrap;
+
+    gap:6px;
+
+}
+
+.maf-tag-chip{
+
+    border:1px solid var(--border);
+
+    background:#F6F7FB;
+
+    border-radius:12px;
+
+    padding:3px 10px;
+
+    font-size:.66rem;
+
+    cursor:pointer;
+
+    transition:.15s;
+
+    font-family:inherit;
+
+    color:var(--text-light);
+
+}
+
+.maf-tag-chip:hover{
+
+    background:#EFEFF4;
+
+}
+
+.maf-tag-chip.active{
+
+    background:var(--text);
+
+    border-color:var(--text);
+
+    color:white;
+
+}
+
+.maf-checkbox-list{
+
+    max-height:150px;
+
+    overflow-y:auto;
+
+    border:1px solid var(--border);
+
+    border-radius:7px;
+
+    padding:5px 10px;
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:2px;
+
+}
+
+.maf-checkbox-list--compact{
+
+    max-height:110px;
+
+}
+
+.maf-checkbox-list.maf-disabled{
+
+    opacity:.5;
+
+    pointer-events:none;
+
+}
+
+.maf-check{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:7px;
+
+    font-size:.74rem;
+
+    line-height:1.7;
+
+    cursor:pointer;
+
+}
+
+.maf-check input{
+
+    cursor:pointer;
+
+    flex-shrink:0;
+
+    width:13px;
+
+    height:13px;
+
+}
+
+.maf-special-checks{
+
+    display:flex;
+
+    gap:16px;
+
+    margin:3px 0;
+
+    font-size:.74rem;
+
+}
+
+.maf-empty{
+
+    font-size:.8rem;
+
+    color:var(--text-light);
+
+    padding:8px 0;
+
+}
+
+.maf-image-previews{
+
+    display:flex;
+
+    flex-wrap:wrap;
+
+    gap:10px;
+
+    margin-top:10px;
+
+}
+
+.maf-image-preview{
+
+    position:relative;
+
+    width:70px;
+
+    height:70px;
+
+    border-radius:8px;
+
+    overflow:hidden;
+
+    border:1px solid var(--border);
+
+}
+
+.maf-image-preview img{
+
+    width:100%;
+
+    height:100%;
+
+    object-fit:cover;
+
+    display:block;
+
+}
+
+.maf-image-preview button{
+
+    position:absolute;
+
+    top:2px;
+
+    right:2px;
+
+    width:18px;
+
+    height:18px;
+
+    border-radius:50%;
+
+    border:none;
+
+    background:rgba(0,0,0,.65);
+
+    color:white;
+
+    font-size:.6rem;
+
+    cursor:pointer;
+
+    line-height:1;
+
+}
+
+.maf-errors{
+
+    background:#FDECEA;
+
+    border:1px solid #F5C6CB;
+
+    color:#8B1E28;
+
+    border-radius:8px;
+
+    padding:12px 14px;
+
+    font-size:.78rem;
+
+    line-height:1.6;
+
+}
+
+/* ===========================================================
+   AÇÕES MANUAIS — histórico ("Últimas ações enviadas")
+=========================================================== */
+
+.mah-item{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    gap:16px;
+
+    padding:14px 0;
+
+    border-bottom:1px solid var(--border);
+
+}
+
+.mah-item:last-child{
+
+    border-bottom:none;
+
+}
+
+.mah-info{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:3px;
+
+    min-width:0;
+
+}
+
+.mah-info strong{
+
+    font-size:.88rem;
+
+    color:var(--text);
+
+    overflow:hidden;
+
+    text-overflow:ellipsis;
+
+    white-space:nowrap;
+
+}
+
+.mah-info span{
+
+    font-size:.76rem;
+
+    color:var(--text-light);
+
+}
+
+.mah-info small{
+
+    font-size:.68rem;
+
+    color:var(--text-light);
+
+}
+
+.mah-resent{
+
+    color:var(--primary)!important;
+
+}
+
+.mah-actions{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:8px;
+
+    flex-shrink:0;
+
+}
+
+.mah-resend-btn{
+
+    white-space:nowrap;
+
+}
+
+.mah-remove-btn{
+
+    border:none;
+
+    background:#F0F0F3;
+
+    color:var(--text);
+
+    width:26px;
+
+    height:26px;
+
+    border-radius:50%;
+
+    cursor:pointer;
+
+    font-size:.68rem;
+
+    transition:.15s;
+
+}
+
+.mah-remove-btn:hover{
+
+    background:#E4E7EC;
 
 }

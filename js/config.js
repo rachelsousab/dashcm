@@ -43,6 +43,64 @@ const CONFIG = {
 
 },
 
+    CANAL500_DATA: {
+
+    csvUrl:
+        "https://docs.google.com/spreadsheets/d/e/2PACX-1vTHKU3_LDE-ZLxD7xzV8mTRcpK_WHZPpRAEslmIy3woqefyFyeHNdOK-DUMmSlE9kVVSIyQEKIVGTE8/pub?gid=191235500&single=true&output=csv",
+
+    autoRefresh: false,
+
+    refreshIntervalMinutes: 10
+
+},
+
+    /* ==========================================
+       CANAL 500 — "Registrar envio" / "Enviar evidência"
+
+       webAppUrl: preencher depois que a Rachel implantar o
+       Apps Script (Code.gs) dedicado a essa planilha.
+    ========================================== */
+    CANAL500_FORM: {
+
+        webAppUrl: "https://script.google.com/a/macros/imusica.com.br/s/AKfycbzm5kdiWIwQNJGntqlf3HaSJSpl1qtCSxnF38cjzBE37lGa4DvT2v0_f3tr6pgHKNmm/exec",
+
+        sharedSecret: "DashCM2026Canal500Rachel",
+
+        driveFolderUrl: "https://drive.google.com/drive/folders/1h9FP1Bzwb6B8AUvj2J_VIHymNk5KF85_?usp=drive_link",
+
+        maxImages: 3,
+
+        maxImageBytes: 5 * 1024 * 1024,
+
+        maxTextLength: 2000,
+
+        statusVeiculacao: ["Em veiculação", "Fora do Ar", "Enviado"],
+
+        generos: [
+            "Alternativo/Indie",
+            "Eletrônica",
+            "Forró",
+            "Funk",
+            "Gospel",
+            "Hip Hop",
+            "Kpop",
+            "MPB",
+            "Nova MPB",
+            "Outros",
+            "Pagode",
+            "Pop",
+            "Pop inter",
+            "Rap/trap",
+            "Reggae",
+            "Reggaeton",
+            "Rock",
+            "Samba",
+            "Sem gênero definido",
+            "Sertanejo"
+        ]
+
+    },
+
     /* ==========================================
        AUTENTICAÇÃO
 
@@ -184,6 +242,14 @@ const CONFIG = {
       mais nomes aqui — nenhuma outra mudança de código é
       necessária. */
 
+   /* Anos com um conjunto de metas de verdade cadastrado (ver
+      GOALS/COUNTRY_SUMMARY_GOALS abaixo). Cada ano tem metas
+      totalmente diferentes, definidas manualmente conforme vão
+      sendo enviadas — não é algo que dá pra inferir dos dados.
+      Adicione o ano aqui só quando as metas dele existirem de
+      verdade (ex.: quando as metas de 2027 chegarem). */
+   GOALS_AVAILABLE_YEARS: [2026],
+
    GOALS: {
 
     "Parcerias com Rádios": {
@@ -246,7 +312,7 @@ const CONFIG = {
         countries: ["Brasil"]
     },
 
-    "Evento Prêmio Claro Música": {
+    "Evento Prêmio Claro música": {
         annual: 1,
         countries: ["Brasil"]
     },
@@ -288,7 +354,7 @@ ACTION_AREAS: {
     "Canal 500": "Label Relations",
     "Papo Claro música": "Label Relations",
     "Conteúdo para redes sociais": "Label Relations",
-    "Evento Prêmio Claro Música": "Label Relations",
+    "Evento Prêmio Claro música": "Label Relations",
     "Playlist personalizada": "Label Relations",
     "Vídeo Insertoras (TV Latam)": "Label Relations",
     "Audição": "Label Relations",
@@ -299,20 +365,19 @@ ACTION_AREAS: {
     "Stream to Win": "Label Relations",
     "Artista de la semana": "Label Relations",
 
-    "E-mail Marketing (Endomarketing)": "Marketing",
+    "E-mail marketing": "Marketing",
     "Site Bora": "Marketing",
     "LinkedIn (Claro)": "Marketing",
     "Eventos institucionais/Patrocínio": "Marketing",
     "Push Notification": "Marketing",
     "Ad no APP": "Marketing",
-    "Youtube Claro": "Marketing",
     "Youtube da Claro": "Marketing",
     "TV Corporativa": "Marketing",
     "Vídeo institucional": "Marketing",
 
     "Parcerias com Rádios": "Licenciamento",
     "Ativação JB FM": "Licenciamento",
-    "Novo contrato (OTT)": "Licenciamento",
+    "Contrato OTT": "Licenciamento",
 
     "Barker": "TV",
     "Trilho": "TV",
@@ -348,7 +413,7 @@ GOAL_MAPPING: {
 
     "BG: Seção de Música": "BG",
 
-    "Negociação Rádios Zero Ratio": "Parcerias com Rádios"
+    "Negociação Rádios Zero Rating": "Parcerias com Rádios"
 
 },
 
@@ -418,8 +483,24 @@ COUNTRY_SUMMARY_GOALS: {
 
         publishDate: "Data final / publicação",
 
-        extra: "Informações extras"
+        extra: "Informações extras",
 
+        id: "ID",
+
+        createdTimestamp: "Timestamp de criação"
+
+    },
+
+    /* ==========================================
+       PREFIXOS DE ID POR PLANILHA DE ORIGEM
+       (ver js/actions-merge.js)
+    ========================================== */
+    ID_SOURCE_PREFIXES: {
+        RS: "Redes sociais",
+        C500: "Canal 500",
+        CO: "Cronograma de posteio - Colombia",
+        BAN: "Cronograma - Banners",
+        PUSH: "Push Notification"
     },
 
     /* ==========================================
@@ -437,7 +518,191 @@ COUNTRY_SUMMARY_GOALS: {
 
         "label"
 
-    ]
+    ],
+
+    /* ==========================================
+       AÇÕES MANUAIS (formulário "Adicionar nova
+       ação" / "Editar ação existente")
+       ------------------------------------------
+       Grava numa planilha própria, separada da
+       "Dados da área", via Apps Script Web App.
+       webAppUrl/sharedSecret NÃO são segurança de
+       verdade (ficam visíveis no código-fonte) —
+       só uma trava contra descoberta casual da
+       URL, mesma categoria da senha de login.
+    ========================================== */
+
+    MANUAL_ACTIONS: {
+
+        webAppUrl: "https://script.google.com/a/macros/imusica.com.br/s/AKfycbx6WfB5SisH7KWNOzbIk5vXQVocisXnkS94itL6PBjjRBCSHXdo4HAlSsPREwX9P-2xYA/exec",
+
+        sharedSecret: "DashCM2026FeitopelaRachel",
+
+        maxImages: 3,
+
+        maxImageBytes: 5 * 1024 * 1024,
+
+        maxTextLength: 2000,
+
+        countries: [
+            "Brasil",
+            "Colômbia",
+            "Argentina",
+            "México",
+            "Peru",
+            "Chile"
+        ],
+
+        areas: [
+            "Label Relations",
+            "Licenciamento",
+            "TV",
+            "Marketing"
+        ],
+
+        /* Cada Detalhe pode aparecer em mais de uma "tag" de
+           filtro rápido — são só atalhos de busca na tela, o
+           campo em si é uma lista única (achatada). */
+        details: [
+            { value: "Canal 500", tags: ["gravadora", "comunicacao", "regional"] },
+            { value: "Papo Claro música", tags: ["gravadora"] },
+            { value: "Conteúdo para redes sociais", tags: ["gravadora", "regional"] },
+            { value: "Evento Prêmio Claro música", tags: ["gravadora"] },
+            { value: "Playlist personalizada", tags: ["gravadora", "comunicacao", "regional"] },
+            { value: "Audição", tags: ["gravadora"] },
+
+            { value: "Barker: Seção de Música", tags: ["tv"] },
+            { value: "Trilho: Seção de Música", tags: ["tv"] },
+            { value: "Banner: Seção de Música", tags: ["tv"] },
+            { value: "Banner: Seção da Home", tags: ["tv"] },
+            { value: "BG: Seção de Música", tags: ["tv"] },
+
+            { value: "TV Corporativa", tags: ["comunicacao"] },
+            { value: "E-mail marketing", tags: ["comunicacao"] },
+            { value: "Site Bora", tags: ["comunicacao"] },
+            { value: "LinkedIn (Claro)", tags: ["comunicacao"] },
+            { value: "Lojas físicas", tags: ["comunicacao", "regional"] },
+            { value: "Eventos institucionais/Patrocínio", tags: ["comunicacao"] },
+            { value: "Boletim", tags: ["comunicacao"] },
+            { value: "Youtube da Claro", tags: ["comunicacao"] },
+
+            { value: "Negociação Rádios Zero Rating", tags: ["licenciamento"] },
+            { value: "Contrato OTT", tags: ["licenciamento"] },
+            { value: "Contrato CM + RBT", tags: ["licenciamento"] },
+            { value: "Parcerias com Rádios", tags: ["licenciamento"] },
+            { value: "Ativação JB FM", tags: ["licenciamento"] },
+
+            { value: "Ad no APP", tags: ["outros"] },
+            { value: "Claro Shows", tags: ["outros"] },
+            { value: "Push Notification", tags: ["outros"] },
+
+            { value: "Stream to Win", tags: ["latam"] },
+            { value: "Íntimos Claro música", tags: ["latam"] },
+            { value: "Café Claro", tags: ["latam"] },
+            { value: "Micrófono", tags: ["latam"] },
+            { value: "Te Lo Dice Cuervo", tags: ["latam"] },
+            { value: "Vídeo Insertoras (TV Latam)", tags: ["latam"] },
+            { value: "Otro contenido (redes sociales)", tags: ["latam"] },
+            { value: "Camilo Cuervo", tags: ["latam"] },
+            { value: "Artista de la semana", tags: ["latam"] },
+            { value: "Saludo Lanzamiento", tags: ["latam"] }
+        ],
+
+        /* ==========================================
+           REGRAS DE EDIÇÃO POR DETALHE
+           (tela "Editar ação existente")
+
+           locked: true  -> aparece na lista, mas não é
+                             clicável (Barker/Trilho/Banner/BG,
+                             atualizados só pela aba de origem).
+           warning: texto do aviso vermelho mostrado ao abrir
+                    uma ação desse Detalhe cuja origem NÃO é
+                    "Ações Manuais" (edição vira duplicação).
+                    Ausente/null = editável direto, sem aviso.
+
+           Detalhes que não aparecem aqui (ex.: Push Notification,
+           que é fonte de Fraseologias) são tratados por
+           Metrics.isPhraseology e nem entram na lista.
+        ========================================== */
+        detailEditRules: {
+            "Canal 500": {
+                warning: "Atualizado automaticamente pela aba Canal 500 — aqui você só pode adicionar informações ou outro canal de mídia pra essa ação (ex.: Vídeo Lucy Alves foi pro Canal 500 → também foi exibido na TV Corporativa)."
+            },
+            "Conteúdo para redes sociais": {
+                warning: "Atualizado automaticamente via API do Instagram — aqui você só pode adicionar informações ou outro canal de mídia pra essa ação (ex.: um vídeo do Instagram também recebeu uma Playlist personalizada, ou foi pro Youtube da Claro)."
+            },
+            "Barker: Seção de Música": { locked: true },
+            "Trilho: Seção de Música": { locked: true },
+            "Banner: Seção de Música": { locked: true },
+            "Banner: Seção da Home": { locked: true },
+            "BG: Seção de Música": { locked: true },
+            "Artista de la semana": {
+                warning: "Atualizado automaticamente via planilha de postagens da Colômbia — aqui você só pode adicionar informações ou outro canal de mídia pra essa ação (ex.: também foi exibido na TV da Colômbia/LatAm)."
+            },
+            "Saludo Lanzamiento": {
+                warning: "Atualizado automaticamente via planilha de postagens da Colômbia — aqui você só pode adicionar informações ou outro canal de mídia pra essa ação (ex.: também foi exibido na TV da Colômbia/LatAm)."
+            }
+        },
+
+        editListNotice: "Ações do tipo Barker, Trilho, Banner (Seção de Música/Home) e BG não são editáveis por aqui — são atualizadas automaticamente. Fraseologias não aparecem nesta lista, pois seguem lógica própria.",
+
+        detailTagLabels: {
+            gravadora: "Ação com gravadora",
+            tv: "Equipe TV",
+            comunicacao: "Comunicação Claro (Endomarketing)",
+            regional: "Ação com regional",
+            licenciamento: "Licenciamento",
+            outros: "Outros",
+            latam: "LatAm (fora do Brasil)"
+        },
+
+        labels: [
+            "Universal Music", "Som Livre", "Downtown Music / FUGA", "MK Music", "ADA",
+            "Virgin Music", "The Orchard", "Sony Music", "Symphonic", "Altafonte",
+            "BMG", "Warner Music", "Audiolink", "Believe", "Strm Music",
+            "ONErpm", "Backstage Musica", "Interscope", "Farolatino", "Codiscos",
+            "Paralogy", "United Masters", "YG Plus", "YT Rocket", "Ditto",
+            "Ingrooves", "Audiosalad", "DMusic", "Xelon", "Fluxus",
+            "Revelator Enterprises", "Hopeless Records", "Creation Music Group", "Absolute", "Adarga Group",
+            "Create Music Group - Label Engine", "Tratore", "Integrity Music", "Ultra Records", "HYBE",
+            "SM Entertainment", "New Music"
+        ],
+
+        labelSpecialOptions: [
+            { value: "Não se aplica", exclusive: true },
+            { value: "iMusica (ott)", exclusive: false }
+        ],
+
+        regionals: [
+            "Regional Sul",
+            "Regional SP",
+            "Regional RJ/ES",
+            "Regional Norte e Nordeste",
+            "Regional MG e Centro Oeste",
+            "Matriz",
+            "Colômbia",
+            "México"
+        ],
+
+        statuses: [
+            "Em andamento",
+            "Standby",
+            "Concluída",
+            "Cancelada"
+        ],
+
+        owners: [
+            "Rachel Sousa",
+            "Isabelle Rocha",
+            "Ana Clara Mendes",
+            "Vanessa Silva",
+            "Victoria Liscio",
+            "Rodrigo Rodriguez",
+            "Carol Ávila",
+            "Felipe Marques"
+        ]
+
+    }
 
 };
 
@@ -449,6 +714,8 @@ COUNTRY_SUMMARY_GOALS: {
 const APP = {
 
     rawData: [],
+
+    mergedData: [],
 
     filteredData: [],
 

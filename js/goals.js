@@ -84,9 +84,53 @@ const Goals = {
             Math.floor(this.currentMonth / 3);
 
         this.currentYear =
-            this.detectLatestYear();
+            this.currentYear && this.getAvailableYears().includes(this.currentYear)
+                ? this.currentYear
+                : this.getDefaultYear();
 
         this.buildIndexes();
+
+    },
+
+    /* ==========================================================
+       ANOS DISPONÍVEIS (aba "Metas do ano")
+
+       Baseado na data de FINALIZAÇÃO das ações já concluídas,
+       igual ao detectLatestYear() — só que retorna a lista
+       inteira de anos com dado, não só o mais recente. O botão
+       de cada ano só aparece se existir ação concluída naquele
+       ano.
+    ========================================================== */
+
+    getAvailableYears() {
+
+        return [...(CONFIG.GOALS_AVAILABLE_YEARS || [])].sort((a, b) => a - b);
+
+    },
+
+    /* Ano padrão ao abrir a aba: o ano-calendário REAL de hoje,
+       se já tiver dado; senão, o ano mais recente disponível. */
+    getDefaultYear() {
+
+        const years = this.getAvailableYears();
+
+        const nowYear = new Date().getFullYear();
+
+        if (years.includes(nowYear)) {
+
+            return nowYear;
+
+        }
+
+        return years.length ? Math.max(...years) : nowYear;
+
+    },
+
+    setYear(year) {
+
+        this.currentYear = year;
+
+        this.render();
 
     },
 
@@ -106,29 +150,6 @@ const Goals = {
             String(row.status).trim().toLowerCase() ===
             String(CONFIG.STATUS.completed).trim().toLowerCase()
         );
-
-    },
-
-    /* ==========================================================
-       DETECTA O ANO MAIS RECENTE
-
-       Baseado na data de FINALIZAÇÃO (Data final / publicação)
-       das ações já concluídas — e não na data da proposta.
-    ========================================================== */
-
-    detectLatestYear() {
-
-        const years = this.rawData
-            .filter(row => this.isCompleted(row) && row.publishDate)
-            .map(row => row.publishDate.getFullYear());
-
-        if (!years.length) {
-
-            return new Date().getFullYear();
-
-        }
-
-        return Math.max(...years);
 
     },
 
@@ -666,6 +687,190 @@ const Goals = {
         this.renderPhraseologies();
 
         this.renderByType();
+
+        this.renderYearSwitch();
+
+        this.renderGoalsCompletionIndicator();
+
+        this.renderCriticalAreas();
+
+    },
+
+    /* ==========================================================
+       RESUMO ANUAL DE METAS (aba "Metas do ano")
+
+       Junta todas as ações COM meta definida, dos dois países,
+       incluindo a meta-resumo do país (ex.: "Ações Colômbia").
+       Retorna o % geral (atingido/meta, no MÁXIMO 100% por
+       ação — uma ação muito acima da meta não "compensa" outra
+       abaixo) e a lista ordenada da mais crítica (menor %) pra
+       mais próxima da meta.
+    ========================================================== */
+
+    getAnnualGoalSummary() {
+
+        const countriesToShow = ["Brasil", "Colômbia"];
+
+        const items = [];
+
+        countriesToShow.forEach(country => {
+
+            const { goalActions } = this.getCountryActions(country);
+
+            goalActions.forEach(action => {
+
+                const goal = this.getGoal(action);
+
+                if (!goal || !goal.annual) return;
+
+                const total = this.getSeriesTotal(
+                    this.getMonthlySeries(country, action)
+                );
+
+                const pct = Math.round((total / goal.annual) * 100);
+
+                items.push({
+                    country,
+                    action,
+                    area: this.getActionArea(action),
+                    total,
+                    goal: goal.annual,
+                    pct
+                });
+
+            });
+
+            const summaryConfig =
+                CONFIG.COUNTRY_SUMMARY_GOALS &&
+                CONFIG.COUNTRY_SUMMARY_GOALS[country];
+
+            if (summaryConfig && summaryConfig.annual) {
+
+                const total = this.getSeriesTotal(
+                    this.getCountrySummarySeries(country)
+                );
+
+                const pct = Math.round((total / summaryConfig.annual) * 100);
+
+                items.push({
+                    country,
+                    action: summaryConfig.label,
+                    area: country,
+                    total,
+                    goal: summaryConfig.annual,
+                    pct
+                });
+
+            }
+
+        });
+
+        const overallPct = items.length
+            ? Math.round(
+                items.reduce((sum, item) => sum + Math.min(item.pct, 100), 0) / items.length
+              )
+            : 0;
+
+        const critical = [...items].sort((a, b) => a.pct - b.pct);
+
+        return { overallPct, items, critical };
+
+    },
+
+    /* ==========================================================
+       TROCA DE ANO (aba "Metas do ano")
+    ========================================================== */
+
+    renderYearSwitch() {
+
+        const container = document.getElementById("goalsYearSwitch");
+
+        if (!container) return;
+
+        const years = this.getAvailableYears();
+
+        if (!years.length) {
+
+            container.innerHTML = "";
+            return;
+
+        }
+
+        container.innerHTML = years.map(year => `
+            <button type="button" class="summary-button ${year === this.currentYear ? "active" : ""}" data-year="${year}">
+                ${year}
+            </button>
+        `).join("");
+
+        Array.from(container.querySelectorAll("button")).forEach(btn => {
+
+            btn.addEventListener("click", () => {
+
+                this.setYear(Number(btn.dataset.year));
+
+            });
+
+        });
+
+    },
+
+    /* ==========================================================
+       INDICADOR DE % DE METAS BATIDAS
+    ========================================================== */
+
+    renderGoalsCompletionIndicator() {
+
+        const container = document.getElementById("goalsCompletionIndicator");
+
+        if (!container) return;
+
+        const { overallPct } = this.getAnnualGoalSummary();
+
+        const status = this.getGoalStatus(overallPct);
+
+        container.innerHTML = `
+            <div class="goals-completion-card ${status.className}">
+                <span class="goals-completion-label">% de metas batidas em ${this.currentYear}</span>
+                <span class="goals-completion-value">${status.icon} ${overallPct}%</span>
+            </div>
+        `;
+
+    },
+
+    /* ==========================================================
+       ÁREAS MAIS CRÍTICAS (mais longe da meta)
+    ========================================================== */
+
+    renderCriticalAreas() {
+
+        const container = document.getElementById("criticalAreasContainer");
+
+        if (!container) return;
+
+        const { critical } = this.getAnnualGoalSummary();
+
+        const worst = critical.filter(item => item.pct < 100).slice(0, 5);
+
+        if (!worst.length) {
+
+            container.innerHTML = "<p class='maf-empty'>Nenhuma meta pendente — tudo dentro do esperado neste ano.</p>";
+            return;
+
+        }
+
+        container.innerHTML = `
+            <ul class="critical-areas-list">
+                ${worst.map(item => `
+                    <li>
+                        <span class="critical-areas-name">${item.action} <small>(${item.country})</small></span>
+                        <span class="critical-areas-bar-wrap">
+                            <span class="critical-areas-bar" style="width:${Math.min(item.pct, 100)}%"></span>
+                        </span>
+                        <span class="critical-areas-pct">${item.pct}%</span>
+                    </li>
+                `).join("")}
+            </ul>
+        `;
 
     },
 
