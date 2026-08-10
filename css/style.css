@@ -1634,6 +1634,16 @@ body.modal-open{
 
 }
 
+.mini-status-locked{
+
+    opacity:.6;
+
+    cursor:help;
+
+    border-bottom:1px dotted var(--text-light);
+
+}
+
 /* ===========================================================
    CANAL 500 — identidade "TV"
 

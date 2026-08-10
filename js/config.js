@@ -637,10 +637,14 @@ COUNTRY_SUMMARY_GOALS: {
             "Banner: Seção da Home": { locked: true },
             "BG: Seção de Música": { locked: true },
             "Artista de la semana": {
-                warning: "Atualizado automaticamente via planilha de postagens da Colômbia — aqui você só pode adicionar informações ou outro canal de mídia pra essa ação (ex.: também foi exibido na TV da Colômbia/LatAm)."
+                warning: "Atualizado automaticamente via planilha de postagens da Colômbia — aqui você só pode adicionar informações ou outro canal de mídia pra essa ação (ex.: também foi exibido na TV da Colômbia/LatAm).",
+                statusLocked: true,
+                statusLockedMessage: "Status atualizado automaticamente a partir da publicação do conteúdo pela Colômbia."
             },
             "Saludo Lanzamiento": {
-                warning: "Atualizado automaticamente via planilha de postagens da Colômbia — aqui você só pode adicionar informações ou outro canal de mídia pra essa ação (ex.: também foi exibido na TV da Colômbia/LatAm)."
+                warning: "Atualizado automaticamente via planilha de postagens da Colômbia — aqui você só pode adicionar informações ou outro canal de mídia pra essa ação (ex.: também foi exibido na TV da Colômbia/LatAm).",
+                statusLocked: true,
+                statusLockedMessage: "Status atualizado automaticamente a partir da publicação do conteúdo pela Colômbia."
             }
         },
 

@@ -360,6 +360,21 @@ const ManualActionsForm = {
 
     },
 
+    /* Detalhes cujo STATUS especificamente não é editável por
+       aqui (mesmo a ação em si continuando editável) — ex.:
+       Saludo Lanzamiento / Artista de la semana, atualizados pela
+       planilha da Colômbia. Retorna a mensagem do aviso, ou null
+       se o status dessa ação não estiver travado. */
+    getStatusLockMessage(detail) {
+
+        const rules = CONFIG.MANUAL_ACTIONS.detailEditRules || {};
+
+        const locked = splitMultiValue(detail).find(d => rules[d] && rules[d].statusLocked);
+
+        return locked ? rules[locked].statusLockedMessage : null;
+
+    },
+
     escapeAttr(text) {
 
         return String(text || "").replace(/"/g, "&quot;");
@@ -1675,6 +1690,11 @@ const ManualActionsForm = {
 
         if (this.isDetailLocked(row.detail) || (typeof Metrics !== "undefined" && Metrics.isPhraseology(row))) {
             return Promise.reject(new Error("Ação não editável por aqui."));
+        }
+
+        const statusLockMessage = this.getStatusLockMessage(row.detail);
+        if (statusLockMessage) {
+            return Promise.reject(new Error(statusLockMessage));
         }
 
         if (!row.id) {

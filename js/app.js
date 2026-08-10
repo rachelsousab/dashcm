@@ -611,6 +611,14 @@ const phraseologies = data.filter(
 
             render: (value, row, index) => {
 
+                const statusLockMessage = typeof ManualActionsForm !== "undefined"
+                    ? ManualActionsForm.getStatusLockMessage(row.detail)
+                    : null;
+
+                if (statusLockMessage) {
+                    return `<span class="mini-status-locked" title="${this.escapeHtml(statusLockMessage)}">${row.status || "—"}</span>`;
+                }
+
                 const locked =
                     row._merged ||
                     !row.id ||
