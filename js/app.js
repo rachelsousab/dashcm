@@ -616,7 +616,7 @@ const phraseologies = data.filter(
                     : null;
 
                 if (statusLockMessage) {
-                    return `<span class="mini-status-locked" title="${this.escapeHtml(statusLockMessage)}">${row.status || "—"}</span>`;
+                    return `<span class="mini-status-locked" data-tooltip="${this.escapeHtml(statusLockMessage)}">${row.status || "—"}</span>`;
                 }
 
                 const locked =

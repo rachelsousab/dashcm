@@ -1642,6 +1642,96 @@ body.modal-open{
 
     border-bottom:1px dotted var(--text-light);
 
+    position:relative;
+
+    display:inline-block;
+
+}
+
+/* Tooltip customizado — o `title` nativo do navegador demora
+   pra aparecer e é inconsistente, então usamos o mesmo padrão
+   de balãozinho já usado na tabela de redes sociais. */
+.mini-status-locked[data-tooltip]::after{
+
+    content:attr(data-tooltip);
+
+    position:absolute;
+
+    top:100%;
+
+    left:50%;
+
+    transform:translate(-50%, 6px);
+
+    background:#2C2C2C;
+
+    color:white;
+
+    padding:6px 10px;
+
+    border-radius:8px;
+
+    font-size:.68rem;
+
+    font-weight:500;
+
+    white-space:normal;
+
+    width:220px;
+
+    text-align:center;
+
+    line-height:1.35;
+
+    box-shadow:0 4px 12px rgba(0,0,0,.25);
+
+    opacity:0;
+
+    visibility:hidden;
+
+    transition:opacity .15s, visibility .15s;
+
+    z-index:30;
+
+    pointer-events:none;
+
+}
+
+.mini-status-locked[data-tooltip]::before{
+
+    content:"";
+
+    position:absolute;
+
+    top:100%;
+
+    left:50%;
+
+    transform:translate(-50%, -1px);
+
+    border:5px solid transparent;
+
+    border-bottom-color:#2C2C2C;
+
+    opacity:0;
+
+    visibility:hidden;
+
+    transition:opacity .15s, visibility .15s;
+
+    z-index:30;
+
+    pointer-events:none;
+
+}
+
+.mini-status-locked[data-tooltip]:hover::after,
+.mini-status-locked[data-tooltip]:hover::before{
+
+    opacity:1;
+
+    visibility:visible;
+
 }
 
 /* ===========================================================
@@ -2854,15 +2944,35 @@ body.auth-locked{
 
     padding:20px 24px;
 
+    display:flex;
+
+    flex-direction:column;
+
+    gap:10px;
+
 }
 
 .manual-block h3{
 
-    margin:0 0 8px;
+    margin:0 0 4px;
 
     font-size:1rem;
 
     color:var(--text);
+
+}
+
+.manual-block h4{
+
+    margin:6px 0 -2px;
+
+    font-size:.8rem;
+
+    color:var(--primary);
+
+    text-transform:uppercase;
+
+    letter-spacing:.03em;
 
 }
 
@@ -2875,6 +2985,128 @@ body.auth-locked{
     font-size:.85rem;
 
     line-height:1.5;
+
+}
+
+.manual-block code{
+
+    background:#F2F2F5;
+
+    color:var(--text);
+
+    padding:1px 5px;
+
+    border-radius:4px;
+
+    font-size:.78rem;
+
+}
+
+.manual-list{
+
+    margin:0;
+
+    padding-left:18px;
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:6px;
+
+    color:var(--text-light);
+
+    font-size:.85rem;
+
+    line-height:1.5;
+
+}
+
+.manual-list li strong{
+
+    color:var(--text);
+
+}
+
+.manual-table{
+
+    width:100%;
+
+    border-collapse:collapse;
+
+    font-size:.8rem;
+
+}
+
+.manual-table th{
+
+    text-align:left;
+
+    padding:7px 10px;
+
+    background:#F6F7FB;
+
+    color:var(--text);
+
+    border-bottom:2px solid var(--border);
+
+}
+
+.manual-table td{
+
+    padding:7px 10px;
+
+    border-bottom:1px solid #ECECEC;
+
+    color:var(--text-light);
+
+    vertical-align:top;
+
+}
+
+.manual-table-badge-col{
+
+    width:170px;
+
+}
+
+.manual-badge{
+
+    display:inline-block;
+
+    padding:2px 8px;
+
+    border-radius:10px;
+
+    font-size:.68rem;
+
+    font-weight:600;
+
+    white-space:nowrap;
+
+}
+
+.manual-badge--auto{
+
+    background:#F3F1FB;
+
+    color:#5B4FCF;
+
+}
+
+.manual-badge--manual{
+
+    background:#E7F6EC;
+
+    color:#1E8E4E;
+
+}
+
+.manual-badge--locked{
+
+    background:#FDECEA;
+
+    color:#8B1E28;
 
 }
 
