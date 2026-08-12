@@ -2922,6 +2922,18 @@ body.auth-locked{
    MANUAL
 =========================================================== */
 
+#page-manual{
+
+    padding-left:32px;
+
+}
+
+#page-manual .page-subtitle{
+
+    margin:0 0 8px;
+
+}
+
 .manual-content{
 
     display:flex;

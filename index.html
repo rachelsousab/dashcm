@@ -1680,16 +1680,14 @@
             <h3>Área de Marketing</h3>
 
             <p>
-                Painel principal de acompanhamento das ações da equipe de Label Relations — KPIs de status,
-                metas do ano, e as tabelas "Acontecendo agora" / "Últimas ações concluídas".
+                Painel principal de acompanhamento das ações da equipe de Label Relations, incluindo KPIs de
+                status e metas do ano.
             </p>
 
             <h4>De onde vêm os dados</h4>
 
             <p>
-                A planilha "Dados da área" consolida automaticamente, pelo <strong>ID</strong> de cada linha,
-                6 origens diferentes numa única lista de ações. Cada ação que veio de fora (não cadastrada
-                manualmente aqui) tem um prefixo no ID que identifica a origem:
+                A planilha "Dados da área" consolida 6 fontes de dados diferentes numa única lista de ações.
             </p>
 
             <table class="manual-table">
@@ -1697,33 +1695,47 @@
                     <tr><th>Origem</th><th>Prefixo do ID</th><th class="manual-table-badge-col">Tipo</th></tr>
                 </thead>
                 <tbody>
-                    <tr><td>Ações Manuais (cadastradas aqui no dashboard)</td><td>UUID / <code>MANUAL-</code></td><td><span class="manual-badge manual-badge--manual">Manual</span></td></tr>
+                    <tr><td>Ações Manuais (cadastradas manualmente aqui no dashboard)</td><td>UUID / <code>MANUAL-</code></td><td><span class="manual-badge manual-badge--manual">Manual</span></td></tr>
                     <tr><td>Canal 500</td><td><code>C500-</code></td><td><span class="manual-badge manual-badge--auto">Automático</span></td></tr>
                     <tr><td>Redes sociais (Instagram)</td><td><code>RS-</code></td><td><span class="manual-badge manual-badge--auto">Automático</span></td></tr>
-                    <tr><td>Cronograma de posteio — Colômbia</td><td><code>CO-</code></td><td><span class="manual-badge manual-badge--auto">Automático</span></td></tr>
+                    <tr><td>Cronograma de posteo — Colômbia</td><td><code>CO-</code></td><td><span class="manual-badge manual-badge--auto">Automático</span></td></tr>
                     <tr><td>Cronograma — Banners</td><td><code>BAN-</code></td><td><span class="manual-badge manual-badge--auto">Automático</span></td></tr>
                     <tr><td>Push Notification (Fraseologias)</td><td><code>PUSH-</code></td><td><span class="manual-badge manual-badge--auto">Automático</span></td></tr>
                 </tbody>
             </table>
+
+            <h4>Como os dados são consolidados</h4>
+
+            <ul class="manual-list">
+                <li><strong>Planilhas de Acompanhamento de Banners, Barkers, Trilhos, BGs</strong> (que Isabelle
+                    Rocha compartilha com o time de TV) — são importadas automaticamente.
+                    <br><em>O que deve ser feito:</em> a cada mês, quando uma nova aba for criada no documento,
+                    incluir na fórmula VSTACK da aba "Dados Consolidadas".</li>
+                <li><strong>Canal 500</strong> — o envio para o Canal 500 deve ser feito diretamente pela
+                    página "Canal 500" do dashboard. Ao enviar ou registrar uma ação, o dado é compilado
+                    automaticamente na lista de ações.</li>
+                <li><strong>Redes sociais (Instagram)</strong> — estamos conectados diretamente à API da Meta,
+                    que puxa os dados do Instagram de forma automática e alimenta a página de redes sociais,
+                    com os dados de engajamento, e os dados de ações da área para contabilização.
+                    <br><em>O que deve ser feito:</em> quando a API identificar um novo post, devemos incluir
+                    manualmente as informações de gênero, gravadora, responsável, formato e tipo de vídeo.</li>
+                <li><strong>Posts Colômbia</strong> — importados automaticamente da planilha "Plan de
+                    contenidos". Seguimos nosso fluxo normal com a equipe CO. Atenção apenas para não mudar
+                    os campos da planilha original.</li>
+                <li><strong>Fraseologias</strong> — importadas automaticamente pela planilha de Push
+                    Notification da equipe CRM (abas Latam + Brasil e aba Colômbia). A planilha identifica
+                    automaticamente se foi Victoria ou Ana Clara a responsável pela fraseologia, a depender do
+                    país. Alterar apenas em caso de férias ou mudança na estrutura da equipe.</li>
+            </ul>
 
             <h4>Fusão de ações</h4>
 
             <p>
                 Quando uma ação automática (ex.: um post do Instagram) também recebe um canal extra cadastrado
                 manualmente aqui (ex.: o mesmo conteúdo foi pra TV Corporativa), as duas linhas se <strong>fundem</strong>
-                numa ação lógica só — mesma data, gravadora, regional, responsável e resumo (ou mesmo ID
+                numa ação lógica só — com mesma data, gravadora, regional, responsável e resumo (ou mesmo ID
                 compartilhado). Isso evita contar a mesma ação duas vezes nos KPIs, mas as linhas originais
-                continuam acessíveis pro drilldown e pra edição individual.
-            </p>
-
-            <h4>KPIs</h4>
-
-            <p>
-                Os KPIs brancos (Concluídas, Total propostas, Em andamento, Standby, Canceladas, Taxa de
-                conclusão, Tempo médio) contam o total de ações fundidas. Os KPIs roxos (Fraseologias,
-                Conteúdo para redes sociais, Canal 500, TV, Ações com a Claro) mostram quanto desse total
-                veio de cada fonte automática — é como enxergar, de relance, o quanto do volume da área
-                já chega pronto sem precisar de cadastro manual.
+                continuam acessíveis para termos acesso e rastreabilidade.
             </p>
 
             <h4>Tabelas "Acontecendo agora" / "Últimas ações concluídas"</h4>
@@ -1731,39 +1743,29 @@
             <p>
                 Listam ações individuais. Cada linha tem um Status editável direto ali (dropdown) e um botão
                 ✏️ que abre a edição completa. Ações travadas (Barker/Trilho/Banner/BG, Fraseologias, ações
-                fundidas de múltiplos canais) mostram cadeado 🔒 no lugar do botão — não editáveis por aqui.
-                Saludo Lanzamiento e Artista de la semana têm o Status especificamente travado (o resto da
-                ação continua editável), com aviso ao passar o mouse.
+                fundidas de múltiplos canais) mostram cadeado 🔒 no lugar do botão porque não são editáveis
+                por ali (já que puxam automaticamente de planilhas de rotina). Saludo Lanzamiento e Artista de
+                la semana têm o Status travado (o resto da ação continua editável), já que a ação é concluída
+                automaticamente quando a equipe Colômbia compartilha evidência do post realizado.
             </p>
-
-            <h4>Botões do topo</h4>
-
-            <ul class="manual-list">
-                <li><strong>✏️ Editar ou Adicionar nova ação</strong> — abre um popup de escolha: "Adicionar
-                    nova ação" (formulário em branco, só com Detalhes 100% manuais — ver bloco abaixo) ou
-                    "Editar ação existente" (busca entre todas as ações, incluindo as automáticas, pra
-                    adicionar um canal/detalhe extra a uma ação que já existe).</li>
-                <li><strong>🕓 Últimas ações enviadas</strong> — histórico guardado só neste navegador (não é
-                    a planilha) — útil pra forçar reenvio se uma ação não aparecer depois de alguns minutos.</li>
-            </ul>
         </section>
 
         <section class="manual-block">
             <h3>Canal 500</h3>
 
             <p>
-                Aba operacional dedicada aos vídeos enviados pro Canal 500 (TV) — planilha própria, separada
-                da "Dados da área". As ações de Canal 500 também aparecem automaticamente na Área de
-                Marketing (prefixo <code>C500-</code>), mas aqui o foco é operacional: o que está no ar agora,
-                quando cada vídeo entra e sai.
+                Aba operacional dedicada aos vídeos enviados pro Canal 500 (TV). As ações de Canal 500 também
+                aparecem automaticamente na Área de Marketing (prefixo <code>C500-</code>), mas aqui temos a
+                descrição do que está no ar agora, e quando cada vídeo entra e sai.
             </p>
 
             <h4>Tabelas</h4>
 
             <ul class="manual-list">
-                <li><strong>Em veiculação agora</strong> — barra de progresso entre Entrada e Saída; fica
+                <li><strong>Em veiculação agora:</strong> barra de progresso entre Entrada e Saída; fica
                     vermelha com "Tempo finalizado, verificar se já saiu do ar" quando passa da data de Saída.</li>
-                <li><strong>Vídeos enviados, aguardando início</strong> e <strong>Últimos vídeos veiculados</strong>.</li>
+                <li><strong>Vídeos enviados:</strong> vídeos aguardando início e evidência na TV.</li>
+                <li><strong>Últimos vídeos veiculados:</strong> histórico do que foi exibido na TV.</li>
             </ul>
 
             <h4>Registrar um envio novo</h4>
@@ -1773,49 +1775,55 @@
             </p>
 
             <ul class="manual-list">
-                <li><strong>Enviar para Canal 500</strong> — formulário reduzido (sem Status de Veiculação,
-                    que já entra automático como "Enviado", e sem Comentários); ao salvar, mostra um botão
-                    "Enviar e-mail para Canal Like" que abre o Gmail com assunto, corpo e destinatários já
-                    preenchidos (editável antes de mandar).</li>
-                <li><strong>Apenas registrar</strong> — formulário completo, pra quando o envio já foi feito
+                <li><strong>Enviar para Canal 500:</strong> formulário para preenchimento dos dados da ação;
+                    ao salvar, mostra um botão "Enviar e-mail para Canal Like" que abre o Gmail com assunto,
+                    corpo e destinatários já preenchidos (editável antes de mandar).</li>
+                <li><strong>Apenas registrar:</strong> formulário completo, para quando o envio já foi feito
                     por e-mail antes e só precisa constar na planilha.</li>
             </ul>
 
             <h4>Ações por linha (só em linhas com ID real)</h4>
 
             <ul class="manual-list">
-                <li><strong>Status de Veiculação</strong> — dropdown editável na hora.</li>
-                <li><strong>✏️ Editar ação</strong> — edição completa de todos os campos.</li>
-                <li><strong>📎 Enviar evidência</strong> — acrescenta texto/imagem à evidência já existente,
-                    sem apagar o que já estava lá.</li>
+                <li><strong>Status de Veiculação:</strong> editável na hora via menu dropdown.</li>
+                <li><strong>✏️ Editar ação:</strong> edição completa de todos os campos.</li>
+                <li><strong>📎 Enviar evidência:</strong> acrescenta texto/imagem ao campo de evidências,
+                    junto ao link de material já cadastrado.</li>
             </ul>
-
-            <p>
-                Linhas antigas (cadastradas à mão antes do formulário existir, sem ID) mostram cadeado 🔒 —
-                não editáveis por aqui até ganharem um ID na planilha.
-            </p>
         </section>
 
         <section class="manual-block">
             <h3>Destaques de gravadoras</h3>
 
             <p>
-                Aba 100% automática, sem formulário de cadastro — só leitura da planilha de destaques
-                editoriais (Inclusão / Capa / Instagram) por país, a mesma base do relatório que já era
-                mandado por e-mail pra cada gravadora.
+                Aba com leitura da planilha de destaques editoriais por país, atualizada a partir da planilha
+                de Reporte enviada pelo Editorial toda sexta-feira.
             </p>
 
-            <ul class="manual-list">
-                <li>Tabela por Disquera e pivot por País.</li>
-                <li>6 donuts fixos (Brasil, Colômbia e 14 países agregados, Destaques e Capas) — não reagem
-                    ao filtro de País da sidebar, pra manter a comparação entre mercados sempre visível.</li>
-                <li>Volume de destaques por Mês/País, e barras de owner/major.</li>
-                <li>Tabela de Detalhamento, paginada e exportável.</li>
-            </ul>
+            <p>
+                Como está sendo feita atualmente: ao receber a planilha atualizada do Editorial, Rachel faz
+                uma cópia para a planilha-fonte do dashboard e faz a limpa dos dados, que envolve a exclusão
+                de linhas vazias e padronização da nomenclatura de cada destaque, além de conferir se os
+                nomes das gravadoras estão ok.
+            </p>
 
             <p>
-                Essa base também alimenta a aba <strong>Análises</strong> e o <strong>Gerador de reporte
-                semanal</strong> — não precisa recarregar nada de novo nessas duas.
+                Depois, é incluída uma helper column informando a semana daquele reporte, e todas as novas
+                linhas de dados são importadas (via fórmula VSTACK do Google Sheets) na aba "Dados
+                Consolidados", que junta o reporte de todas as semanas e envia para o dashboard. Na aba Dados
+                Consolidados, além das colunas importadas de cada aba de semana, há duas helper columns: mês
+                (extraído via fórmula =TEXTO(H2;"mmmm")) e Owner / Major (extraído via XLOOKUP:
+                =PROCX(G2;'Relação - Gravadoras'!A:A;'Relação - Gravadoras'!B:B)).
+            </p>
+
+            <p>
+                <em>A ideia é conversar com o Editorial a fim de padronizar a nomenclatura de cada destaque e
+                realizar a limpeza de dados já no envio, para que o dashboard esteja sempre conectado
+                automaticamente à planilha deles, sem depender de tanto esforço humano.</em>
+            </p>
+
+            <p>
+                Essa base também alimenta a aba Análises e o Gerador de reporte semanal.
             </p>
         </section>
 
@@ -1823,11 +1831,11 @@
             <h3>Redes sociais</h3>
 
             <p>
-                Também 100% automática — planilha de posts do Instagram, sem formulário de cadastro.
-                Como o volume desses posts já é contado na Área de Marketing (Detalhe "Conteúdo para redes
-                sociais", prefixo <code>RS-</code>), essa aba foca nas métricas de <strong>qualidade</strong>
-                que só o Instagram tem: curtidas, comentários, alcance, interações, engajamento e novos
-                seguidores — por gênero musical, tipo de conteúdo, gravadora, responsável e tipo de collab.
+                Planilha de posts do Instagram, importada via API. Como o volume desses posts já é contado
+                na Área de Marketing (Detalhe "Conteúdo para redes sociais", prefixo <code>RS-</code>), essa
+                aba foca nas métricas de qualidade que só o Instagram tem: curtidas, comentários, alcance,
+                interações, engajamento e novos seguidores. Os campos de gênero musical, tipo de conteúdo,
+                gravadora, responsável e tipo de collab devem ser incluídos manualmente.
             </p>
 
             <p>Inclui também uma tabela de Detalhamento com todos os posts.</p>
@@ -1837,18 +1845,15 @@
             <h3>Análises 360</h3>
 
             <p>
-                Cruza as 3 bases já carregadas (Ações de marketing, Destaques de gravadoras, Redes sociais)
-                sem duplicar contagem — Fraseologias ficam de fora, mesma regra do resto do dashboard. Tem
-                filtros próprios (Ano, Trimestre, Gravadora, Responsável) que não interferem no que estiver
-                selecionado nas outras abas.
+                Cruza as 3 bases já carregadas (Ações de marketing, Destaques de gravadoras, Redes sociais).
             </p>
 
             <p>Duas análises, para cada um dos 2 mercados (Brasil e Colômbia):</p>
 
             <ul class="manual-list">
-                <li><strong>Proporcionalidade por país</strong> — quanto cada gravadora representa do total
+                <li><strong>Proporcionalidade por país:</strong> quanto cada gravadora representa do total
                     de ações/destaques daquele mercado.</li>
-                <li><strong>Share of voice total por gravadora</strong> — soma ações de marketing + destaques
+                <li><strong>Share of voice total por gravadora:</strong> soma ações de marketing + destaques
                     editoriais; no Brasil entram também as métricas de qualidade do Instagram (alcance médio,
                     engajamento médio, % de collab), já que é a única base com esse tipo de dado.</li>
             </ul>
@@ -1864,47 +1869,14 @@
 
             <p>
                 Monta a planilha de Destaques de gravadoras exatamente como hoje é enviada por e-mail pra
-                cada gravadora — mesma formatação (cabeçalho vermelho-escuro, Capa/Inclusão coloridos), já
-                traduzida (PT/ES/EN). Reaproveita a mesma base já carregada pela aba Destaques de gravadoras
-                — não recarrega nem duplica nada.
+                cada gravadora, com a mesma formatação (cabeçalho vermelho-escuro, Capa/Inclusão coloridos),
+                já traduzida automaticamente (PT/ES/EN). Reaproveita a mesma base já carregada pela aba
+                Destaques de gravadoras.
             </p>
 
             <p>
                 Filtros: Semana, Território, Gravadora, Idioma, incluir país, incluir cabeçalho. Botão pra
                 copiar (com formatação, pronto pra colar no e-mail) ou baixar em planilha.
-            </p>
-        </section>
-
-        <section class="manual-block">
-            <h3>Detalhes automáticos x manuais (Área de Marketing)</h3>
-
-            <p>
-                Estes Detalhes são atualizados automaticamente por outras fontes — por isso <strong>não
-                aparecem</strong> como opção ao clicar "Adicionar nova ação". Eles continuam disponíveis em
-                "Editar ação existente", pra adicionar informação ou outro canal a uma ação que já existe.
-            </p>
-
-            <table class="manual-table">
-                <thead>
-                    <tr><th>Detalhe</th><th>Fonte automática</th><th class="manual-table-badge-col">Edição</th></tr>
-                </thead>
-                <tbody>
-                    <tr><td>Canal 500</td><td>Aba Canal 500</td><td>Só adicionar canal/informação</td></tr>
-                    <tr><td>Conteúdo para redes sociais</td><td>API do Instagram</td><td>Só adicionar canal/informação</td></tr>
-                    <tr><td>Saludo Lanzamiento</td><td>Planilha de postagens da Colômbia</td><td>Só adicionar canal/informação — <strong>Status travado</strong></td></tr>
-                    <tr><td>Artista de la semana</td><td>Planilha de postagens da Colômbia</td><td>Só adicionar canal/informação — <strong>Status travado</strong></td></tr>
-                    <tr><td>Barker: Seção de Música</td><td>Cronograma de Banners</td><td><span class="manual-badge manual-badge--locked">Totalmente travado</span></td></tr>
-                    <tr><td>Trilho: Seção de Música</td><td>Cronograma de Banners</td><td><span class="manual-badge manual-badge--locked">Totalmente travado</span></td></tr>
-                    <tr><td>Banner: Seção de Música</td><td>Cronograma de Banners</td><td><span class="manual-badge manual-badge--locked">Totalmente travado</span></td></tr>
-                    <tr><td>Banner: Seção da Home</td><td>Cronograma de Banners</td><td><span class="manual-badge manual-badge--locked">Totalmente travado</span></td></tr>
-                    <tr><td>BG: Seção de Música</td><td>Cronograma de Banners</td><td><span class="manual-badge manual-badge--locked">Totalmente travado</span></td></tr>
-                </tbody>
-            </table>
-
-            <p>
-                Fraseologias (Push Notification) nem aparecem nesta lista de edição — contam individualmente
-                pro total enviado, sem fusão e sem edição por aqui. Todos os outros Detalhes são 100%
-                manuais: só existem se alguém cadastrar pelo formulário.
             </p>
         </section>
 
