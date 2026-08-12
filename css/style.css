@@ -2932,6 +2932,8 @@ body.auth-locked{
 
     margin:0 0 8px;
 
+    white-space:nowrap;
+
 }
 
 .manual-content{
