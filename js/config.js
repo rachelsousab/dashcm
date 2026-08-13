@@ -581,6 +581,7 @@ COUNTRY_SUMMARY_GOALS: {
             { value: "E-mail marketing", tags: ["comunicacao"] },
             { value: "Site Bora", tags: ["comunicacao"] },
             { value: "LinkedIn (Claro)", tags: ["comunicacao"] },
+            { value: "Instagram da Claro", tags: ["comunicacao"] },
             { value: "Lojas físicas", tags: ["comunicacao", "regional"] },
             { value: "Eventos institucionais/Patrocínio", tags: ["comunicacao"] },
             { value: "Boletim", tags: ["comunicacao"] },
