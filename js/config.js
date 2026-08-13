@@ -292,7 +292,7 @@ const CONFIG = {
         countries: ["Brasil"]
     },
 
-    "E-mail Marketing (Endomarketing)": {
+    "E-mail marketing": {
         annual: 4,
         countries: ["Brasil"]
     },
