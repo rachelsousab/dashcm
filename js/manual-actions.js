@@ -713,6 +713,12 @@ const ManualActionsForm = {
         body.innerHTML = `
 
             <div class="maf-field">
+                <label class="maf-label">Resumo da ação <span class="maf-required">*</span></label>
+                <small class="maf-hint">Descreva a ação brevemente, de forma facilmente identificável.</small>
+                <input type="text" class="maf-input" id="maf-resumo">
+            </div>
+
+            <div class="maf-field">
                 <label class="maf-label">País <span class="maf-required">*</span></label>
                 <div class="maf-chip-group" id="maf-pais"></div>
             </div>
@@ -720,14 +726,6 @@ const ManualActionsForm = {
             <div class="maf-field">
                 <label class="maf-label">Área <span class="maf-required">*</span></label>
                 <div class="maf-radio-group" id="maf-area"></div>
-            </div>
-
-            <div class="maf-field">
-                <label class="maf-label">Detalhe <span class="maf-required">*</span></label>
-                <div class="maf-selected-chips" id="maf-detalhe-selected"></div>
-                <input type="search" class="maf-search" id="maf-detalhe-search" placeholder="Buscar detalhe...">
-                <div class="maf-tag-chips" id="maf-detalhe-tags"></div>
-                <div class="maf-checkbox-list" id="maf-detalhe-list"></div>
             </div>
 
             <div class="maf-field-row">
@@ -745,9 +743,17 @@ const ManualActionsForm = {
             </div>
 
             <div class="maf-field">
-                <label class="maf-label">Resumo da ação <span class="maf-required">*</span></label>
-                <small class="maf-hint">Descreva a ação brevemente, de forma facilmente identificável.</small>
-                <input type="text" class="maf-input" id="maf-resumo">
+                <label class="maf-label">Status <span class="maf-required">*</span></label>
+                <div class="maf-radio-group" id="maf-status"></div>
+            </div>
+
+            <div class="maf-field">
+                <label class="maf-label">Detalhe <span class="maf-required">*</span></label>
+                <small class="maf-hint">Quais frentes foram realizadas nessa ação?</small>
+                <div class="maf-selected-chips" id="maf-detalhe-selected"></div>
+                <input type="search" class="maf-search" id="maf-detalhe-search" placeholder="Buscar detalhe...">
+                <div class="maf-tag-chips" id="maf-detalhe-tags"></div>
+                <div class="maf-checkbox-list" id="maf-detalhe-list"></div>
             </div>
 
             <div class="maf-field">
@@ -767,11 +773,6 @@ const ManualActionsForm = {
                     <label class="maf-check"><input type="checkbox" id="maf-regional-nao-aplica"> Não se aplica</label>
                 </div>
                 <div class="maf-checkbox-list maf-checkbox-list--compact" id="maf-regional-list"></div>
-            </div>
-
-            <div class="maf-field">
-                <label class="maf-label">Status <span class="maf-required">*</span></label>
-                <div class="maf-radio-group" id="maf-status"></div>
             </div>
 
             <div class="maf-field">
