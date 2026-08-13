@@ -682,7 +682,8 @@ COUNTRY_SUMMARY_GOALS: {
             "Regional SP",
             "Regional RJ/ES",
             "Regional Norte e Nordeste",
-            "Regional MG e Centro Oeste",
+            "Regional MG",
+            "Regional Centro-Oeste",
             "Matriz",
             "Colômbia",
             "México"
