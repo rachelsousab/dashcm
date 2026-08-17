@@ -133,7 +133,7 @@ const CONFIG = {
 
     SOCIAL_FORM: {
 
-        webAppUrl: "",
+        webAppUrl: "https://script.google.com/macros/s/AKfycbykxINAoV-nBTgPkfinLYw17BPVQr1wM80RZPmwsAaBHNSajcfF-PR0UClrI6fTacVH7g/exec",
 
         sharedSecret: "DashCM2026SocialRachel",
 
