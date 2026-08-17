@@ -119,7 +119,7 @@ const SocialRecentTable = {
         }
 
         el.style.display = "";
-        el.textContent = `${count} ação${count === 1 ? "" : "ões"} com informações faltantes. O Instagram não consegue importar todas automaticamente. Favor adicionar de forma manual.`;
+        el.textContent = `${count} ${count === 1 ? "ação" : "ações"} com informações faltantes. O Instagram não consegue importar todas automaticamente. Favor adicionar de forma manual.`;
 
     },
 
@@ -177,13 +177,23 @@ const SocialRecentTable = {
             return this.escapeHtml(value);
         }
 
+        const uid = `sm-${index}-${field}`;
+
         return `
             <span class="social-missing-badge">Informação faltante</span>
-            <div class="social-multiselect-wrap">
-                <select class="social-field-multiselect" data-index="${index}" data-field="${field}" multiple size="4">
-                    ${options.map(o => `<option value="${this.escapeAttr(o)}">${this.escapeHtml(o)}</option>`).join("")}
-                </select>
-                <button type="button" class="data-table-csv-btn social-multiselect-save-btn" data-index="${index}" data-field="${field}">Salvar</button>
+            <div class="social-multiselect-dropdown" data-uid="${uid}">
+                <button type="button" class="social-multiselect-toggle" data-uid="${uid}">Selecionar ▾</button>
+                <div class="social-multiselect-panel" data-uid="${uid}" style="display:none;">
+                    <div class="social-multiselect-options">
+                        ${options.map((o, i) => `
+                            <label class="social-multiselect-option">
+                                <input type="checkbox" value="${this.escapeAttr(o)}" data-uid="${uid}">
+                                ${this.escapeHtml(o)}
+                            </label>
+                        `).join("")}
+                    </div>
+                    <button type="button" class="data-table-csv-btn social-multiselect-save-btn" data-index="${index}" data-field="${field}" data-uid="${uid}">Salvar</button>
+                </div>
             </div>
         `;
 
@@ -255,6 +265,42 @@ const SocialRecentTable = {
 
         });
 
+        /* Dropdown compacto: fechado por padrão, abre/fecha ao
+           clicar no botão, fecha ao clicar fora. */
+        Array.from(container.querySelectorAll(".social-multiselect-toggle")).forEach(toggle => {
+
+            toggle.addEventListener("click", (event) => {
+
+                event.stopPropagation();
+
+                const uid = toggle.dataset.uid;
+                const panel = container.querySelector(`.social-multiselect-panel[data-uid="${uid}"]`);
+
+                const isOpen = panel.style.display !== "none";
+
+                // Fecha qualquer outro painel aberto antes de abrir este.
+                Array.from(container.querySelectorAll(".social-multiselect-panel")).forEach(p => p.style.display = "none");
+
+                panel.style.display = isOpen ? "none" : "block";
+
+            });
+
+        });
+
+        if (!this._docCloseBound) {
+
+            this._docCloseBound = true;
+
+            document.addEventListener("click", () => {
+                Array.from(document.querySelectorAll(".social-multiselect-panel")).forEach(p => p.style.display = "none");
+            });
+
+        }
+
+        Array.from(container.querySelectorAll(".social-multiselect-panel")).forEach(panel => {
+            panel.addEventListener("click", (event) => event.stopPropagation());
+        });
+
         Array.from(container.querySelectorAll(".social-multiselect-save-btn")).forEach(btn => {
 
             btn.addEventListener("click", () => {
@@ -262,10 +308,11 @@ const SocialRecentTable = {
                 const index = Number(btn.dataset.index);
                 const field = btn.dataset.field;
                 const post = this._posts[index];
+                const uid = btn.dataset.uid;
 
-                const select = container.querySelector(`.social-field-multiselect[data-index="${index}"][data-field="${field}"]`);
+                const checked = Array.from(container.querySelectorAll(`input[type="checkbox"][data-uid="${uid}"]:checked`));
 
-                const values = Array.from(select.selectedOptions).map(o => o.value);
+                const values = checked.map(c => c.value);
 
                 if (!values.length) {
                     alert("Selecione ao menos uma opção.");
@@ -273,7 +320,6 @@ const SocialRecentTable = {
                 }
 
                 btn.disabled = true;
-                select.disabled = true;
 
                 SocialForm.updateField(post, field, values)
                     .then(() => {
@@ -284,7 +330,6 @@ const SocialRecentTable = {
                         console.error(error);
                         alert("Não foi possível salvar. Tente de novo.");
                         btn.disabled = false;
-                        select.disabled = false;
                     });
 
             });

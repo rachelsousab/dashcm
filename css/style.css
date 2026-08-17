@@ -1616,7 +1616,63 @@ body.modal-open{
 
 .social-recent-table{
 
-    white-space:nowrap;
+    table-layout:fixed;
+
+}
+
+.social-recent-table td,
+.social-recent-table th{
+
+    white-space:normal;
+
+    overflow-wrap:break-word;
+
+    vertical-align:top;
+
+}
+
+.social-recent-table td:nth-child(1),
+.social-recent-table th:nth-child(1){
+
+    width:78px;
+
+}
+
+.social-recent-table td:nth-child(2),
+.social-recent-table th:nth-child(2){
+
+    width:160px;
+
+}
+
+.social-recent-table td:nth-child(3),
+.social-recent-table th:nth-child(3),
+.social-recent-table td:nth-child(4),
+.social-recent-table th:nth-child(4){
+
+    width:110px;
+
+}
+
+.social-recent-table td:nth-child(5),
+.social-recent-table th:nth-child(5),
+.social-recent-table td:nth-child(6),
+.social-recent-table th:nth-child(6),
+.social-recent-table td:nth-child(7),
+.social-recent-table th:nth-child(7),
+.social-recent-table td:nth-child(8),
+.social-recent-table th:nth-child(8){
+
+    width:130px;
+
+}
+
+.social-recent-table td:nth-child(9),
+.social-recent-table th:nth-child(9),
+.social-recent-table td:nth-child(10),
+.social-recent-table th:nth-child(10){
+
+    width:90px;
 
 }
 
@@ -1646,15 +1702,15 @@ body.modal-open{
 
     color:#8B1E28;
 
-    font-size:.66rem;
+    font-size:.6rem;
 
     font-weight:600;
 
-    padding:2px 6px;
+    padding:2px 5px;
 
     border-radius:6px;
 
-    margin-bottom:4px;
+    margin-bottom:3px;
 
     white-space:normal;
 
@@ -1669,59 +1725,135 @@ body.modal-open{
 
     border-radius:6px;
 
-    padding:3px 6px;
+    padding:2px 5px;
 
-    font-size:.72rem;
+    font-size:.66rem;
 
     font-family:inherit;
 
     background:white;
 
+    width:100%;
+
 }
 
 .social-field-number{
 
-    width:80px;
+    width:70px;
 
 }
 
-.social-multiselect-wrap{
+/* Dropdown compacto de múltipla seleção — fechado por padrão,
+   abre um painel flutuante com checkboxes ao clicar, pra não
+   estourar a altura da linha (era o problema do <select
+   multiple> aberto direto na célula). */
+.social-multiselect-dropdown{
 
-    display:flex;
+    position:relative;
 
-    flex-direction:column;
-
-    gap:4px;
-
-    align-items:flex-start;
+    display:inline-block;
 
 }
 
-.social-field-multiselect{
+.social-multiselect-toggle{
 
     border:1px solid var(--border);
 
     border-radius:6px;
 
-    font-size:.72rem;
+    padding:2px 6px;
+
+    font-size:.66rem;
 
     font-family:inherit;
 
-    min-width:150px;
+    background:white;
+
+    cursor:pointer;
+
+}
+
+.social-multiselect-toggle:hover{
+
+    background:#F6F7FB;
+
+}
+
+.social-multiselect-panel{
+
+    position:absolute;
+
+    top:100%;
+
+    left:0;
+
+    margin-top:2px;
+
+    background:white;
+
+    border:1px solid var(--border);
+
+    border-radius:8px;
+
+    box-shadow:0 6px 18px rgba(0,0,0,.15);
+
+    padding:8px;
+
+    z-index:25;
+
+    width:170px;
+
+    white-space:normal;
+
+}
+
+.social-multiselect-options{
+
+    max-height:150px;
+
+    overflow-y:auto;
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:3px;
+
+    margin-bottom:6px;
+
+}
+
+.social-multiselect-option{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:5px;
+
+    font-size:.68rem;
+
+    font-weight:400;
+
+    cursor:pointer;
 
 }
 
 .social-multiselect-save-btn{
 
-    font-size:.68rem;
+    font-size:.66rem;
 
     padding:3px 8px;
+
+    width:100%;
 
 }
 
 .social-generate-resumo-btn{
 
     white-space:nowrap;
+
+    font-size:.66rem;
 
 }
 
