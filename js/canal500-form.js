@@ -1003,6 +1003,7 @@ const Canal500Form = {
             "Jeanine Brandão <jeanine@canallike.com.br>",
             "CRISTIANE CAROLINE TRAVAGIM <cristiane.travagim@claro.com.br>",
             "Myriam Porto <myriam@canallike.com.br>",
+            "Mariana Lopes <mariana.lopes@canallike.com.br>",
             "Marketing <marketing@imusica.com.br>"
         ].join(",");
 
