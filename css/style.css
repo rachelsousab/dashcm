@@ -1642,15 +1642,31 @@ body.modal-open{
 
 }
 
-/* Só o Resumo da ação pode ter texto longo — quebra linha com
-   largura limitada, em vez de esticar a tabela inteira. */
+/* Resumo da ação — largura maior pra caber os nomes por
+   inteiro, com quebra de linha em vez de esticar a tabela. */
 .social-recent-table td:nth-child(2){
 
     white-space:normal;
 
     overflow-wrap:break-word;
 
-    max-width:170px;
+    min-width:230px;
+
+    max-width:230px;
+
+}
+
+/* Gravadora e Responsável — mais de um valor quebra em linhas
+   (ver renderMultiSelectCell) em vez de virar uma lista longa
+   separada por vírgula, então a coluna pode ficar mais estreita. */
+.social-recent-table td:nth-child(5),
+.social-recent-table td:nth-child(6){
+
+    white-space:normal;
+
+    overflow-wrap:break-word;
+
+    max-width:110px;
 
 }
 

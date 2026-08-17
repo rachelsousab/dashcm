@@ -226,7 +226,16 @@ const SocialRecentTable = {
         const value = post[field];
 
         if (value) {
-            return this.escapeHtml(value);
+
+            // Mais de um valor: uma linha por valor, em vez de
+            // uma lista separada por vírgula esticando a coluna.
+            return value
+                .split(",")
+                .map(v => v.trim())
+                .filter(Boolean)
+                .map(v => this.escapeHtml(v))
+                .join("<br>");
+
         }
 
         const uid = `sm-${index}-${field}`;
