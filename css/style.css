@@ -1729,7 +1729,7 @@ body.modal-open{
 
     position:relative;
 
-    display:inline-block;
+    display:block;
 
 }
 

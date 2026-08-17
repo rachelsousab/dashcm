@@ -340,7 +340,7 @@ normalize() {
             //-----------------------------------------
 
             postId:
-                this.toString(row["Post ID"]) ||
+                this.toString(row["Post_ID"]) ||
                 this.generateId(),
 
             //-----------------------------------------
