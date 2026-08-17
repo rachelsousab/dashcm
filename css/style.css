@@ -1612,67 +1612,45 @@ body.modal-open{
 
     overflow-x:auto;
 
+    /* ~4 linhas visíveis (um pouco menos que o padrão de 280px/
+       5 linhas usado em Ações/Canal 500) — o resto só rolando. */
+    max-height:245px;
+
 }
 
 .social-recent-table{
 
-    table-layout:fixed;
+    table-layout:auto;
 
 }
 
-.social-recent-table td,
 .social-recent-table th{
 
-    white-space:normal;
+    white-space:nowrap;
 
-    overflow-wrap:break-word;
+    font-size:.62rem;
+
+    padding:7px 8px;
+
+}
+
+.social-recent-table td{
+
+    white-space:nowrap;
 
     vertical-align:top;
 
 }
 
-.social-recent-table td:nth-child(1),
-.social-recent-table th:nth-child(1){
+/* Só o Resumo da ação pode ter texto longo — quebra linha com
+   largura limitada, em vez de esticar a tabela inteira. */
+.social-recent-table td:nth-child(2){
 
-    width:78px;
+    white-space:normal;
 
-}
+    overflow-wrap:break-word;
 
-.social-recent-table td:nth-child(2),
-.social-recent-table th:nth-child(2){
-
-    width:160px;
-
-}
-
-.social-recent-table td:nth-child(3),
-.social-recent-table th:nth-child(3),
-.social-recent-table td:nth-child(4),
-.social-recent-table th:nth-child(4){
-
-    width:110px;
-
-}
-
-.social-recent-table td:nth-child(5),
-.social-recent-table th:nth-child(5),
-.social-recent-table td:nth-child(6),
-.social-recent-table th:nth-child(6),
-.social-recent-table td:nth-child(7),
-.social-recent-table th:nth-child(7),
-.social-recent-table td:nth-child(8),
-.social-recent-table th:nth-child(8){
-
-    width:130px;
-
-}
-
-.social-recent-table td:nth-child(9),
-.social-recent-table th:nth-child(9),
-.social-recent-table td:nth-child(10),
-.social-recent-table th:nth-child(10){
-
-    width:90px;
+    max-width:170px;
 
 }
 

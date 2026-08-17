@@ -48,7 +48,14 @@ const SocialRecentTable = {
             "<th>Collab</th>" +
             "<th>Gênero</th>" +
             "<th>Reposts</th>" +
-            "<th>Começaram a seguir</th>";
+            "<th>Começaram a seguir</th>" +
+            "<th>Curtidas</th>" +
+            "<th>Comentários</th>" +
+            "<th>Compartilhamentos</th>" +
+            "<th>Salvamentos</th>" +
+            "<th>Visualizações</th>" +
+            "<th>Alcance</th>" +
+            "<th>Interações</th>";
 
         const bodyHtml = this._posts.map((post, index) => `
             <tr>
@@ -62,6 +69,13 @@ const SocialRecentTable = {
                 <td>${this.renderMultiSelectCell(post, index, "genero", CONFIG.SOCIAL_FORM.generos)}</td>
                 <td>${this.renderNumberCell(post, index, "reposts")}</td>
                 <td>${this.renderNumberCell(post, index, "seguidores")}</td>
+                <td>${this.formatMetric(post.curtidas)}</td>
+                <td>${this.formatMetric(post.comentarios)}</td>
+                <td>${this.formatMetric(post.compartilhamentos)}</td>
+                <td>${this.formatMetric(post.salvamentos)}</td>
+                <td>${this.formatMetric(post.visualizacoes)}</td>
+                <td>${this.formatMetric(post.alcance)}</td>
+                <td>${this.formatMetric(post.interacoes)}</td>
             </tr>
         `).join("");
 
@@ -82,6 +96,14 @@ const SocialRecentTable = {
         const especiais = CONFIG.MANUAL_ACTIONS.labelSpecialOptions.map(o => o.value);
 
         return [...gravadoras, ...especiais];
+
+    },
+
+    /* Métricas de engajamento — vêm automaticamente da API,
+       só leitura por aqui. */
+    formatMetric(value) {
+
+        return Number(value || 0).toLocaleString("pt-BR");
 
     },
 
