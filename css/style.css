@@ -1759,14 +1759,10 @@ body.modal-open{
 
 .social-multiselect-panel{
 
-    position:absolute;
-
-    top:100%;
-
-    left:0;
-
-    margin-top:2px;
-
+    /* position/top/left são definidos em JS na hora de abrir
+       (position:fixed, calculado a partir do botão) — assim o
+       painel escapa do scroll/corte da tabela em vez de ficar
+       cortado nas bordas dela. */
     background:white;
 
     border:1px solid var(--border);

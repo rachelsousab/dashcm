@@ -107,6 +107,36 @@ const SocialRecentTable = {
 
     },
 
+    /* Abre o painel do dropdown como position:fixed, calculado
+       a partir do botão que o abriu — assim ele escapa do
+       scroll/corte da tabela (overflow-x/y) em vez de ficar
+       cortado nas bordas dela, e sempre com o botão Salvar
+       visível (abre pra cima se não couber embaixo). */
+    positionPanel(toggle, panel) {
+
+        panel.style.display = "block";
+        panel.style.position = "fixed";
+        panel.style.visibility = "hidden";
+
+        const rect = toggle.getBoundingClientRect();
+        const panelHeight = panel.offsetHeight;
+        const panelWidth = panel.offsetWidth;
+
+        const spaceBelow = window.innerHeight - rect.bottom;
+        const openUp = spaceBelow < panelHeight + 8 && rect.top > panelHeight + 8;
+
+        panel.style.top = openUp
+            ? `${rect.top - panelHeight - 4}px`
+            : `${rect.bottom + 4}px`;
+
+        const maxLeft = window.innerWidth - panelWidth - 8;
+
+        panel.style.left = `${Math.min(rect.left, Math.max(8, maxLeft))}px`;
+
+        panel.style.visibility = "visible";
+
+    },
+
     /* Campos considerados "faltando" pra fins do aviso e do
        indicativo vermelho — Reposts/Começaram a seguir contam
        como faltando quando estão em 0 (a planilha não distingue
@@ -301,9 +331,11 @@ const SocialRecentTable = {
                 const isOpen = panel.style.display !== "none";
 
                 // Fecha qualquer outro painel aberto antes de abrir este.
-                Array.from(container.querySelectorAll(".social-multiselect-panel")).forEach(p => p.style.display = "none");
+                Array.from(document.querySelectorAll(".social-multiselect-panel")).forEach(p => p.style.display = "none");
 
-                panel.style.display = isOpen ? "none" : "block";
+                if (isOpen) return;
+
+                this.positionPanel(toggle, panel);
 
             });
 
@@ -314,6 +346,12 @@ const SocialRecentTable = {
             this._docCloseBound = true;
 
             document.addEventListener("click", () => {
+                Array.from(document.querySelectorAll(".social-multiselect-panel")).forEach(p => p.style.display = "none");
+            });
+
+            // Fecha o painel aberto se a tabela rolar — evita ele
+            // ficar "flutuando" desconectado da linha original.
+            document.getElementById("socialRecentPostsBox")?.addEventListener("scroll", () => {
                 Array.from(document.querySelectorAll(".social-multiselect-panel")).forEach(p => p.style.display = "none");
             });
 
