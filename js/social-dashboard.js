@@ -485,6 +485,8 @@ const posts = SocialMetrics.getPosts();
 
     this.renderDetailTable();
 
+    SocialRecentTable.render();
+
     return this;
 
 },

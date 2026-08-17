@@ -1604,6 +1604,127 @@ body.modal-open{
 
 }
 
+/* ===========================================================
+   REDES SOCIAIS — "Últimas postagens"
+=========================================================== */
+
+#socialRecentPostsBox{
+
+    overflow-x:auto;
+
+}
+
+.social-recent-table{
+
+    white-space:nowrap;
+
+}
+
+.social-missing-notice{
+
+    background:#FDECEA;
+
+    border:1px solid #F5C6CB;
+
+    color:#8B1E28;
+
+    border-radius:8px;
+
+    padding:8px 12px;
+
+    font-size:.8rem;
+
+    margin-bottom:10px;
+
+}
+
+.social-missing-badge{
+
+    display:inline-block;
+
+    background:#FDECEA;
+
+    color:#8B1E28;
+
+    font-size:.66rem;
+
+    font-weight:600;
+
+    padding:2px 6px;
+
+    border-radius:6px;
+
+    margin-bottom:4px;
+
+    white-space:normal;
+
+}
+
+.social-field-select,
+.social-field-number{
+
+    display:block;
+
+    border:1px solid var(--border);
+
+    border-radius:6px;
+
+    padding:3px 6px;
+
+    font-size:.72rem;
+
+    font-family:inherit;
+
+    background:white;
+
+}
+
+.social-field-number{
+
+    width:80px;
+
+}
+
+.social-multiselect-wrap{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:4px;
+
+    align-items:flex-start;
+
+}
+
+.social-field-multiselect{
+
+    border:1px solid var(--border);
+
+    border-radius:6px;
+
+    font-size:.72rem;
+
+    font-family:inherit;
+
+    min-width:150px;
+
+}
+
+.social-multiselect-save-btn{
+
+    font-size:.68rem;
+
+    padding:3px 8px;
+
+}
+
+.social-generate-resumo-btn{
+
+    white-space:nowrap;
+
+}
+
 .mini-edit-btn{
 
     background:none;

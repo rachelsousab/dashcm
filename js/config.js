@@ -117,6 +117,102 @@ const CONFIG = {
     },
 
     /* ==========================================
+       REDES SOCIAIS — edição manual de campos
+       ------------------------------------------
+       A maioria dos campos vem automaticamente da
+       API do Instagram, mas alguns (Formato, Tipo,
+       Resumo, Responsável, Gravadora, Collab,
+       Gênero, Reposts, Começaram a seguir) têm que
+       ser preenchidos à mão — ficam editáveis direto
+       na tabela "Últimas postagens" quando vazios.
+
+       webAppUrl: preencher depois que a Rachel
+       adaptar/implantar o Apps Script já existente
+       na planilha de Instagram.
+    ========================================== */
+
+    SOCIAL_FORM: {
+
+        webAppUrl: "",
+
+        sharedSecret: "DashCM2026SocialRachel",
+
+        formatos: [
+            "Reels",
+            "Carrossel",
+            "Imagem estática"
+        ],
+
+        tipos: [
+            "ID Lançamento",
+            "Trecho de clipe",
+            "Ação de feriados",
+            "Gravação externa",
+            "Participação em evento",
+            "Cobertura de show",
+            "Entrevista",
+            "Post genérico",
+            "Vídeo conceitual",
+            "Meme",
+            "Prêmio Claro música",
+            "No Radar",
+            "Desafio Claro música",
+            "Pauta quente",
+            "Institucional",
+            "Papo Claro música",
+            "Trend"
+        ],
+
+        responsaveis: [
+            "Rachel Sousa",
+            "Isabelle Rocha",
+            "Ana Clara Mendes",
+            "Vanessa Silva",
+            "Victoria Liscio",
+            "Rodrigo Rodriguez",
+            "Felipe Marques",
+            "Carol Ávila",
+            "Mariá Vecchi",
+            "Externo/Claro"
+        ],
+
+        collabs: [
+            "Collab artista",
+            "Collab fã clube",
+            "Collab portal",
+            "Collab gravadora",
+            "Collab influenciador",
+            "Collab Claro",
+            "Sem collab"
+        ],
+
+        generos: [
+            "Samba",
+            "Pagode",
+            "MPB",
+            "Pop",
+            "Funk",
+            "Reggaeton",
+            "Kpop",
+            "Eletrônica",
+            "Rock",
+            "Alternativo/indie",
+            "Outros",
+            "Reggae",
+            "Sertanejo",
+            "Pop inter",
+            "Rap/trap",
+            "Gospel",
+            "Nova MPB",
+            "Vários gêneros",
+            "Sem gênero definido/outros",
+            "Hip hop",
+            "Forró"
+        ]
+
+    },
+
+    /* ==========================================
        COMPANY
     ========================================== */
 
