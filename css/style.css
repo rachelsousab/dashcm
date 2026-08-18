@@ -2867,6 +2867,22 @@ main.full-width{
 
 }
 
+.social-table-scroll{
+
+    max-height:260px;
+
+    overflow-y:auto;
+
+    overflow-x:auto;
+
+}
+
+.social-table-scroll table{
+
+    font-size:.72rem;
+
+}
+
 .chart-more-toggle{
 
     display:none;

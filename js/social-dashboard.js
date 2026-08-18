@@ -674,40 +674,7 @@ renderKPIs(context) {
 
         this.renderGravadoraLegend(gravadora, colorMap);
 
-        // Posts em collab com artista, por gravadora — mesmas cores
-        // de gravadora usadas em toda a dashboard.
-        const collabArtistaPosts = SocialMetrics.getPosts().filter(post =>
-            splitMultiValue(post.collab).includes("Collab artista")
-        );
-
-        const collabArtistaByGravadora = {};
-
-        collabArtistaPosts.forEach(post => {
-
-            splitMultiValue(post.gravadora).forEach(nome => {
-                collabArtistaByGravadora[nome] = (collabArtistaByGravadora[nome] || 0) + 1;
-            });
-
-        });
-
-        const collabArtistaGroups = Object.entries(collabArtistaByGravadora)
-            .map(([nome, posts]) => ({ nome, posts }))
-            .sort((a, b) => b.posts - a.posts);
-
-        this.renderBarWithOverflow({
-            canvasId: "chart-social-collab-artista-gravadora",
-            items: collabArtistaGroups,
-            valueKey: "posts",
-            label: "Posts em collab com artista",
-            color: item => colorMap.get(item.nome) || SocialCharts.colors.gray,
-            onItemClick: g => {
-                const rows = SocialMetrics.getPosts().filter(post =>
-                    splitMultiValue(post.gravadora).includes(g.nome) &&
-                    splitMultiValue(post.collab).includes("Collab artista")
-                );
-                Dashboard.openDrilldown(rows, `Collab com artista: ${g.nome}`, this.drilldownColumns);
-            }
-        });
+        this.renderCollabArtistaPorGravadora(gravadora);
 
         // Distribuição de posts por responsável
         const responsavelGroups = SocialMetrics.groupBySplit("responsavel").sort((a, b) => b.posts - a.posts);
@@ -879,6 +846,100 @@ renderKPIs(context) {
         }
 
         container.innerHTML = html;
+
+    },
+
+    /* ======================================================
+       TABELA: Collab com artista por gravadora — mostra a
+       quantidade de posts em collab com artista ao lado do
+       total de posts da gravadora e dos posts em outros tipos
+       de collab, mais o % que collab com artista representa
+       do total de posts da gravadora.
+    ====================================================== */
+
+    renderCollabArtistaPorGravadora(gravadoraGroups) {
+
+        const container = document.getElementById("socialCollabArtistaGravadoraTable");
+
+        if (!container) return;
+
+        const posts = SocialMetrics.getPosts();
+
+        const fmt = n => Math.round(n || 0).toLocaleString("pt-BR");
+
+        const fmtPct = n => `${(n || 0).toFixed(1)}%`;
+
+        const rows = gravadoraGroups.map(g => {
+
+            const postsGravadora = posts.filter(post =>
+                splitMultiValue(post.gravadora).includes(g.nome)
+            );
+
+            const collabArtista = postsGravadora.filter(post =>
+                splitMultiValue(post.collab).includes("Collab artista")
+            ).length;
+
+            const outrosCollabs = postsGravadora.filter(post => {
+
+                const collabs = splitMultiValue(post.collab);
+
+                return collabs.some(c => c && c !== "Collab artista" && c !== "Sem collab");
+
+            }).length;
+
+            const total = postsGravadora.length;
+
+            const pct = total ? (collabArtista / total) * 100 : 0;
+
+            return { nome: g.nome, total, collabArtista, outrosCollabs, pct };
+
+        }).sort((a, b) => b.collabArtista - a.collabArtista);
+
+        const body = rows.map(r => `
+            <tr>
+                <td class="action-name">${r.nome}</td>
+                <td>${fmt(r.total)}</td>
+                <td>${fmt(r.collabArtista)}</td>
+                <td>${fmt(r.outrosCollabs)}</td>
+                <td>${fmtPct(r.pct)}</td>
+            </tr>
+        `).join("");
+
+        container.innerHTML = `
+            <table class="goals-table">
+                <thead>
+                    <tr>
+                        <th>Gravadora</th>
+                        <th>Total de posts</th>
+                        <th>Collab com artista</th>
+                        <th>Outros tipos de collab</th>
+                        <th>% collab com artista</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${body}
+                </tbody>
+            </table>
+        `;
+
+        Array.from(container.querySelectorAll("tbody tr")).forEach((tr, index) => {
+
+            tr.style.cursor = "pointer";
+
+            tr.addEventListener("click", () => {
+
+                const nome = rows[index].nome;
+
+                const drillRows = posts.filter(post =>
+                    splitMultiValue(post.gravadora).includes(nome) &&
+                    splitMultiValue(post.collab).includes("Collab artista")
+                );
+
+                Dashboard.openDrilldown(drillRows, `Collab com artista: ${nome}`, this.drilldownColumns);
+
+            });
+
+        });
 
     },
 
