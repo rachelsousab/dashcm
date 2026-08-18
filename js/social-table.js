@@ -6,6 +6,10 @@ const SocialTable = {
 
     annualData: {},
 
+    sourcePosts: [],
+
+    drilldownColumns: [],
+
     rows: [
 
         {
@@ -221,7 +225,35 @@ render() {
 
     `;
 
+    this.bindEvents();
+
     return this;
+
+},
+
+bindEvents() {
+
+    this.container
+        .querySelectorAll(".metric-cell-clickable")
+        .forEach(cell => {
+
+            cell.addEventListener("click", () => {
+
+                const month = cell.dataset.month;
+
+                const rows = month === "all"
+                    ? this.sourcePosts
+                    : this.sourcePosts.filter(post => post.mes === Number(month));
+
+                const title = month === "all"
+                    ? "Posts do ano"
+                    : `Posts de ${SocialData.getMonthName(Number(month))}`;
+
+                Dashboard.openDrilldown(rows, title, this.drilldownColumns);
+
+            });
+
+        });
 
 },
 
@@ -390,6 +422,8 @@ renderCell(field) {
 
     };
 
+    const clickable = field === "posts";
+
     this.monthlyData.forEach((month, index) => {
 
         const value = month[field] || 0;
@@ -398,9 +432,13 @@ renderCell(field) {
             ? this.monthlyData[index - 1][field]
             : null;
 
+        const cellAttrs = clickable
+            ? ` class="metric-cell-clickable" data-month="${index + 1}"`
+            : "";
+
         html += `
 
-            <td><span class="metric-value">${field === "taxaEngajamento"
+            <td${cellAttrs}><span class="metric-value">${field === "taxaEngajamento"
 
                         ? this.formatPercent(value)
 
@@ -412,9 +450,13 @@ renderCell(field) {
 
     const annual = kpis[fieldMap[field]] ?? 0;
 
+    const annualAttrs = clickable
+        ? ` class="annual metric-cell-clickable" data-month="all"`
+        : ` class="annual"`;
+
     html += `
 
-        <td class="annual">
+        <td${annualAttrs}>
 
             ${field === "taxaEngajamento"
 

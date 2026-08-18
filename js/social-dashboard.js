@@ -509,6 +509,10 @@ const posts = SocialMetrics.getPosts();
 
         SocialTable.annualData = SocialMetrics.getKPIs(tablePosts);
 
+        SocialTable.sourcePosts = tablePosts;
+
+        SocialTable.drilldownColumns = this.drilldownColumns;
+
         SocialTable.render();
 
     },

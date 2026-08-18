@@ -2684,6 +2684,24 @@ main.full-width{
 
 }
 
+.social-table td.metric-cell-clickable{
+
+    cursor:pointer;
+
+}
+
+.social-table td.metric-cell-clickable:hover{
+
+    background:#FDEBEC;
+
+}
+
+.social-table td.metric-cell-clickable:hover .metric-value{
+
+    color:var(--primary);
+
+}
+
 /* ==========================================================
    REDES SOCIAIS
 ========================================================== */
