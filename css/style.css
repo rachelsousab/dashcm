@@ -1688,6 +1688,24 @@ body.modal-open{
 
 }
 
+.social-missing-ok{
+
+    background:#E9F7EE;
+
+    border:1px solid #BFE6CC;
+
+    color:#1E7A3D;
+
+    border-radius:8px;
+
+    padding:8px 12px;
+
+    font-size:.8rem;
+
+    margin-bottom:10px;
+
+}
+
 .social-missing-badge{
 
     display:inline-block;

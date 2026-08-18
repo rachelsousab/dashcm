@@ -32,14 +32,16 @@ const SocialRecentTable = {
 
         if (!container) return;
 
-        this._posts = [...SocialData.getPosts()].sort((a, b) => b.timestamp - a.timestamp);
+        const allPosts = SocialData.getPosts();
 
-        const missingCount = this._posts.filter(post => this.getMissingFields(post).length > 0).length;
+        this._posts = allPosts
+            .filter(post => this.getMissingFields(post).length > 0)
+            .sort((a, b) => b.timestamp - a.timestamp);
 
-        this.renderMissingNotice(missingCount);
+        this.renderMissingNotice(this._posts.length, allPosts.length);
 
         if (!this._posts.length) {
-            container.innerHTML = "<p class='maf-empty'>Nenhum post carregado.</p>";
+            container.innerHTML = "";
             return;
         }
 
@@ -179,17 +181,20 @@ const SocialRecentTable = {
 
     },
 
-    renderMissingNotice(count) {
+    renderMissingNotice(count, totalPosts) {
 
         const el = document.getElementById("socialMissingNotice");
+        const okEl = document.getElementById("socialMissingOk");
 
-        if (!el) return;
+        if (!el || !okEl) return;
 
         if (!count) {
             el.style.display = "none";
+            okEl.style.display = totalPosts ? "" : "none";
             return;
         }
 
+        okEl.style.display = "none";
         el.style.display = "";
         el.textContent = `${count} ${count === 1 ? "ação" : "ações"} com informações faltantes. O Instagram não consegue importar todas automaticamente. Favor adicionar de forma manual.`;
 
