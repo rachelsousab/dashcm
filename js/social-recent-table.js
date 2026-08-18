@@ -201,8 +201,9 @@ const SocialRecentTable = {
     },
 
     /* ======================================================
-       RESUMO — botão "Gerar resumo" (escreve a fórmula =AI(...)
-       na planilha via Apps Script) quando ainda está vazio.
+       RESUMO — campo de texto livre, preenchido manualmente
+       (a IA do Sheets/Gemini não está disponível pra essa
+       conta, então não há geração automática).
     ====================================================== */
     renderResumoCell(post, index) {
 
@@ -210,13 +211,12 @@ const SocialRecentTable = {
             return this.escapeHtml(post.resumo);
         }
 
-        if (post._resumoPending) {
-            return `<span class="social-missing-badge">Solicitado — confira na planilha em alguns minutos.</span>`;
-        }
-
         return `
             <span class="social-missing-badge">Informação faltante</span>
-            <button type="button" class="mini-edit-btn social-generate-resumo-btn" data-index="${index}" title="Gerar resumo">✨ Gerar resumo</button>
+            <div class="social-text-wrap">
+                <input type="text" class="social-field-text" data-index="${index}" data-field="resumo" placeholder="Resumo da ação">
+                <button type="button" class="data-table-csv-btn social-text-save-btn" data-index="${index}" data-field="resumo">Salvar</button>
+            </div>
         `;
 
     },
@@ -305,21 +305,41 @@ const SocialRecentTable = {
     ====================================================== */
     bindEvents(container) {
 
-        Array.from(container.querySelectorAll(".social-generate-resumo-btn")).forEach(btn => {
+        Array.from(container.querySelectorAll(".social-text-save-btn")).forEach(btn => {
 
             btn.addEventListener("click", () => {
 
-                const post = this._posts[Number(btn.dataset.index)];
+                const index = Number(btn.dataset.index);
+                const field = btn.dataset.field;
+                const post = this._posts[index];
+                const input = container.querySelector(`.social-field-text[data-index="${index}"][data-field="${field}"]`);
 
-                btn.disabled = true;
-                btn.textContent = "Gerando...";
+                const value = (input.value || "").trim();
 
-                SocialForm.generateResumo(post).then(() => {
+                if (!value) return;
 
-                    post._resumoPending = true;
-                    this.render();
+                SocialForm.updateField(post, field, value);
 
-                });
+                post[field] = value;
+
+                this.render();
+
+            });
+
+        });
+
+        Array.from(container.querySelectorAll(".social-field-text")).forEach(input => {
+
+            input.addEventListener("keydown", (event) => {
+
+                if (event.key !== "Enter") return;
+
+                event.preventDefault();
+
+                const index = input.dataset.index;
+                const field = input.dataset.field;
+
+                container.querySelector(`.social-text-save-btn[data-index="${index}"][data-field="${field}"]`).click();
 
             });
 

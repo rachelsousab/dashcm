@@ -43,24 +43,6 @@ const SocialForm = {
     },
 
     /**
-     * Botão "Gerar resumo" — pede pro Apps Script escrever a
-     * fórmula =AI(...) na célula "Resumo da ação" dessa linha,
-     * referenciando a célula de Legenda da própria linha. A
-     * fórmula em si (e a referência de célula) é montada no
-     * Apps Script, que sabe a linha/coluna reais da planilha —
-     * aqui só mandamos o postId.
-     */
-    generateResumo(post) {
-
-        return this.sendPayload({
-            token: CONFIG.SOCIAL_FORM.sharedSecret,
-            mode: "generateResumo",
-            postId: post.postId
-        });
-
-    },
-
-    /**
      * Envia o payload pro Apps Script (mesmo padrão "no-cors"
      * usado em Ações Manuais e Canal 500). Se a URL ainda não
      * foi configurada, não tenta mandar nada — só avisa no
