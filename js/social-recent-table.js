@@ -418,7 +418,11 @@ const SocialRecentTable = {
 
         });
 
-        /* Seleção única (Formato/Tipo): clicar já salva e fecha. */
+        /* Seleção única (Formato/Tipo): clicar já salva e fecha.
+           Atualização otimista — a tela já reflete a escolha na
+           hora, sem esperar o Apps Script responder (esse round
+           trip costuma levar alguns segundos, e travar a tela
+           até ele voltar é o que deixava o preenchimento lento). */
         Array.from(container.querySelectorAll(".social-dropdown-option-btn")).forEach(optionBtn => {
 
             optionBtn.addEventListener("click", () => {
@@ -427,18 +431,11 @@ const SocialRecentTable = {
                 const field = optionBtn.dataset.field;
                 const value = optionBtn.dataset.value;
 
-                optionBtn.disabled = true;
-
                 SocialForm.updateField(post, field, value)
-                    .then(() => {
-                        post[field] = value;
-                        this.render();
-                    })
-                    .catch(error => {
-                        console.error(error);
-                        alert("Não foi possível salvar. Tente de novo.");
-                        optionBtn.disabled = false;
-                    });
+                    .catch(error => console.error(error));
+
+                post[field] = value;
+                this.render();
 
             });
 
@@ -462,18 +459,11 @@ const SocialRecentTable = {
                     return;
                 }
 
-                btn.disabled = true;
-
                 SocialForm.updateField(post, field, values)
-                    .then(() => {
-                        post[field] = values.join(", ");
-                        this.render();
-                    })
-                    .catch(error => {
-                        console.error(error);
-                        alert("Não foi possível salvar. Tente de novo.");
-                        btn.disabled = false;
-                    });
+                    .catch(error => console.error(error));
+
+                post[field] = values.join(", ");
+                this.render();
 
             });
 
@@ -499,21 +489,12 @@ const SocialRecentTable = {
 
                 const value = Number(input.value);
 
-                btn.disabled = true;
-                input.disabled = true;
-
                 SocialForm.updateField(post, field, value)
-                    .then(() => {
-                        post[field] = value;
-                        post[setFlag] = true;
-                        this.render();
-                    })
-                    .catch(error => {
-                        console.error(error);
-                        alert("Não foi possível salvar. Tente de novo.");
-                        btn.disabled = false;
-                        input.disabled = false;
-                    });
+                    .catch(error => console.error(error));
+
+                post[field] = value;
+                post[setFlag] = true;
+                this.render();
 
             });
 
