@@ -857,6 +857,14 @@ renderKPIs(context) {
        do total de posts da gravadora.
     ====================================================== */
 
+    collabGravadoraColumns: [
+        { field: "nome", label: "Gravadora", metric: "total" },
+        { field: "total", label: "Total de posts", metric: "total" },
+        { field: "collabArtista", label: "Collab com artista", metric: "collabArtista" },
+        { field: "outrosCollabs", label: "Outros tipos de collab", metric: "outros" },
+        { field: "pct", label: "% collab com artista", metric: "collabArtista" }
+    ],
+
     renderCollabArtistaPorGravadora(gravadoraGroups) {
 
         const container = document.getElementById("socialCollabArtistaGravadoraTable");
@@ -864,10 +872,6 @@ renderKPIs(context) {
         if (!container) return;
 
         const posts = SocialMetrics.getPosts();
-
-        const fmt = n => Math.round(n || 0).toLocaleString("pt-BR");
-
-        const fmtPct = n => `${(n || 0).toFixed(1)}%`;
 
         const rows = gravadoraGroups.map(g => {
 
@@ -893,53 +897,162 @@ renderKPIs(context) {
 
             return { nome: g.nome, total, collabArtista, outrosCollabs, pct };
 
-        }).sort((a, b) => b.collabArtista - a.collabArtista);
+        });
 
-        const body = rows.map(r => `
+        this._collabGravadoraContainer = container;
+        this._collabGravadoraRows = rows;
+        this._collabGravadoraPosts = posts;
+
+        if (!this._collabGravadoraSort) {
+            this._collabGravadoraSort = { field: "pct", dir: "desc" };
+        }
+
+        this.drawCollabArtistaPorGravadora();
+
+    },
+
+    drawCollabArtistaPorGravadora() {
+
+        const container = this._collabGravadoraContainer;
+        const posts = this._collabGravadoraPosts;
+
+        if (!container || !this._collabGravadoraRows) return;
+
+        const activeInput = container.querySelector("#collabGravadoraFilterInput");
+        const hadFocus = activeInput && document.activeElement === activeInput;
+        const caret = hadFocus ? activeInput.selectionStart : null;
+
+        const fmt = n => Math.round(n || 0).toLocaleString("pt-BR");
+
+        const fmtPct = n => `${(n || 0).toFixed(1)}%`;
+
+        const filterText = (this._collabGravadoraFilter || "").trim().toLowerCase();
+
+        const filtered = filterText
+            ? this._collabGravadoraRows.filter(r => r.nome.toLowerCase().includes(filterText))
+            : this._collabGravadoraRows;
+
+        const { field, dir } = this._collabGravadoraSort;
+
+        const rows = [...filtered].sort((a, b) => {
+
+            const diff = field === "nome"
+                ? a.nome.localeCompare(b.nome, "pt-BR", { sensitivity: "base" })
+                : a[field] - b[field];
+
+            return dir === "asc" ? diff : -diff;
+
+        });
+
+        const headerHtml = this.collabGravadoraColumns.map(col => {
+
+            const active = field === col.field;
+            const arrow = active ? (dir === "asc" ? " ▲" : " ▼") : "";
+
+            return `<th class="social-sortable-th" data-field="${col.field}">${col.label}${arrow}</th>`;
+
+        }).join("");
+
+        const bodyHtml = rows.map(r => `
             <tr>
-                <td class="action-name">${r.nome}</td>
-                <td>${fmt(r.total)}</td>
-                <td>${fmt(r.collabArtista)}</td>
-                <td>${fmt(r.outrosCollabs)}</td>
-                <td>${fmtPct(r.pct)}</td>
+                <td class="action-name social-cell-clickable" data-metric="total">${r.nome}</td>
+                <td class="social-cell-clickable" data-metric="total">${fmt(r.total)}</td>
+                <td class="social-cell-clickable" data-metric="collabArtista">${fmt(r.collabArtista)}</td>
+                <td class="social-cell-clickable" data-metric="outros">${fmt(r.outrosCollabs)}</td>
+                <td class="social-cell-clickable" data-metric="collabArtista">${fmtPct(r.pct)}</td>
             </tr>
         `).join("");
 
         container.innerHTML = `
-            <table class="goals-table">
-                <thead>
-                    <tr>
-                        <th>Gravadora</th>
-                        <th>Total de posts</th>
-                        <th>Collab com artista</th>
-                        <th>Outros tipos de collab</th>
-                        <th>% collab com artista</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    ${body}
-                </tbody>
-            </table>
+            <input type="text" class="social-table-filter" id="collabGravadoraFilterInput" placeholder="Buscar gravadora..." value="${this.escapeAttrValue(this._collabGravadoraFilter || "")}">
+            <div class="social-table-scroll">
+                <table class="goals-table social-collab-gravadora-table">
+                    <thead>
+                        <tr>${headerHtml}</tr>
+                    </thead>
+                    <tbody>
+                        ${bodyHtml}
+                    </tbody>
+                </table>
+            </div>
         `;
 
-        Array.from(container.querySelectorAll("tbody tr")).forEach((tr, index) => {
+        container.querySelectorAll(".social-sortable-th").forEach(th => {
 
-            tr.style.cursor = "pointer";
+            th.addEventListener("click", () => {
 
-            tr.addEventListener("click", () => {
+                const clickedField = th.dataset.field;
 
-                const nome = rows[index].nome;
+                if (this._collabGravadoraSort.field === clickedField) {
+                    this._collabGravadoraSort.dir = this._collabGravadoraSort.dir === "asc" ? "desc" : "asc";
+                } else {
+                    this._collabGravadoraSort = { field: clickedField, dir: "desc" };
+                }
 
-                const drillRows = posts.filter(post =>
-                    splitMultiValue(post.gravadora).includes(nome) &&
-                    splitMultiValue(post.collab).includes("Collab artista")
-                );
-
-                Dashboard.openDrilldown(drillRows, `Collab com artista: ${nome}`, this.drilldownColumns);
+                this.drawCollabArtistaPorGravadora();
 
             });
 
         });
+
+        const filterInput = container.querySelector("#collabGravadoraFilterInput");
+
+        if (hadFocus) {
+            filterInput.focus();
+            filterInput.setSelectionRange(caret, caret);
+        }
+
+        filterInput.addEventListener("input", () => {
+
+            this._collabGravadoraFilter = filterInput.value;
+
+            this.drawCollabArtistaPorGravadora();
+
+        });
+
+        Array.from(container.querySelectorAll("tbody tr")).forEach((tr, index) => {
+
+            const nome = rows[index].nome;
+
+            Array.from(tr.querySelectorAll("td.social-cell-clickable")).forEach(td => {
+
+                td.addEventListener("click", () => {
+
+                    const metric = td.dataset.metric;
+
+                    const drillRows = posts.filter(post => {
+
+                        if (!splitMultiValue(post.gravadora).includes(nome)) return false;
+
+                        if (metric === "total") return true;
+
+                        const collabs = splitMultiValue(post.collab);
+
+                        if (metric === "collabArtista") return collabs.includes("Collab artista");
+
+                        return collabs.some(c => c && c !== "Collab artista" && c !== "Sem collab");
+
+                    });
+
+                    const titleMap = {
+                        total: `Posts: ${nome}`,
+                        collabArtista: `Collab com artista: ${nome}`,
+                        outros: `Outros tipos de collab: ${nome}`
+                    };
+
+                    Dashboard.openDrilldown(drillRows, titleMap[metric], this.drilldownColumns);
+
+                });
+
+            });
+
+        });
+
+    },
+
+    escapeAttrValue(value) {
+
+        return String(value || "").replace(/"/g, "&quot;");
 
     },
 

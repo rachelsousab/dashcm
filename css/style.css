@@ -2919,6 +2919,68 @@ main.full-width{
 
 }
 
+.social-table-filter{
+
+    width:100%;
+
+    box-sizing:border-box;
+
+    border:1px solid var(--border);
+
+    border-radius:6px;
+
+    padding:5px 8px;
+
+    font-size:.72rem;
+
+    margin-bottom:8px;
+
+}
+
+.social-collab-gravadora-table thead th{
+
+    position:sticky;
+
+    top:0;
+
+    z-index:2;
+
+    font-size:.62rem;
+
+    padding:6px 5px;
+
+    white-space:nowrap;
+
+}
+
+.social-sortable-th{
+
+    cursor:pointer;
+
+    user-select:none;
+
+}
+
+.social-sortable-th:hover{
+
+    background:#1a1a1a;
+
+}
+
+.social-cell-clickable{
+
+    cursor:pointer;
+
+}
+
+.social-cell-clickable:hover{
+
+    background:#FDEBEC;
+
+    color:var(--primary);
+
+}
+
 .chart-more-toggle{
 
     display:none;
