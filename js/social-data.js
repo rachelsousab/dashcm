@@ -397,6 +397,12 @@ normalize() {
             reposts:
                 this.parseNumber(row["Reposts"]),
 
+            // "0" digitado de propósito é diferente de célula vazia —
+            // guarda se a célula tinha algum texto (mesmo "0"), pra
+            // não tratar um zero de verdade como "faltando".
+            repostsSet:
+                this.toString(row["Reposts"]) !== "",
+
             compartilhamentos:
                 this.parseNumber(row["Compartilhamentos"]),
 
@@ -411,6 +417,9 @@ normalize() {
 
             seguidores:
                 this.parseNumber(row["Começaram a seguir"]),
+
+            seguidoresSet:
+                this.toString(row["Começaram a seguir"]) !== "",
 
             interacoes:
                 this.parseNumber(row["Interações"]),

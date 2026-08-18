@@ -157,9 +157,10 @@ const SocialRecentTable = {
     },
 
     /* Campos considerados "faltando" pra fins do aviso e do
-       indicativo vermelho — Reposts/Começaram a seguir contam
-       como faltando quando estão em 0 (a planilha não distingue
-       "zero de verdade" de "ainda não preenchido" por aqui). */
+       indicativo vermelho. Reposts/Começaram a seguir usam o
+       flag *Set (célula tinha algum texto, mesmo "0") em vez do
+       valor em si — assim um zero de verdade não é tratado como
+       "faltando" pra sempre. */
     getMissingFields(post) {
 
         const missing = [];
@@ -171,8 +172,8 @@ const SocialRecentTable = {
         if (!post.gravadora) missing.push("gravadora");
         if (!post.collab) missing.push("collab");
         if (!post.genero) missing.push("genero");
-        if (!post.reposts) missing.push("reposts");
-        if (!post.seguidores) missing.push("seguidores");
+        if (!post.repostsSet) missing.push("reposts");
+        if (!post.seguidoresSet) missing.push("seguidores");
 
         return missing;
 
@@ -278,13 +279,18 @@ const SocialRecentTable = {
     ====================================================== */
     renderNumberCell(post, index, field) {
 
-        if (post[field]) {
+        const setFlag = field === "reposts" ? "repostsSet" : "seguidoresSet";
+
+        if (post[setFlag]) {
             return Number(post[field]).toLocaleString("pt-BR");
         }
 
         return `
             <span class="social-missing-badge">Informação faltante</span>
-            <input type="number" min="0" class="social-field-number" data-index="${index}" data-field="${field}" placeholder="0">
+            <div class="social-number-wrap">
+                <input type="number" min="0" class="social-field-number" data-index="${index}" data-field="${field}" placeholder="0">
+                <button type="button" class="data-table-csv-btn social-number-save-btn" data-index="${index}" data-field="${field}">Salvar</button>
+            </div>
         `;
 
     },
@@ -448,40 +454,59 @@ const SocialRecentTable = {
 
         });
 
-        Array.from(container.querySelectorAll(".social-field-number")).forEach(input => {
+        Array.from(container.querySelectorAll(".social-number-save-btn")).forEach(btn => {
 
-            const save = () => {
+            btn.addEventListener("click", () => {
 
-                const index = Number(input.dataset.index);
-                const field = input.dataset.field;
+                const index = Number(btn.dataset.index);
+                const field = btn.dataset.field;
                 const post = this._posts[index];
+                const setFlag = field === "reposts" ? "repostsSet" : "seguidoresSet";
+
+                const input = container.querySelector(`.social-field-number[data-index="${index}"][data-field="${field}"]`);
+
+                // "" (nada digitado) continua inválido, mas "0" é uma
+                // resposta legítima — só bloqueia texto vazio ou negativo.
+                if (input.value === "" || Number(input.value) < 0) {
+                    alert("Preencha um número (pode ser 0).");
+                    return;
+                }
 
                 const value = Number(input.value);
 
-                if (!value || value <= 0) return;
-
+                btn.disabled = true;
                 input.disabled = true;
 
                 SocialForm.updateField(post, field, value)
                     .then(() => {
                         post[field] = value;
+                        post[setFlag] = true;
                         this.render();
                     })
                     .catch(error => {
                         console.error(error);
                         alert("Não foi possível salvar. Tente de novo.");
+                        btn.disabled = false;
                         input.disabled = false;
                     });
 
-            };
+            });
 
-            input.addEventListener("blur", save);
+        });
+
+        Array.from(container.querySelectorAll(".social-field-number")).forEach(input => {
 
             input.addEventListener("keydown", (event) => {
-                if (event.key === "Enter") {
-                    event.preventDefault();
-                    save();
-                }
+
+                if (event.key !== "Enter") return;
+
+                event.preventDefault();
+
+                const index = input.dataset.index;
+                const field = input.dataset.field;
+
+                container.querySelector(`.social-number-save-btn[data-index="${index}"][data-field="${field}"]`)?.click();
+
             });
 
         });

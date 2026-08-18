@@ -1736,6 +1736,26 @@ body.modal-open{
 
 }
 
+.social-number-wrap{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:4px;
+
+}
+
+.social-number-save-btn{
+
+    font-size:.62rem;
+
+    padding:2px 6px;
+
+    white-space:nowrap;
+
+}
+
 /* Dropdown compacto de múltipla seleção — fechado por padrão,
    abre um painel flutuante com checkboxes ao clicar, pra não
    estourar a altura da linha (era o problema do <select
