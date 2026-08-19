@@ -20,13 +20,15 @@ const ReportCoverDownload = {
 
     _rows: [],
     _formatCountry: (pais) => pais,
+    _meta: {},
     _zipUrl: "",
     _bound: false,
 
-    open(rows, formatCountry) {
+    open(rows, formatCountry, meta) {
 
         this._rows = rows;
         this._formatCountry = formatCountry || ((pais) => pais);
+        this._meta = meta || {};
         this._zipUrl = "";
 
         this.bindEvents();
@@ -109,7 +111,7 @@ const ReportCoverDownload = {
             semana: row.semana
         }));
 
-        const url = `${CONFIG.COVERS_DOWNLOAD.webAppUrl}?action=buscarCapas&rows=${encodeURIComponent(JSON.stringify(payload))}`;
+        const url = `${CONFIG.COVERS_DOWNLOAD.webAppUrl}?action=buscarCapas&rows=${encodeURIComponent(JSON.stringify(payload))}&zipName=${encodeURIComponent(this.buildZipName())}`;
 
         fetch(url)
             .then(response => response.json())
@@ -196,6 +198,27 @@ const ReportCoverDownload = {
         }
 
         body.innerHTML = html;
+
+    },
+
+    /**
+     * "Território - Gravadora - Semana" (ex.: "LatAm - ONErpm -
+     * 14-08-2026") — sem barra na data (Windows não aceita "/"
+     * em nome de arquivo) e sem outros caracteres especiais que
+     * possam vir da gravadora (ex.: "DMusic / AWAL").
+     */
+    buildZipName() {
+
+        const { territorio, gravadora, semana } = this._meta;
+
+        const semanaSlug = String(semana || "").replace(/\//g, "-");
+
+        const raw = `${territorio || ""} - ${gravadora || "Todas"} - ${semanaSlug}`;
+
+        return raw
+            .replace(/[\\/:*?"<>|]/g, "")
+            .replace(/\s+/g, " ")
+            .trim();
 
     },
 

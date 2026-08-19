@@ -222,7 +222,13 @@ const ReportDashboard = {
                 return;
             }
 
-            ReportCoverDownload.open(rows, this.formatCountry.bind(this));
+            ReportCoverDownload.open(rows, this.formatCountry.bind(this), {
+
+                territorio: this.filters.territorio,
+                gravadora: this.filters.gravadora || "Todas",
+                semana: this.filters.semana
+
+            });
 
         });
 

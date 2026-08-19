@@ -37,7 +37,7 @@ const CONFIG = {
     // Vazio até a Rachel implantar o script e colar a URL aqui.
     COVERS_DOWNLOAD: {
 
-    webAppUrl: ""
+    webAppUrl: "https://script.google.com/macros/s/AKfycbxFSvBkx_NVx420H_gFbTqNFy-3UMa2I0I_N1oDScx04wpzKVEqO89rSLueVwcmiSQv/exec"
 
 },
 
