@@ -32,6 +32,15 @@ const CONFIG = {
 
 },
 
+    // Web App (Apps Script) que busca as capas no Drive e devolve
+    // um .zip — feature em teste, ver js/report-cover-download.js.
+    // Vazio até a Rachel implantar o script e colar a URL aqui.
+    COVERS_DOWNLOAD: {
+
+    webAppUrl: ""
+
+},
+
     HIGHLIGHTS_DATA: {
 
     csvUrl:

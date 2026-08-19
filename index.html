@@ -1031,6 +1031,34 @@
 
 </div>
 
+<!-- ========================================================= -->
+<!-- MODAL: Download de capas (Gerador de Reporte) -->
+<!-- ========================================================= -->
+
+<div id="reportCoverDownloadModal" class="drilldown-modal">
+
+    <div class="drilldown-box maf-form-box" style="max-width:820px;">
+
+        <div class="drilldown-header">
+            <div class="maf-form-header-left">
+                <h3>Download de capas (em teste)</h3>
+                <span id="reportCoverDownloadSubtitle" class="maf-form-subtitle"></span>
+            </div>
+            <button id="reportCoverDownloadClose" class="drilldown-close" aria-label="Fechar">✕</button>
+        </div>
+
+        <div id="reportCoverDownloadBody" class="maf-form-body">
+        </div>
+
+        <div class="maf-form-footer">
+            <button type="button" id="reportCoverDownloadCancelBtn" class="data-table-csv-btn">Fechar</button>
+            <button type="button" id="reportCoverDownloadZipBtn" class="data-table-link-btn" disabled>⬇️ Baixar tudo (.zip)</button>
+        </div>
+
+    </div>
+
+</div>
+
 <!--NOVA PÁGINA - REPORT GRAVADORAS (NATIVO)-->
 <div id="page-labels" class="page">
 
@@ -1667,6 +1695,8 @@
 
         <button type="button" id="reportCoverPromptBtn" class="data-table-csv-btn">🖼️ Copiar prompt de capas</button>
 
+        <button type="button" id="reportDownloadCoverBtn" class="data-table-csv-btn">⬇️ Download capas (em teste)</button>
+
         <span class="report-count" id="reportCount"></span>
 
     </div>
@@ -2099,6 +2129,8 @@
     <script src="js/analises-dashboard.js"></script>
 
     <script src="js/report-dashboard.js"></script>
+
+    <script src="js/report-cover-download.js"></script>
 
     <script src="js/manual-actions.js"></script>
 

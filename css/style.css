@@ -4827,6 +4827,138 @@ table.report-table td.report-link-col{
 
 }
 
+.cover-download-status{
+
+    text-align:center;
+
+    color:#666;
+
+    padding:24px 0;
+
+}
+
+.cover-download-status.cover-download-error{
+
+    color:var(--primary);
+
+}
+
+.cover-download-grid{
+
+    display:grid;
+
+    grid-template-columns:repeat(auto-fill, minmax(140px, 1fr));
+
+    gap:12px;
+
+    margin-bottom:16px;
+
+}
+
+.cover-download-card{
+
+    border:1px solid var(--border);
+
+    border-radius:10px;
+
+    overflow:hidden;
+
+    background:#fff;
+
+}
+
+.cover-download-card img{
+
+    width:100%;
+
+    aspect-ratio:1/1;
+
+    object-fit:cover;
+
+    display:block;
+
+    background:#F0F0F3;
+
+}
+
+.cover-download-card-info{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:2px;
+
+    padding:8px;
+
+    font-size:.68rem;
+
+}
+
+.cover-download-card-info strong{
+
+    color:var(--primary);
+
+    font-size:.7rem;
+
+}
+
+.cover-download-card-artist{
+
+    color:#666;
+
+}
+
+.cover-download-card-filename{
+
+    color:#999;
+
+    font-size:.6rem;
+
+    overflow:hidden;
+
+    text-overflow:ellipsis;
+
+    white-space:nowrap;
+
+}
+
+.cover-download-missing{
+
+    background:#FDECEA;
+
+    border:1px solid #F5C6CB;
+
+    border-radius:8px;
+
+    padding:10px 14px;
+
+}
+
+.cover-download-missing-title{
+
+    color:#8B1E28;
+
+    font-weight:600;
+
+    margin-bottom:6px;
+
+    font-size:.78rem;
+
+}
+
+.cover-download-missing ul{
+
+    margin:0;
+
+    padding-left:18px;
+
+    font-size:.72rem;
+
+    color:#8B1E28;
+
+}
+
 .maf-form-footer button:disabled{
 
     opacity:.5;
