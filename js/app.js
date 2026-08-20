@@ -355,12 +355,6 @@ setActivePage(page) {
 
     }
 
-    if (page === "pivot") {
-
-        PivotDashboard.init();
-
-    }
-
     if (page === "canal500") {
 
         (Canal500Data.isLoaded()
