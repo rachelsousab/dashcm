@@ -1738,7 +1738,8 @@
     </div>
 
     <p class="page-subtitle">
-        Envie a planilha de consumo (Excel ou CSV) para gerar automaticamente o cálculo de consumo.
+        Envie a planilha de consumo (Excel ou CSV) para gerar automaticamente o cálculo de consumo. Pode enviar
+        várias playlists de uma vez.
         <br>
         <small>*Planilha anexada deve conter as colunas Data, ID Playlist, Nome da Playlist e Consumo (padrão do Tableau).</small>
     </p>
@@ -1748,21 +1749,26 @@
         <div class="pivot-upload-row">
 
             <div class="filter">
-                <label>Arquivo (.xlsx / .csv)</label>
-                <input type="file" id="pivotFileInput" accept=".xlsx,.xls,.csv">
+                <label>Arquivo(s) (.xlsx / .csv)</label>
+                <input type="file" id="pivotFileInput" accept=".xlsx,.xls,.csv" multiple>
             </div>
 
-            <div class="filter">
+            <div class="filter" id="pivotEntradaField">
                 <label>Entrada do destaque (opcional)</label>
                 <input type="date" id="pivotEntradaInput">
             </div>
 
-            <div class="filter">
+            <div class="filter" id="pivotSaidaField">
                 <label>Saída do destaque (opcional)</label>
                 <input type="date" id="pivotSaidaInput">
             </div>
 
         </div>
+
+        <label class="report-toggle pivot-same-period-toggle">
+            <input type="checkbox" id="pivotSamePeriodToggle" checked>
+            Usar mesmo período de destaque para todas
+        </label>
 
         <p class="pivot-upload-status" id="pivotUploadStatus"></p>
 
@@ -1770,53 +1776,27 @@
 
     <div id="pivotResult" class="pivot-result" style="display:none;">
 
-        <section class="kpi-grid pivot-kpi-grid">
-
-            <article class="kpi-card kpi-highlight">
-                <span>Consumo da playlist no período enviado</span>
-                <h2 id="pivotKpiTotal">0</h2>
-            </article>
-
-            <article class="kpi-card">
-                <span>Consumo durante o destaque</span>
-                <h2 id="pivotKpiDestaque">0</h2>
-            </article>
-
-            <article class="kpi-card">
-                <span>% variação no consumo (destaque vs. dias anteriores)</span>
-                <h2 id="pivotKpiVariacaoDestaque">—</h2>
-            </article>
-
-            <article class="kpi-card">
-                <span>% variação após término do destaque</span>
-                <h2 id="pivotKpiVariacaoPosDestaque">—</h2>
-            </article>
-
-        </section>
-
-        <div class="pivot-grid">
-
-            <div class="card pivot-table-card">
-                <h3>Tabela dinâmica (por dia)</h3>
-                <div class="pivot-table-scroll" id="pivotTableContainer"></div>
-            </div>
-
-            <div class="card pivot-chart-card">
-                <h3>Consumo por dia</h3>
-                <div class="pivot-chart-canvas-wrap">
-                    <canvas id="pivotChart"></canvas>
-                </div>
-            </div>
-
-        </div>
-
         <div class="report-actions">
 
             <button type="button" id="pivotSubmitBtn" class="data-table-link-btn">☁️ Salvar no histórico</button>
 
+            <button type="button" id="pivotCompareBtn" class="data-table-csv-btn" style="display:none;">📊 Comparar playlists</button>
+
             <span class="report-count" id="pivotSubmitStatus"></span>
 
         </div>
+
+        <div id="pivotCompareSection" class="pivot-compare-section" style="display:none;">
+
+            <div class="pivot-table-scroll" id="pivotCompareTableContainer"></div>
+
+            <div class="pivot-chart-canvas-wrap">
+                <canvas id="pivotCompareChart"></canvas>
+            </div>
+
+        </div>
+
+        <div id="pivotUploadsList" class="pivot-uploads-list"></div>
 
     </div>
 
@@ -1871,6 +1851,24 @@
                 </article>
 
             </section>
+
+            <div id="pivotHistoryVisual" class="pivot-grid" style="display:none;">
+
+                <div class="card pivot-table-card">
+                    <h3>Tabela dinâmica (por dia)</h3>
+                    <div class="pivot-table-scroll" id="pivotHistoryTableContainer"></div>
+                </div>
+
+                <div class="card pivot-chart-card">
+                    <h3>Consumo por dia</h3>
+                    <div class="pivot-chart-canvas-wrap">
+                        <canvas id="pivotHistoryChart"></canvas>
+                    </div>
+                </div>
+
+            </div>
+
+            <p class="pivot-history-visual-status" id="pivotHistoryVisualStatus"></p>
 
             <p class="pivot-history-iframe-hint">Use as abas dentro da própria planilha (embaixo) para trocar entre "Dados" e "Tabela Dinâmica".</p>
 

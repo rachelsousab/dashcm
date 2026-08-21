@@ -4593,6 +4593,182 @@ table.data-table{
 
 }
 
+.pivot-same-period-toggle{
+
+    margin-top:12px;
+
+}
+
+.pivot-uploads-list{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:10px;
+
+    margin-top:10px;
+
+}
+
+.pivot-upload-item{
+
+    background:#fff;
+
+    border:1px solid var(--border);
+
+    border-radius:10px;
+
+    overflow:hidden;
+
+}
+
+.pivot-upload-item-header{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:12px;
+
+    padding:10px 14px;
+
+    flex-wrap:wrap;
+
+}
+
+.pivot-upload-item-toggle{
+
+    background:none;
+
+    border:1px solid var(--border);
+
+    border-radius:6px;
+
+    width:26px;
+
+    height:26px;
+
+    cursor:pointer;
+
+    font-size:.85rem;
+
+    color:var(--text-light);
+
+    flex-shrink:0;
+
+}
+
+.pivot-upload-item-toggle:hover{
+
+    background:#F6F7FB;
+
+}
+
+.pivot-upload-item-info{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:2px;
+
+    min-width:180px;
+
+}
+
+.pivot-upload-item-info strong{
+
+    font-size:.86rem;
+
+}
+
+.pivot-upload-item-id{
+
+    font-size:.7rem;
+
+    color:var(--text-light);
+
+}
+
+.pivot-upload-item-kpis-inline{
+
+    display:flex;
+
+    gap:16px;
+
+    flex-wrap:wrap;
+
+    margin-left:auto;
+
+    font-size:.76rem;
+
+    color:var(--text-light);
+
+}
+
+.pivot-upload-item-kpis-inline strong{
+
+    color:var(--text-dark, #222);
+
+    font-family:"AMX";
+
+}
+
+.pivot-upload-item-status{
+
+    font-size:.9rem;
+
+    min-width:18px;
+
+    text-align:center;
+
+}
+
+.pivot-upload-item-body{
+
+    padding:0 14px 16px;
+
+    border-top:1px solid var(--border);
+
+    padding-top:14px;
+
+}
+
+.pivot-compare-section{
+
+    background:#fff;
+
+    border-radius:12px;
+
+    padding:18px 20px;
+
+    margin-bottom:16px;
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:16px;
+
+}
+
+.pivot-compare-section .pivot-chart-canvas-wrap{
+
+    height:320px;
+
+}
+
+.pivot-history-visual-status{
+
+    font-size:.78rem;
+
+    color:var(--text-light);
+
+    margin:8px 0;
+
+}
+
 .pivot-kpi-grid{
 
     grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));

@@ -354,6 +354,50 @@ const PivotData = {
 
         return d >= s && d <= e;
 
+    },
+
+    /* ======================================================
+       ABA "DADOS" DE UMA SHEET JÁ GERADA (modal do histórico)
+       ------------------------------------------------------
+       Buscar essas Sheets direto pela URL do Google (/export ou
+       /gviz/tq) NÃO funciona a partir do dashboard — testado ao
+       vivo com Sheets reais e o navegador bloqueia por CORS,
+       mesmo elas estando com "Qualquer pessoa com o link". Por
+       isso passa pelo próprio Web App do Apps Script (mesmo que
+       já cria a Sheet — precisa da action "getDados", ver
+       scratch-code-gs-pivot.gs), que devolve JSON legível sem
+       esse problema (mesmo padrão do download de capas).
+    ====================================================== */
+
+    fetchDadosCsv(driveFileId) {
+
+        const url = `${CONFIG.PIVOT_UPLOAD.webAppUrl}?action=getDados&fileId=${encodeURIComponent(driveFileId)}&token=${encodeURIComponent(CONFIG.PIVOT_UPLOAD.sharedSecret)}`;
+
+        return fetch(url)
+            .then(response => response.json())
+            .then(data => {
+
+                if (!data.success) {
+                    throw new Error((data.errors && data.errors[0]) || "Não foi possível carregar os dados diários.");
+                }
+
+                const rows = (data.rows || [])
+                    .map(row => ({
+                        data: this.parseDateBR(row.data),
+                        idPlaylist: this.toString(row.idPlaylist),
+                        nomePlaylist: this.toString(row.nomePlaylist),
+                        consumo: this.toNumber(row.consumo)
+                    }))
+                    .filter(row => row.data instanceof Date && !isNaN(row.data.getTime()));
+
+                if (!rows.length) {
+                    throw new Error("Nenhuma linha encontrada na aba Dados.");
+                }
+
+                return { rows, grouped: this.groupByDate(rows) };
+
+            });
+
     }
 
 };

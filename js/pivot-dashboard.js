@@ -2,12 +2,14 @@
  * ==========================================================
  * CONSUMO DE PLAYLISTS — ORQUESTRADOR
  * ----------------------------------------------------------
- * Upload do arquivo -> prévia instantânea (tabela + KPIs +
- * gráfico, tudo calculado no navegador) -> "Salvar no
- * histórico" manda os dados brutos pro Apps Script, que
- * cria a Google Sheet de verdade (aba Dados + aba Tabela
- * Dinâmica com pivot table e gráfico nativos) e registra no
- * histórico. O histórico é lido de volta via CSV publicado.
+ * Upload de um ou vários arquivos -> lista com prévia
+ * instantânea por playlist (KPIs + tabela + gráfico, tudo
+ * calculado no navegador, colapsada por padrão) -> "Salvar no
+ * histórico" manda cada playlist marcada, uma de cada vez,
+ * pro Apps Script, que cria a Google Sheet de verdade (aba
+ * Dados + aba Tabela Dinâmica com pivot table e gráfico
+ * nativos) e registra no histórico. O histórico é lido de
+ * volta via CSV publicado.
  * ==========================================================
  */
 
@@ -16,13 +18,13 @@ const PivotDashboard = {
     initialized: false,
     bound: false,
 
-    chart: null,
+    _uploads: [],
+    _uidCounter: 0,
 
-    _rows: [],
-    _grouped: [],
-    _idPlaylist: "",
-    _nomePlaylist: "",
+    _compareChart: null,
+    _compareVisible: false,
 
+    _historyChart: null,
     _historyFiltered: [],
     _activeHistoryRow: null,
 
@@ -57,16 +59,85 @@ const PivotDashboard = {
 
         document.getElementById("pivotFileInput").addEventListener("change", (event) => {
 
-            const file = event.target.files[0];
-
-            if (file) this.handleFileSelected(file);
+            this.handleFilesSelected(event.target.files);
 
         });
 
-        document.getElementById("pivotEntradaInput").addEventListener("change", () => this.renderAll());
-        document.getElementById("pivotSaidaInput").addEventListener("change", () => this.renderAll());
+        document.getElementById("pivotEntradaInput").addEventListener("change", () => this.refreshAllEntries());
+        document.getElementById("pivotSaidaInput").addEventListener("change", () => this.refreshAllEntries());
 
-        document.getElementById("pivotSubmitBtn").addEventListener("click", () => this.submit());
+        document.getElementById("pivotSamePeriodToggle").addEventListener("change", (event) => {
+
+            // Ao desligar, cada playlist parte do período que estava
+            // valendo até agora (compartilhado) — assim ninguém perde
+            // as datas já preenchidas, só passa a poder editar cada
+            // uma separadamente a partir daí.
+            if (!event.target.checked) {
+
+                const shared = this.getEntradaSaida();
+
+                this._uploads.forEach(entry => {
+                    if (!entry.entrada) entry.entrada = shared.entrada;
+                    if (!entry.saida) entry.saida = shared.saida;
+                });
+
+            }
+
+            this.updateSamePeriodFieldsVisibility();
+            this.renderUploadsList();
+
+        });
+
+        document.getElementById("pivotSubmitBtn").addEventListener("click", () => this.submitSelected());
+
+        document.getElementById("pivotCompareBtn").addEventListener("click", () => this.toggleCompare());
+
+        document.getElementById("pivotUploadsList").addEventListener("click", (event) => {
+
+            const toggleBtn = event.target.closest(".pivot-upload-item-toggle");
+
+            if (!toggleBtn) return;
+
+            const itemEl = toggleBtn.closest("[data-uid]");
+
+            if (itemEl) this.toggleEntryExpanded(itemEl.dataset.uid);
+
+        });
+
+        document.getElementById("pivotUploadsList").addEventListener("change", (event) => {
+
+            const itemEl = event.target.closest("[data-uid]");
+
+            if (!itemEl) return;
+
+            const entry = this.findEntry(itemEl.dataset.uid);
+
+            if (!entry) return;
+
+            if (event.target.classList.contains("pivot-upload-item-check")) {
+
+                entry.selected = event.target.checked;
+                return;
+
+            }
+
+            if (event.target.classList.contains("pivot-upload-item-entrada")) {
+
+                entry.entrada = event.target.value ? this.parseDateInput(event.target.value) : null;
+                this.onEntryPeriodChanged(entry);
+                return;
+
+            }
+
+            if (event.target.classList.contains("pivot-upload-item-saida")) {
+
+                entry.saida = event.target.value ? this.parseDateInput(event.target.value) : null;
+                this.onEntryPeriodChanged(entry);
+                return;
+
+            }
+
+        });
 
         document.getElementById("pivotHistorySearch").addEventListener("input", (event) => {
 
@@ -92,48 +163,110 @@ const PivotDashboard = {
 
         });
 
+        this.updateSamePeriodFieldsVisibility();
 
     },
 
     /* ======================================================
-       UPLOAD + PRÉVIA (100% no navegador)
+       UPLOAD + PRÉVIA (100% no navegador, 1 ou vários arquivos)
     ====================================================== */
 
-    handleFileSelected(file) {
+    handleFilesSelected(fileList) {
+
+        const files = Array.from(fileList || []);
+
+        if (!files.length) return;
 
         const status = document.getElementById("pivotUploadStatus");
 
-        status.textContent = "Lendo arquivo...";
+        status.textContent = `Lendo ${files.length} arquivo${files.length === 1 ? "" : "s"}...`;
         status.classList.remove("pivot-upload-error");
 
-        PivotData.parseFile(file)
-            .then(rows => {
+        const tasks = files.map(file =>
+            PivotData.parseFile(file)
+                .then(rows => ({ file, rows }))
+                .catch(error => { throw { file, error }; })
+        );
 
-                this._rows = rows;
-                this._idPlaylist = rows[0].idPlaylist;
-                this._nomePlaylist = rows[0].nomePlaylist;
+        Promise.allSettled(tasks).then(results => {
 
-                this._grouped = PivotData.groupByDate(rows);
+            const errors = [];
 
-                status.textContent = `${rows.length} linhas lidas — ${this._nomePlaylist} (ID ${this._idPlaylist}).`;
+            results.forEach(result => {
 
-                document.getElementById("pivotResult").style.display = "";
+                if (result.status === "fulfilled") {
 
-                this.renderAll();
+                    const { file, rows } = result.value;
 
-            })
-            .catch(error => {
+                    this._uploads.push({
 
-                console.error("[PivotDashboard]", error);
+                        uid: this.makeUid(),
+                        fileName: file.name,
+                        rows,
+                        grouped: PivotData.groupByDate(rows),
+                        idPlaylist: rows[0].idPlaylist,
+                        nomePlaylist: rows[0].nomePlaylist,
+                        entrada: null,
+                        saida: null,
+                        selected: true,
+                        expanded: false,
+                        detailRendered: false,
+                        chart: null,
+                        status: ""
 
-                status.textContent = error.message || "Não foi possível ler o arquivo.";
-                status.classList.add("pivot-upload-error");
+                    });
 
-                document.getElementById("pivotResult").style.display = "none";
+                }
+                else {
+
+                    const { file, error } = result.reason;
+
+                    errors.push(`${file.name}: ${(error && error.message) || "erro ao ler"}`);
+
+                }
 
             });
 
+            if (errors.length) {
+
+                status.textContent = errors.join(" · ");
+                status.classList.add("pivot-upload-error");
+
+            }
+            else {
+
+                status.textContent = `${results.length} arquivo${results.length === 1 ? "" : "s"} lido${results.length === 1 ? "" : "s"} com sucesso.`;
+
+            }
+
+            this.renderUploadsList();
+
+        });
+
+        // Limpa o input pra dar pra escolher os MESMOS arquivos de
+        // novo depois (o navegador não dispara "change" se o valor
+        // não mudar).
+        document.getElementById("pivotFileInput").value = "";
+
     },
+
+    makeUid() {
+
+        this._uidCounter += 1;
+
+        return `u${this._uidCounter}`;
+
+    },
+
+    findEntry(uid) {
+
+        return this._uploads.find(entry => entry.uid === uid);
+
+    },
+
+    /* ======================================================
+       PERÍODO DE DESTAQUE — compartilhado ou por playlist
+    ====================================================== */
 
     getEntradaSaida() {
 
@@ -147,6 +280,16 @@ const PivotDashboard = {
 
     },
 
+    getEntryEntradaSaida(entry) {
+
+        const samePeriod = document.getElementById("pivotSamePeriodToggle").checked;
+
+        if (samePeriod) return this.getEntradaSaida();
+
+        return { entrada: entry.entrada || null, saida: entry.saida || null };
+
+    },
+
     parseDateInput(value) {
 
         // <input type="date"> devolve sempre "yyyy-mm-dd"
@@ -156,30 +299,72 @@ const PivotDashboard = {
 
     },
 
-    renderAll() {
+    formatDateInput(date) {
 
-        if (!this._grouped.length) return;
+        if (!date) return "";
 
-        this.renderKPIs();
-        this.renderTable();
-        this.renderChart();
+        const y = date.getFullYear();
+        const m = String(date.getMonth() + 1).padStart(2, "0");
+        const d = String(date.getDate()).padStart(2, "0");
+
+        return `${y}-${m}-${d}`;
 
     },
 
-    renderKPIs() {
+    updateSamePeriodFieldsVisibility() {
 
-        const { entrada, saida } = this.getEntradaSaida();
+        const samePeriod = document.getElementById("pivotSamePeriodToggle").checked;
 
-        const total = this._rows.reduce((sum, row) => sum + row.consumo, 0);
+        document.getElementById("pivotEntradaField").style.display = samePeriod ? "" : "none";
+        document.getElementById("pivotSaidaField").style.display = samePeriod ? "" : "none";
 
-        const destaque = this._rows
+    },
+
+    refreshAllEntries() {
+
+        this._uploads.forEach(entry => {
+
+            this.renderEntryHeader(entry);
+
+            if (entry.expanded) this.renderEntryDetail(entry);
+
+        });
+
+        if (this._compareVisible) this.renderComparison();
+
+    },
+
+    onEntryPeriodChanged(entry) {
+
+        this.renderEntryHeader(entry);
+
+        if (entry.expanded) this.renderEntryDetail(entry);
+
+        if (this._compareVisible) this.renderComparison();
+
+    },
+
+    /* ======================================================
+       CÁLCULOS (compartilhados entre lista, comparativo e
+       modal do histórico)
+    ====================================================== */
+
+    computeKpis(rows, grouped, entrada, saida) {
+
+        const total = rows.reduce((sum, row) => sum + row.consumo, 0);
+
+        const destaque = rows
             .filter(row => PivotData.isWithinRange(row.data, entrada, saida))
             .reduce((sum, row) => sum + row.consumo, 0);
 
-        document.getElementById("pivotKpiTotal").textContent = total.toLocaleString("pt-BR");
-        document.getElementById("pivotKpiDestaque").textContent = destaque.toLocaleString("pt-BR");
+        const variacao = this.computeVariacao(grouped, entrada, saida);
 
-        this.renderVariacaoKPIs(entrada, saida);
+        return {
+            total,
+            destaque,
+            variacaoDestaque: variacao.destaque,
+            variacaoPosDestaque: variacao.pos
+        };
 
     },
 
@@ -193,20 +378,13 @@ const PivotDashboard = {
      * - "% variação após término": média diária DEPOIS da saída
      *   vs. média diária DURANTE o destaque.
      */
-    renderVariacaoKPIs(entrada, saida) {
+    computeVariacao(grouped, entrada, saida) {
 
-        const elDestaque = document.getElementById("pivotKpiVariacaoDestaque");
-        const elPos = document.getElementById("pivotKpiVariacaoPosDestaque");
+        if (!entrada || !saida) return { destaque: "—", pos: "—" };
 
-        if (!entrada || !saida) {
-            elDestaque.textContent = "—";
-            elPos.textContent = "—";
-            return;
-        }
-
-        const antes = this._grouped.filter(item => item.date < entrada);
-        const durante = this._grouped.filter(item => PivotData.isWithinRange(item.date, entrada, saida));
-        const depois = this._grouped.filter(item => item.date > saida);
+        const antes = grouped.filter(item => item.date < entrada);
+        const durante = grouped.filter(item => PivotData.isWithinRange(item.date, entrada, saida));
+        const depois = grouped.filter(item => item.date > saida);
 
         const media = (items) => items.length
             ? items.reduce((sum, item) => sum + item.total, 0) / items.length
@@ -216,8 +394,10 @@ const PivotDashboard = {
         const mediaDurante = media(durante);
         const mediaDepois = media(depois);
 
-        elDestaque.textContent = this.formatVariacao(mediaAntes, mediaDurante);
-        elPos.textContent = this.formatVariacao(mediaDurante, mediaDepois);
+        return {
+            destaque: this.formatVariacao(mediaAntes, mediaDurante),
+            pos: this.formatVariacao(mediaDurante, mediaDepois)
+        };
 
     },
 
@@ -233,15 +413,198 @@ const PivotDashboard = {
 
     },
 
-    renderTable() {
+    /* ======================================================
+       LISTA DE PLAYLISTS CARREGADAS
+    ====================================================== */
 
-        const container = document.getElementById("pivotTableContainer");
+    renderUploadsList() {
 
-        const { entrada, saida } = this.getEntradaSaida();
+        const container = document.getElementById("pivotUploadsList");
+        const resultBox = document.getElementById("pivotResult");
+        const compareBtn = document.getElementById("pivotCompareBtn");
 
-        const totalGeral = this._grouped.reduce((sum, item) => sum + item.total, 0);
+        if (!this._uploads.length) {
 
-        const body = this._grouped.map(item => {
+            container.innerHTML = "";
+            resultBox.style.display = "none";
+            compareBtn.style.display = "none";
+
+            return;
+
+        }
+
+        resultBox.style.display = "";
+        compareBtn.style.display = this._uploads.length > 1 ? "" : "none";
+
+        container.innerHTML = this._uploads.map(entry => this.buildUploadItemHtml(entry)).join("");
+
+        if (this._compareVisible) this.renderComparison();
+
+    },
+
+    buildUploadItemHtml(entry) {
+
+        const samePeriod = document.getElementById("pivotSamePeriodToggle").checked;
+
+        const { entrada, saida } = this.getEntryEntradaSaida(entry);
+
+        const kpis = this.computeKpis(entry.rows, entry.grouped, entrada, saida);
+
+        const periodFieldsHtml = samePeriod ? "" : `
+            <div class="pivot-upload-row">
+                <div class="filter">
+                    <label>Entrada do destaque (opcional)</label>
+                    <input type="date" class="pivot-upload-item-entrada" value="${this.formatDateInput(entry.entrada)}">
+                </div>
+                <div class="filter">
+                    <label>Saída do destaque (opcional)</label>
+                    <input type="date" class="pivot-upload-item-saida" value="${this.formatDateInput(entry.saida)}">
+                </div>
+            </div>
+        `;
+
+        return `
+            <div class="pivot-upload-item" data-uid="${entry.uid}">
+
+                <div class="pivot-upload-item-header">
+
+                    <input type="checkbox" class="pivot-upload-item-check" ${entry.selected ? "checked" : ""} title="Enviar pro Drive">
+
+                    <button type="button" class="pivot-upload-item-toggle" aria-label="Expandir/recolher">${entry.expanded ? "▾" : "▸"}</button>
+
+                    <div class="pivot-upload-item-info">
+                        <strong>${this.escapeHtml(entry.nomePlaylist)}</strong>
+                        <span class="pivot-upload-item-id">ID ${this.escapeHtml(entry.idPlaylist)} · ${this.escapeHtml(entry.fileName)}</span>
+                    </div>
+
+                    <div class="pivot-upload-item-kpis-inline">
+                        <span>Total: <strong>${Math.round(kpis.total).toLocaleString("pt-BR")}</strong></span>
+                        <span>Destaque: <strong>${Math.round(kpis.destaque).toLocaleString("pt-BR")}</strong></span>
+                        <span>Variação: <strong>${kpis.variacaoDestaque}</strong></span>
+                        <span>Pós: <strong>${kpis.variacaoPosDestaque}</strong></span>
+                    </div>
+
+                    <span class="pivot-upload-item-status" id="pivotUploadStatus-${entry.uid}">${this.statusLabel(entry.status)}</span>
+
+                </div>
+
+                <div class="pivot-upload-item-body" style="${entry.expanded ? "" : "display:none;"}">
+
+                    ${periodFieldsHtml}
+
+                    <div class="pivot-grid">
+
+                        <div class="card pivot-table-card">
+                            <h3>Tabela dinâmica (por dia)</h3>
+                            <div class="pivot-table-scroll" id="pivotTableContainer-${entry.uid}"></div>
+                        </div>
+
+                        <div class="card pivot-chart-card">
+                            <h3>Consumo por dia</h3>
+                            <div class="pivot-chart-canvas-wrap">
+                                <canvas id="pivotChart-${entry.uid}"></canvas>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+        `;
+
+    },
+
+    renderEntryHeader(entry) {
+
+        const itemEl = document.querySelector(`.pivot-upload-item[data-uid="${entry.uid}"]`);
+
+        if (!itemEl) return;
+
+        const { entrada, saida } = this.getEntryEntradaSaida(entry);
+
+        const kpis = this.computeKpis(entry.rows, entry.grouped, entrada, saida);
+
+        const kpisEl = itemEl.querySelector(".pivot-upload-item-kpis-inline");
+
+        kpisEl.innerHTML = `
+            <span>Total: <strong>${Math.round(kpis.total).toLocaleString("pt-BR")}</strong></span>
+            <span>Destaque: <strong>${Math.round(kpis.destaque).toLocaleString("pt-BR")}</strong></span>
+            <span>Variação: <strong>${kpis.variacaoDestaque}</strong></span>
+            <span>Pós: <strong>${kpis.variacaoPosDestaque}</strong></span>
+        `;
+
+    },
+
+    renderEntryDetail(entry) {
+
+        const tableEl = document.getElementById(`pivotTableContainer-${entry.uid}`);
+        const canvasEl = document.getElementById(`pivotChart-${entry.uid}`);
+
+        if (!tableEl || !canvasEl) return;
+
+        const { entrada, saida } = this.getEntryEntradaSaida(entry);
+
+        this.renderTableInto(tableEl, entry.grouped, entrada, saida);
+
+        entry.chart = this.renderChartInto(canvasEl, entry.grouped, entrada, saida, entry.chart);
+
+        entry.detailRendered = true;
+
+    },
+
+    toggleEntryExpanded(uid) {
+
+        const entry = this.findEntry(uid);
+
+        if (!entry) return;
+
+        entry.expanded = !entry.expanded;
+
+        const itemEl = document.querySelector(`.pivot-upload-item[data-uid="${uid}"]`);
+
+        if (!itemEl) return;
+
+        const bodyEl = itemEl.querySelector(".pivot-upload-item-body");
+        const btnEl = itemEl.querySelector(".pivot-upload-item-toggle");
+
+        bodyEl.style.display = entry.expanded ? "" : "none";
+        btnEl.textContent = entry.expanded ? "▾" : "▸";
+
+        if (entry.expanded && !entry.detailRendered) this.renderEntryDetail(entry);
+
+    },
+
+    statusLabel(status) {
+
+        if (status === "sending") return "⏳";
+        if (status === "sent") return "✔";
+        if (status === "error") return "✖";
+
+        return "";
+
+    },
+
+    updateEntryStatusUI(entry) {
+
+        const el = document.getElementById(`pivotUploadStatus-${entry.uid}`);
+
+        if (el) el.title = entry.error || "";
+        if (el) el.textContent = this.statusLabel(entry.status);
+
+    },
+
+    /* ======================================================
+       TABELA / GRÁFICO GENÉRICOS — usados na lista, no
+       comparativo (só a lógica de cálculo) e no modal do
+       histórico.
+    ====================================================== */
+
+    renderTableInto(container, grouped, entrada, saida) {
+
+        const totalGeral = grouped.reduce((sum, item) => sum + item.total, 0);
+
+        const body = grouped.map(item => {
 
             const destacado = PivotData.isWithinRange(item.date, entrada, saida);
 
@@ -274,25 +637,19 @@ const PivotDashboard = {
 
     },
 
-    renderChart() {
+    renderChartInto(canvas, grouped, entrada, saida, existingChart) {
 
-        const canvas = document.getElementById("pivotChart");
+        if (existingChart) existingChart.destroy();
 
-        const { entrada, saida } = this.getEntradaSaida();
+        const labels = grouped.map(item => PivotData.formatDateBR(item.date));
 
-        const labels = this._grouped.map(item => PivotData.formatDateBR(item.date));
+        const consumo = grouped.map(item => item.total);
 
-        const consumo = this._grouped.map(item => item.total);
-
-        const consumoDestaque = this._grouped.map(item =>
+        const consumoDestaque = grouped.map(item =>
             PivotData.isWithinRange(item.date, entrada, saida) ? item.total : null
         );
 
-        if (this.chart) {
-            this.chart.destroy();
-        }
-
-        this.chart = new Chart(canvas, {
+        return new Chart(canvas, {
 
             type: "line",
 
@@ -346,17 +703,163 @@ const PivotDashboard = {
     },
 
     /* ======================================================
-       ENVIO — gera a Sheet de verdade via Apps Script
+       COMPARATIVO ENTRE PLAYLISTS (sob demanda)
     ====================================================== */
 
-    submit() {
+    toggleCompare() {
+
+        this._compareVisible = !this._compareVisible;
+
+        document.getElementById("pivotCompareSection").style.display = this._compareVisible ? "" : "none";
+
+        if (this._compareVisible) this.renderComparison();
+
+    },
+
+    renderComparison() {
+
+        const tableContainer = document.getElementById("pivotCompareTableContainer");
+
+        const rowsHtml = this._uploads.map(entry => {
+
+            const { entrada, saida } = this.getEntryEntradaSaida(entry);
+
+            const kpis = this.computeKpis(entry.rows, entry.grouped, entrada, saida);
+
+            return `
+                <tr>
+                    <td>${this.escapeHtml(entry.nomePlaylist)}</td>
+                    <td>${this.escapeHtml(entry.idPlaylist)}</td>
+                    <td>${Math.round(kpis.total).toLocaleString("pt-BR")}</td>
+                    <td>${Math.round(kpis.destaque).toLocaleString("pt-BR")}</td>
+                    <td>${kpis.variacaoDestaque}</td>
+                    <td>${kpis.variacaoPosDestaque}</td>
+                </tr>
+            `;
+
+        }).join("");
+
+        tableContainer.innerHTML = `
+            <table class="goals-table">
+                <thead>
+                    <tr>
+                        <th>Playlist</th>
+                        <th>ID</th>
+                        <th>Consumo total</th>
+                        <th>Consumo destaque</th>
+                        <th>Variação</th>
+                        <th>Pós-destaque</th>
+                    </tr>
+                </thead>
+                <tbody>${rowsHtml}</tbody>
+            </table>
+        `;
+
+        const dateKeys = new Set();
+
+        this._uploads.forEach(entry => entry.grouped.forEach(item => dateKeys.add(item.dateKey)));
+
+        const sortedKeys = [...dateKeys].sort();
+
+        const labels = sortedKeys.map(key => PivotData.formatDateBR(PivotData.dateFromKey(key)));
+
+        const palette = ["#E30613", "#1F6FEB", "#2EA043", "#D29922", "#8957E5", "#DB6D28", "#39C5CF", "#F778BA"];
+
+        const datasets = this._uploads.map((entry, index) => {
+
+            const map = new Map(entry.grouped.map(item => [item.dateKey, item.total]));
+
+            return {
+                label: entry.nomePlaylist,
+                data: sortedKeys.map(key => map.has(key) ? map.get(key) : null),
+                borderColor: palette[index % palette.length],
+                backgroundColor: "transparent",
+                spanGaps: true,
+                tension: 0.2,
+                pointRadius: 2
+            };
+
+        });
+
+        const canvas = document.getElementById("pivotCompareChart");
+
+        if (this._compareChart) this._compareChart.destroy();
+
+        this._compareChart = new Chart(canvas, {
+
+            type: "line",
+
+            data: { labels, datasets },
+
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { position: "bottom" } },
+                scales: { y: { beginAtZero: true } }
+            }
+
+        });
+
+    },
+
+    /* ======================================================
+       ENVIO — gera a Sheet de verdade via Apps Script, uma
+       playlist marcada de cada vez (sequencial, pra não
+       estourar limite de execuções simultâneas do Apps Script
+       e pra dar pra mostrar o progresso linha a linha).
+    ====================================================== */
+
+    async submitEntry(entry) {
+
+        const { entrada, saida } = this.getEntryEntradaSaida(entry);
+
+        const payload = {
+
+            token: CONFIG.PIVOT_UPLOAD.sharedSecret,
+
+            idPlaylist: entry.idPlaylist,
+            nomePlaylist: entry.nomePlaylist,
+
+            entrada: entrada ? PivotData.dateKey(entrada) : "",
+            saida: saida ? PivotData.dateKey(saida) : "",
+
+            rows: entry.rows.map(row => ({
+                data: PivotData.dateKey(row.data),
+                idPlaylist: row.idPlaylist,
+                nomePlaylist: row.nomePlaylist,
+                consumo: row.consumo
+            }))
+
+        };
+
+        const response = await fetch(CONFIG.PIVOT_UPLOAD.webAppUrl, {
+
+            method: "POST",
+            headers: { "Content-Type": "text/plain;charset=utf-8" },
+            body: JSON.stringify(payload)
+
+        });
+
+        const data = await response.json();
+
+        if (!data.success) {
+            throw new Error((data.errors && data.errors[0]) || "Erro ao gerar a planilha.");
+        }
+
+        return data;
+
+    },
+
+    async submitSelected() {
 
         const status = document.getElementById("pivotSubmitStatus");
         const btn = document.getElementById("pivotSubmitBtn");
 
-        if (!this._rows.length) {
+        const selected = this._uploads.filter(entry => entry.selected);
 
-            alert("Envie um arquivo antes.");
+        if (!selected.length) {
+
+            alert("Marque ao menos uma playlist (checkbox à esquerda) pra enviar.");
             return;
 
         }
@@ -368,66 +871,57 @@ const PivotDashboard = {
 
         }
 
-        const { entrada, saida } = this.getEntradaSaida();
-
-        const payload = {
-
-            token: CONFIG.PIVOT_UPLOAD.sharedSecret,
-
-            idPlaylist: this._idPlaylist,
-            nomePlaylist: this._nomePlaylist,
-
-            entrada: entrada ? PivotData.dateKey(entrada) : "",
-            saida: saida ? PivotData.dateKey(saida) : "",
-
-            rows: this._rows.map(row => ({
-                data: PivotData.dateKey(row.data),
-                idPlaylist: row.idPlaylist,
-                nomePlaylist: row.nomePlaylist,
-                consumo: row.consumo
-            }))
-
-        };
-
         btn.disabled = true;
 
-        status.textContent = "Gerando planilha no Drive — isso pode levar um minuto...";
+        let done = 0;
+        let failed = 0;
 
-        fetch(CONFIG.PIVOT_UPLOAD.webAppUrl, {
+        for (const entry of selected) {
 
-            method: "POST",
-            headers: { "Content-Type": "text/plain;charset=utf-8" },
-            body: JSON.stringify(payload)
+            entry.status = "sending";
+            entry.error = "";
+            this.updateEntryStatusUI(entry);
 
-        })
-            .then(response => response.json())
-            .then(data => {
+            status.textContent = `Enviando ${done + 1} de ${selected.length}...`;
 
-                btn.disabled = false;
+            try {
 
-                if (!data.success) {
+                await this.submitEntry(entry);
+                entry.status = "sent";
 
-                    status.textContent = (data.errors && data.errors[0]) || "Erro ao gerar a planilha.";
-                    return;
-
-                }
-
-                status.textContent = "✔ Planilha gerada e enviada pro Drive!";
-
-                return PivotData.loadHistorico().then(() => {
-                    this.renderHistoryList(PivotData.historico);
-                });
-
-            })
-            .catch(error => {
+            }
+            catch (error) {
 
                 console.error("[PivotDashboard]", error);
+                entry.status = "error";
+                entry.error = error.message;
+                failed += 1;
 
-                btn.disabled = false;
+            }
 
-                status.textContent = "Não foi possível gerar a planilha agora. Tente de novo.";
+            this.updateEntryStatusUI(entry);
 
-            });
+            done += 1;
+
+        }
+
+        btn.disabled = false;
+
+        status.textContent = failed
+            ? `✔ ${done - failed} de ${done} enviadas pro Drive — ${failed} falharam (veja o status de cada linha).`
+            : `✔ ${done} playlist${done === 1 ? "" : "s"} enviada${done === 1 ? "" : "s"} pro Drive!`;
+
+        try {
+
+            await PivotData.loadHistorico();
+            this.renderHistoryList(PivotData.historico);
+
+        }
+        catch (error) {
+
+            console.error("[PivotDashboard]", error);
+
+        }
 
     },
 
@@ -458,7 +952,7 @@ const PivotDashboard = {
 
         if (!rows.length) {
 
-            container.innerHTML = `<p class="analises-empty">Nenhuma planilha no histórico ainda.</p>`;
+            container.innerHTML = `<p class="analises-empty">Nenhuma playlist no histórico ainda.</p>`;
             return;
 
         }
@@ -521,13 +1015,84 @@ const PivotDashboard = {
 
         document.getElementById("pivotHistoryModal").classList.add("open");
 
+        this.loadHistoryVisual(row);
+
+    },
+
+    /**
+     * Busca a aba "Dados" da Sheet dessa linha do histórico e
+     * desenha a mesma tabela+gráfico da tela de upload, ANTES do
+     * embed da planilha — deixa o pop-up mais visual em vez de só
+     * mostrar o Google Sheets embutido direto. Se a busca falhar
+     * (Sheet apagada/movida, sem internet etc.), some silenciosamente
+     * e mantém só o embed, sem travar o pop-up.
+     */
+    loadHistoryVisual(row) {
+
+        const visualSection = document.getElementById("pivotHistoryVisual");
+        const statusEl = document.getElementById("pivotHistoryVisualStatus");
+
+        visualSection.style.display = "none";
+
+        if (this._historyChart) {
+            this._historyChart.destroy();
+            this._historyChart = null;
+        }
+
+        if (!row.driveFileId || !row.dadosGid) {
+            statusEl.textContent = "";
+            return;
+        }
+
+        statusEl.textContent = "Carregando gráfico e tabela...";
+
+        PivotData.fetchDadosCsv(row.driveFileId)
+            .then(({ grouped }) => {
+
+                // Se o modal já foi fechado ou trocou de linha
+                // antes disso terminar, não escreve por cima.
+                if (this._activeHistoryRow !== row) return;
+
+                this.renderTableInto(document.getElementById("pivotHistoryTableContainer"), grouped, row.entrada, row.saida);
+
+                this._historyChart = this.renderChartInto(
+                    document.getElementById("pivotHistoryChart"),
+                    grouped,
+                    row.entrada,
+                    row.saida,
+                    null
+                );
+
+                visualSection.style.display = "";
+                statusEl.textContent = "";
+
+            })
+            .catch(error => {
+
+                console.error("[PivotDashboard]", error);
+
+                if (this._activeHistoryRow !== row) return;
+
+                statusEl.textContent = "";
+
+            });
+
     },
 
     closeHistoryModal() {
 
         document.getElementById("pivotHistoryModal").classList.remove("open");
-
         document.getElementById("pivotHistoryIframe").src = "";
+
+        document.getElementById("pivotHistoryVisual").style.display = "none";
+        document.getElementById("pivotHistoryVisualStatus").textContent = "";
+
+        if (this._historyChart) {
+            this._historyChart.destroy();
+            this._historyChart = null;
+        }
+
+        this._activeHistoryRow = null;
 
     },
 
