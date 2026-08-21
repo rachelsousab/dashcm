@@ -49,7 +49,10 @@ const ReportCoverDownload = {
 
         if (subtitle) subtitle.textContent = `${rows.length} ${rows.length === 1 ? "capa" : "capas"}`;
 
-        if (zipBtn) zipBtn.disabled = true;
+        if (zipBtn) {
+            zipBtn.disabled = true;
+            zipBtn.textContent = "⬇️ Baixar tudo (.zip)";
+        }
 
         this.renderLoading();
 
@@ -166,6 +169,7 @@ const ReportCoverDownload = {
 
         if (zipBtn) {
             zipBtn.disabled = !this._zipUrl || !found.length;
+            zipBtn.textContent = data.isSingleFile ? "⬇️ Baixar imagem" : "⬇️ Baixar tudo (.zip)";
         }
 
         let html = "";
