@@ -2020,6 +2020,12 @@ body.modal-open{
 
 }
 
+.c500-delete-btn:hover{
+
+    background:#FDECEA;
+
+}
+
 .mini-status-locked{
 
     opacity:.6;

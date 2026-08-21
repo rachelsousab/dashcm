@@ -1836,6 +1836,10 @@ const phraseologies = data.filter(
                 ? `<button type="button" class="mini-edit-btn c500-edit-btn" data-rows-ref="${sourceKey}" data-index="${index}" title="Editar ação">✏️</button>`
                 : `<span class="mini-edit-locked" title="Linha antiga sem ID — não editável por aqui">🔒</span>`;
 
+            const deleteBtn = row.id
+                ? `<button type="button" class="mini-edit-btn c500-delete-btn" data-rows-ref="${sourceKey}" data-index="${index}" title="Excluir entrada">🗑️</button>`
+                : `<span class="mini-edit-locked" title="Linha antiga sem ID — não excluível por aqui">🔒</span>`;
+
             return `
                 <tr>
                     <td>${row.acaoProspectada || "—"}</td>
@@ -1847,7 +1851,7 @@ const phraseologies = data.filter(
                     ${progressCell}
                     <td>${statusCell}</td>
                     <td>${row.responsavel || "—"}</td>
-                    <td>${editBtn}${evidenceBtn}</td>
+                    <td>${editBtn}${evidenceBtn}${deleteBtn}</td>
                 </tr>
             `;
 
@@ -1875,10 +1879,11 @@ const phraseologies = data.filter(
 
                 const evidenceBtn = event.target.closest(".c500-evidence-btn");
                 const editBtn = event.target.closest(".c500-edit-btn");
+                const deleteBtn = event.target.closest(".c500-delete-btn");
 
-                if (!evidenceBtn && !editBtn) return;
+                if (!evidenceBtn && !editBtn && !deleteBtn) return;
 
-                const btn = evidenceBtn || editBtn;
+                const btn = evidenceBtn || editBtn || deleteBtn;
 
                 const rows = this._canal500Rows[btn.dataset.rowsRef];
 
@@ -1889,8 +1894,42 @@ const phraseologies = data.filter(
                 if (evidenceBtn) {
                     Canal500Form.openEvidenceForm(row);
                 }
-                else {
+                else if (editBtn) {
                     Canal500Form.openEditForm(row);
+                }
+                else {
+
+                    const label = `${row.acaoProspectada || "essa ação"}${row.artistas ? " — " + row.artistas : ""}`;
+
+                    if (!confirm(`Excluir "${label}" da planilha do Canal 500? Essa ação não pode ser desfeita por aqui.`)) return;
+
+                    deleteBtn.disabled = true;
+
+                    Canal500Form.deleteEntry(row)
+                        .then(() => {
+
+                            // refreshCanal500() re-filtra a partir de
+                            // Canal500Data.rows (não das listas em
+                            // _canal500Rows, que são só a "foto" já
+                            // filtrada/ordenada da última renderização)
+                            // — por isso a remoção precisa acontecer
+                            // na fonte, senão a linha reaparece no
+                            // refresh a seguir.
+                            const globalIndex = Canal500Data.rows.indexOf(row);
+
+                            if (globalIndex !== -1) Canal500Data.rows.splice(globalIndex, 1);
+
+                            this.refreshCanal500();
+
+                        })
+                        .catch(error => {
+
+                            console.error(error);
+                            alert("Não foi possível excluir agora. Tente de novo.");
+                            deleteBtn.disabled = false;
+
+                        });
+
                 }
 
             });

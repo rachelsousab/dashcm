@@ -1049,6 +1049,21 @@ const Canal500Form = {
 
     },
 
+    /* Apaga uma linha existente pela planilha (só funciona pra
+       linhas com ID real). Assim como updateStatus, "no-cors" não
+       deixa confirmar de verdade que apagou — a UI remove a linha
+       de forma otimista assim que o fetch não estoura erro de
+       rede (ver bindCanal500TableEvents em app.js). */
+    deleteEntry(row) {
+
+        return this.sendPayload({
+            token: CONFIG.CANAL500_FORM.sharedSecret,
+            mode: "delete",
+            id: row.id
+        });
+
+    },
+
     formatDateForSheet(value) {
 
         if (!value) return "";
