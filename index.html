@@ -2087,6 +2087,68 @@
             </p>
         </section>
 
+        <section class="manual-block">
+            <h3>Consumo de Playlists</h3>
+
+            <p>
+                Lê uma planilha de consumo diário de uma playlist (o formato exportado pelo Tableau) e gera
+                automaticamente uma tabela agrupada por dia, um gráfico e os KPIs de consumo — sem precisar
+                montar nada na mão. Se você marcar um período de destaque, tudo fica comparado com esse
+                período: as linhas/pontos dentro dele ficam destacados em vermelho, e aparecem KPIs de
+                variação.
+            </p>
+
+            <h4>Como usar</h4>
+
+            <p>
+                Envie o arquivo (.xlsx ou .csv) com as colunas <code>Data</code>, <code>ID Playlist</code>,
+                <code>Nome da Playlist</code> e <code>Consumo</code>. A tabela, o gráfico e o KPI de consumo
+                total aparecem na hora, no navegador — não precisa de internet nem de enviar nada ainda
+                nesse ponto. As datas de "Entrada do destaque" e "Saída do destaque" são opcionais: sem elas
+                você já vê o consumo completo do período enviado; preenchendo as duas, o dashboard calcula
+                automaticamente o que aconteceu antes, durante e depois do destaque.
+            </p>
+
+            <h4>KPIs mostrados</h4>
+
+            <table class="manual-table">
+                <thead>
+                    <tr><th>KPI</th><th>O que significa</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>Consumo da playlist no período enviado</td><td>Soma de Consumo de todas as linhas do arquivo.</td></tr>
+                    <tr><td>Consumo durante o destaque</td><td>Soma de Consumo só dos dias entre a Entrada e a Saída do destaque.</td></tr>
+                    <tr><td>% variação no consumo</td><td>Compara a média diária DURANTE o destaque com a média diária dos dias ANTES da entrada — mostra se o destaque aumentou o consumo.</td></tr>
+                    <tr><td>% variação após término do destaque</td><td>Compara a média diária DEPOIS da saída com a média diária DURANTE o destaque — mostra se o efeito se manteve ou caiu quando o destaque acabou.</td></tr>
+                </tbody>
+            </table>
+
+            <p>
+                Sem data de destaque preenchida, os dois KPIs de variação ficam em "—" (não há o que comparar).
+            </p>
+
+            <h4>Gerar planilha e enviar pro Drive</h4>
+
+            <p>
+                O botão "☁️ Gerar planilha e enviar pro Drive" cria uma cópia de verdade no Google Drive, com
+                duas abas — <strong>Dados</strong> (a planilha enviada, como veio) e <strong>Tabela
+                Dinâmica</strong> (o agrupamento por dia + o mesmo gráfico, já dentro da Sheet, editável por
+                lá se precisar personalizar depois). O arquivo é nomeado automaticamente
+                (Playlist - ID - período) e salvo numa pasta fixa do Drive.
+            </p>
+
+            <h4>Histórico</h4>
+
+            <p>
+                Toda vez que uma planilha é gerada, uma linha é registrada num histórico (pesquisável por ID
+                ou nome da playlist, logo abaixo da tabela). Clicando numa linha do histórico, abre um
+                visualizador com os mesmos 4 KPIs (calculados na hora da geração) e a planilha do Drive
+                embutida — use as abas dentro da própria planilha embutida (embaixo dela) pra alternar entre
+                "Dados" e "Tabela Dinâmica". De lá também dá pra abrir o arquivo direto no Drive ou baixar
+                como .xlsx.
+            </p>
+        </section>
+
     </div>
 
 </div>
