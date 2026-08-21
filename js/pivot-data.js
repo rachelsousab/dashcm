@@ -152,8 +152,23 @@ const PivotData = {
             const script = document.createElement("script");
 
             script.src = "js/vendor/xlsx.full.min.js";
+
             script.onload = () => resolve();
-            script.onerror = () => reject(new Error("Não foi possível carregar a biblioteca de leitura de planilhas."));
+
+            script.onerror = () => {
+
+                // Sem isso, uma falha passageira (rede lenta, um
+                // upload interrompendo o outro) ficava marcada pra
+                // sempre — todo envio seguinte reusava essa MESMA
+                // promise já rejeitada e nunca mais tentava
+                // carregar de novo, mesmo reabrindo o arquivo.
+                // Limpando aqui, o próximo envio tenta carregar a
+                // biblioteca outra vez.
+                this._xlsxLoadPromise = null;
+
+                reject(new Error("Não foi possível carregar a biblioteca de leitura de planilhas. Tente enviar o arquivo de novo."));
+
+            };
 
             document.head.appendChild(script);
 
@@ -192,12 +207,19 @@ const PivotData = {
                     const sheetName = workbook.SheetNames[0];
                     const sheet = workbook.Sheets[sheetName];
 
-                    const json = XLSX.utils.sheet_to_json(sheet, { defval: "", raw: true });
+                    // header:1 -> array de arrays, lido pela POSIÇÃO da
+                    // coluna (Data, ID Playlist, Nome da Playlist,
+                    // Consumo, nessa ordem) em vez de pelo nome do
+                    // cabeçalho. Exports reais do Tableau às vezes vêm
+                    // sem o cabeçalho da última coluna (Consumo) —
+                    // lendo por nome, essa coluna simplesmente sumia e
+                    // toda linha ficava com Consumo 0.
+                    const matrix = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: "", raw: true });
 
-                    const rows = this.normalizeRows(json);
+                    const rows = this.normalizeRows(matrix.slice(1));
 
                     if (!rows.length) {
-                        reject(new Error("Nenhuma linha válida encontrada (confira se as colunas se chamam Data, ID Playlist, Nome da Playlist e Consumo)."));
+                        reject(new Error("Nenhuma linha válida encontrada (confira se as colunas são Data, ID Playlist, Nome da Playlist e Consumo, nessa ordem)."));
                         return;
                     }
 
@@ -220,18 +242,22 @@ const PivotData = {
 
     },
 
-    normalizeRows(json) {
+    normalizeRows(matrix) {
 
-        return json
-            .map(row => {
+        // matrix = linhas de dados já sem o cabeçalho, uma linha por
+        // array (colunas na ordem Data, ID Playlist, Nome da
+        // Playlist, Consumo — ver comentário em parseFile).
+        return matrix
+            .filter(cols => Array.isArray(cols) && cols.length)
+            .map(cols => {
 
-                const data = this.toDate(row["Data"]);
+                const data = this.toDate(cols[0]);
 
                 return {
                     data,
-                    idPlaylist: this.toString(row["ID Playlist"]),
-                    nomePlaylist: this.toString(row["Nome da Playlist"]),
-                    consumo: this.toNumber(row["Consumo"])
+                    idPlaylist: this.toString(cols[1]),
+                    nomePlaylist: this.toString(cols[2]),
+                    consumo: this.toNumber(cols[3])
                 };
 
             })
