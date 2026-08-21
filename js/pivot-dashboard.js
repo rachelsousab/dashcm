@@ -171,6 +171,58 @@ const PivotDashboard = {
         document.getElementById("pivotKpiTotal").textContent = total.toLocaleString("pt-BR");
         document.getElementById("pivotKpiDestaque").textContent = destaque.toLocaleString("pt-BR");
 
+        this.renderVariacaoKPIs(entrada, saida);
+
+    },
+
+    /**
+     * Duas métricas só fazem sentido com entrada/saída preenchidas
+     * (e pelo menos 1 dia de dado no período de comparação —
+     * senão ficam "—", em vez de dividir por zero):
+     *
+     * - "% variação no consumo": média diária DURANTE o destaque
+     *   vs. média diária ANTES da entrada.
+     * - "% variação após término": média diária DEPOIS da saída
+     *   vs. média diária DURANTE o destaque.
+     */
+    renderVariacaoKPIs(entrada, saida) {
+
+        const elDestaque = document.getElementById("pivotKpiVariacaoDestaque");
+        const elPos = document.getElementById("pivotKpiVariacaoPosDestaque");
+
+        if (!entrada || !saida) {
+            elDestaque.textContent = "—";
+            elPos.textContent = "—";
+            return;
+        }
+
+        const antes = this._grouped.filter(item => item.date < entrada);
+        const durante = this._grouped.filter(item => PivotData.isWithinRange(item.date, entrada, saida));
+        const depois = this._grouped.filter(item => item.date > saida);
+
+        const media = (items) => items.length
+            ? items.reduce((sum, item) => sum + item.total, 0) / items.length
+            : null;
+
+        const mediaAntes = media(antes);
+        const mediaDurante = media(durante);
+        const mediaDepois = media(depois);
+
+        elDestaque.textContent = this.formatVariacao(mediaAntes, mediaDurante);
+        elPos.textContent = this.formatVariacao(mediaDurante, mediaDepois);
+
+    },
+
+    formatVariacao(base, comparado) {
+
+        if (!base || comparado === null) return "—";
+
+        const variacao = ((comparado - base) / base) * 100;
+
+        const sinal = variacao > 0 ? "+" : "";
+
+        return `${sinal}${variacao.toLocaleString("pt-BR", { maximumFractionDigits: 1 })}%`;
+
     },
 
     renderTable() {
