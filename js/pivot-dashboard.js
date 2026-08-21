@@ -82,6 +82,16 @@ const PivotDashboard = {
 
         });
 
+        document.addEventListener("keydown", (event) => {
+
+            if (event.key !== "Escape") return;
+
+            const modal = document.getElementById("pivotHistoryModal");
+
+            if (modal.classList.contains("open")) this.closeHistoryModal();
+
+        });
+
 
     },
 
@@ -523,9 +533,13 @@ const PivotDashboard = {
 
     formatVariacaoValue(value) {
 
-        const numero = Number(value);
+        // A célula vem do Sheets com vírgula decimal (ex.: "71,7"),
+        // que Number() não entende sozinho — troca por ponto antes.
+        const texto = String(value === undefined || value === null ? "" : value).trim();
 
-        if (value === "" || value === undefined || value === null || isNaN(numero)) return "—";
+        const numero = Number(texto.replace(",", "."));
+
+        if (texto === "" || isNaN(numero)) return "—";
 
         const sinal = numero > 0 ? "+" : "";
 
