@@ -3,8 +3,8 @@
  * CONSUMO DE PLAYLISTS — ORQUESTRADOR
  * ----------------------------------------------------------
  * Upload do arquivo -> prévia instantânea (tabela + KPIs +
- * gráfico, tudo calculado no navegador) -> "Gerar planilha e
- * enviar pro Drive" manda os dados brutos pro Apps Script, que
+ * gráfico, tudo calculado no navegador) -> "Salvar no
+ * histórico" manda os dados brutos pro Apps Script, que
  * cria a Google Sheet de verdade (aba Dados + aba Tabela
  * Dinâmica com pivot table e gráfico nativos) e registra no
  * histórico. O histórico é lido de volta via CSV publicado.
