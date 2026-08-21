@@ -141,6 +141,11 @@
     </button>
 
     <button class="page-tab"
+            data-page="pivot">
+        Consumo de Playlists
+    </button>
+
+    <button class="page-tab"
             data-page="manual">
         Manual
     </button>
@@ -1705,6 +1710,149 @@
 
 </div>
 
+<!-- ========================================================= -->
+<!-- CONSUMO DE PLAYLISTS (tabela dinâmica automática) -->
+<!-- ========================================================= -->
+
+<div id="page-pivot" class="page">
+
+    <div class="section-header">
+        <h2>Consumo de Playlists</h2>
+    </div>
+
+    <p class="page-subtitle">
+        Envie a planilha de consumo (Excel ou CSV) para gerar automaticamente o cálculo de consumo.
+        <br>
+        <small>*Planilha anexada deve conter as colunas Data, ID Playlist, Nome da Playlist e Consumo (padrão do Tableau).</small>
+    </p>
+
+    <div class="pivot-upload-box">
+
+        <div class="pivot-upload-row">
+
+            <div class="filter">
+                <label>Arquivo (.xlsx / .csv)</label>
+                <input type="file" id="pivotFileInput" accept=".xlsx,.xls,.csv">
+            </div>
+
+            <div class="filter">
+                <label>Entrada do destaque (opcional)</label>
+                <input type="date" id="pivotEntradaInput">
+            </div>
+
+            <div class="filter">
+                <label>Saída do destaque (opcional)</label>
+                <input type="date" id="pivotSaidaInput">
+            </div>
+
+        </div>
+
+        <p class="pivot-upload-status" id="pivotUploadStatus"></p>
+
+    </div>
+
+    <div id="pivotResult" class="pivot-result" style="display:none;">
+
+        <section class="kpi-grid pivot-kpi-grid">
+
+            <article class="kpi-card kpi-highlight">
+                <span>Consumo total da playlist</span>
+                <h2 id="pivotKpiTotal">0</h2>
+            </article>
+
+            <article class="kpi-card">
+                <span>Consumo durante o destaque</span>
+                <h2 id="pivotKpiDestaque">0</h2>
+            </article>
+
+        </section>
+
+        <div class="pivot-grid">
+
+            <div class="card pivot-table-card">
+                <h3>Tabela dinâmica (por dia)</h3>
+                <div class="pivot-table-scroll" id="pivotTableContainer"></div>
+            </div>
+
+            <div class="card pivot-chart-card">
+                <h3>Consumo por dia</h3>
+                <div class="pivot-chart-canvas-wrap">
+                    <canvas id="pivotChart"></canvas>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="report-actions">
+
+            <button type="button" id="pivotSubmitBtn" class="data-table-link-btn">☁️ Gerar planilha e enviar pro Drive</button>
+
+            <span class="report-count" id="pivotSubmitStatus"></span>
+
+        </div>
+
+    </div>
+
+    <div class="section-title" style="margin-top:24px;">
+        <h2>Histórico</h2>
+    </div>
+
+    <input type="text" id="pivotHistorySearch" class="social-table-filter" placeholder="Buscar por ID ou nome da playlist...">
+
+    <div id="pivotHistoryList" class="pivot-history-list"></div>
+
+</div>
+
+<!-- ========================================================= -->
+<!-- MODAL: Consumo de Playlists — visualizador do histórico -->
+<!-- ========================================================= -->
+
+<div id="pivotHistoryModal" class="drilldown-modal">
+
+    <div class="drilldown-box maf-form-box" style="max-width:1100px;">
+
+        <div class="drilldown-header">
+            <div class="maf-form-header-left">
+                <h3 id="pivotHistoryModalTitle">Playlist</h3>
+                <span id="pivotHistoryModalSubtitle" class="maf-form-subtitle"></span>
+            </div>
+            <button id="pivotHistoryModalClose" class="drilldown-close" aria-label="Fechar">✕</button>
+        </div>
+
+        <div class="maf-form-body">
+
+            <section class="kpi-grid pivot-kpi-grid">
+
+                <article class="kpi-card kpi-highlight">
+                    <span>Consumo total da playlist</span>
+                    <h2 id="pivotHistoryKpiTotal">0</h2>
+                </article>
+
+                <article class="kpi-card">
+                    <span>Consumo durante o destaque</span>
+                    <h2 id="pivotHistoryKpiDestaque">0</h2>
+                </article>
+
+            </section>
+
+            <div class="pivot-history-tabs">
+                <button type="button" class="pivot-history-tab active" id="pivotHistoryTabDados" data-gid="0">Dados originais</button>
+                <button type="button" class="pivot-history-tab" id="pivotHistoryTabPivot" data-gid="">Tabela dinâmica</button>
+            </div>
+
+            <iframe id="pivotHistoryIframe" class="pivot-history-iframe" src="" title="Planilha"></iframe>
+
+        </div>
+
+        <div class="maf-form-footer">
+            <a id="pivotHistoryOpenDrive" class="data-table-csv-btn" href="#" target="_blank" rel="noopener">Abrir no Drive</a>
+            <a id="pivotHistoryDownload" class="data-table-link-btn" href="#" target="_blank" rel="noopener">⬇️ Baixar planilha (.xlsx)</a>
+        </div>
+
+    </div>
+
+</div>
+
 <!--MANUAL DO DASHBOARD-->
 <div id="page-manual" class="page">
 
@@ -2131,6 +2279,10 @@
     <script src="js/report-dashboard.js"></script>
 
     <script src="js/report-cover-download.js"></script>
+
+    <script src="js/pivot-data.js"></script>
+
+    <script src="js/pivot-dashboard.js"></script>
 
     <script src="js/manual-actions.js"></script>
 

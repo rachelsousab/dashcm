@@ -41,6 +41,26 @@ const CONFIG = {
 
 },
 
+    // "Consumo de Playlists" (tabela dinâmica automática) — histórico
+    // vem do CSV publicado da planilha de rastreamento; upload vai
+    // pro Web App que gera a Sheet com pivot table + gráfico.
+    // Ambos vazios até a Rachel terminar o setup (ver instruções).
+    PIVOT_DATA: {
+
+    csvUrl: "https://docs.google.com/spreadsheets/d/e/2PACX-1vSMS5qWPYnmVdapM3hi0HFb2rpnD851r93DJGawVJPhQwZ1H6uCSd46HyCF4LoDhiUFi5cB7s_xbFcB/pub?gid=0&single=true&output=csv",
+
+    driveFolderUrl: "https://drive.google.com/drive/folders/1QX-XT44umbP7XlKmT3-NtDrQg60mdD4M?usp=drive_link"
+
+},
+
+    PIVOT_UPLOAD: {
+
+    webAppUrl: "https://script.google.com/macros/s/AKfycbwN24RAeUSVKwLamd-HDCJn3Hg4v0gGOSvqKRcXhxLCo3iCl3_Aw2Sn_RUub9LM_5fxSQ/exec",
+
+    sharedSecret: "DashCM2026PivotRachel"
+
+},
+
     HIGHLIGHTS_DATA: {
 
     csvUrl:
