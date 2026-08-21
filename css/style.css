@@ -5193,6 +5193,22 @@ table.report-table td.report-link-col{
 
 }
 
+.cover-download-missing-notice{
+
+    font-size:.72rem;
+
+    color:#8B1E28;
+
+    margin-bottom:8px;
+
+}
+
+.cover-download-missing #reportCoverPromptMissingBtn{
+
+    margin-bottom:10px;
+
+}
+
 .maf-form-footer button:disabled{
 
     opacity:.5;

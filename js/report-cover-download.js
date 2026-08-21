@@ -23,6 +23,16 @@ const ReportCoverDownload = {
     _meta: {},
     _zipUrl: "",
     _bound: false,
+    _notFound: [],
+
+    // Mesmo texto usado no "Copiar prompt de capas" do Gerador de
+    // Reporte (js/report-dashboard.js) — aqui, porém, a lista que
+    // acompanha o texto é só das capas que o Drive NÃO encontrou
+    // sozinho (a busca automática exige que o arquivo já esteja
+    // no padrão "País(es) - Playlist - Artista"; enquanto a
+    // Editorial não padroniza todos os países, isso ajuda a achar
+    // as que ainda faltam).
+    COVER_PROMPT_INTRO: "Encontre, nessa pasta, as imagens referentes às capas das playlists listadas abaixo, por país.",
 
     open(rows, formatCountry, meta) {
 
@@ -148,6 +158,7 @@ const ReportCoverDownload = {
         const notFound = data.notFound || [];
 
         this._zipUrl = data.zipUrl || "";
+        this._notFound = notFound;
 
         if (subtitle) {
             subtitle.textContent = `${found.length} encontrada${found.length === 1 ? "" : "s"} de ${this._rows.length}`;
@@ -183,6 +194,8 @@ const ReportCoverDownload = {
 
             html += `<div class="cover-download-missing">`;
             html += `<p class="cover-download-missing-title">${notFound.length} não encontrada${notFound.length === 1 ? "" : "s"} automaticamente:</p>`;
+            html += `<p class="cover-download-missing-notice">A função de download das capas por aqui está em construção, junto à equipe Editorial. Por enquanto, use o prompt de capas para ajudar a encontrar as capas faltantes abaixo:</p>`;
+            html += `<button type="button" id="reportCoverPromptMissingBtn" class="data-table-csv-btn">🖼️ Copiar prompt de capas</button>`;
             html += `<ul>`;
 
             html += notFound.map(item => `
@@ -198,6 +211,96 @@ const ReportCoverDownload = {
         }
 
         body.innerHTML = html;
+
+        const promptBtn = document.getElementById("reportCoverPromptMissingBtn");
+
+        if (promptBtn) {
+            promptBtn.addEventListener("click", () => this.copyMissingCoverPrompt());
+        }
+
+    },
+
+    copyMissingCoverPrompt() {
+
+        if (!this._notFound.length) return;
+
+        const lines = this._notFound.map(item => `${this._formatCountry(item.pais)} - ${item.playlist} - ${item.artist || ""}`);
+
+        const text = `${this.COVER_PROMPT_INTRO}\n\n${lines.join("\n")}`;
+
+        this.copyPlainText(text, "reportCoverPromptMissingBtn");
+
+    },
+
+    /**
+     * IMPORTANTE: tenta o método síncrono (execCommand) primeiro —
+     * mesma estratégia do "Copiar prompt de capas" original
+     * (js/report-dashboard.js). A Clipboard API assíncrona às
+     * vezes rejeita silenciosamente dependendo da origem/navegador
+     * (ex.: GitHub Pages), e nesse caso o fallback só rodaria fora
+     * do gesto de clique original — por isso execCommand precisa
+     * ser o método principal, não o fallback.
+     */
+    copyPlainText(text, buttonId) {
+
+        const btn = document.getElementById(buttonId);
+
+        const finish = (ok) => {
+
+            if (!btn) return;
+
+            const original = btn.textContent;
+
+            btn.textContent = ok ? "✔ Copiado!" : "Não foi possível copiar";
+
+            setTimeout(() => { btn.textContent = original; }, 1800);
+
+        };
+
+        if (this.copyPlainTextFallback(text)) {
+
+            finish(true);
+
+        }
+        else if (navigator.clipboard && navigator.clipboard.writeText) {
+
+            navigator.clipboard.writeText(text)
+                .then(() => finish(true))
+                .catch(() => finish(false));
+
+        }
+        else {
+
+            finish(false);
+
+        }
+
+    },
+
+    copyPlainTextFallback(text) {
+
+        const textarea = document.createElement("textarea");
+
+        textarea.value = text;
+        textarea.style.position = "fixed";
+        textarea.style.left = "-9999px";
+
+        document.body.appendChild(textarea);
+
+        textarea.select();
+
+        let ok = false;
+
+        try {
+            ok = document.execCommand("copy");
+        }
+        catch (error) {
+            ok = false;
+        }
+
+        document.body.removeChild(textarea);
+
+        return ok;
 
     },
 
