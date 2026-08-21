@@ -1640,34 +1640,51 @@
 
         <div class="report-filters">
 
-            <div class="filter">
-                <label>Semana</label>
-                <select id="reportWeek"></select>
+            <div class="report-filters-main">
+
+                <div class="filter">
+                    <label>Semana</label>
+                    <select id="reportWeek"></select>
+                </div>
+
+                <div class="filter">
+                    <label>Território</label>
+                    <select id="reportTerritory">
+                        <option value="Brasil">Brasil</option>
+                        <option value="LatAm">LatAm</option>
+                        <option value="Todos">Todos</option>
+                    </select>
+                    <span class="report-hint">Para filtrar por mais territórios, por favor, use a aba Destaques de gravadoras. O Gerador é feito apenas para o Reporte Semanal, dividido entre Brasil e LatAm.</span>
+                </div>
+
+                <div class="filter">
+                    <label>Gravadora</label>
+                    <select id="reportLabel"></select>
+                </div>
+
+                <div class="filter">
+                    <label>Idioma</label>
+                    <select id="reportLanguage">
+                        <option value="">Selecione o idioma</option>
+                        <option value="pt">Português</option>
+                        <option value="es">Espanhol</option>
+                        <option value="en">Inglês</option>
+                    </select>
+                </div>
+
             </div>
 
-            <div class="filter">
-                <label>Território</label>
-                <select id="reportTerritory">
-                    <option value="Brasil">Brasil</option>
-                    <option value="LatAm">LatAm</option>
-                    <option value="Todos">Todos</option>
-                </select>
-                <span class="report-hint">Para filtrar por mais territórios, por favor, use a aba Destaques de gravadoras. O Gerador é feito apenas para o Reporte Semanal, dividido entre Brasil e LatAm.</span>
-            </div>
-
-            <div class="filter">
-                <label>Gravadora</label>
-                <select id="reportLabel"></select>
-            </div>
-
-            <div class="filter">
-                <label>Idioma</label>
-                <select id="reportLanguage">
-                    <option value="">Selecione o idioma</option>
-                    <option value="pt">Português</option>
-                    <option value="es">Espanhol</option>
-                    <option value="en">Inglês</option>
-                </select>
+            <div class="filter filter-search">
+                <label>Buscar (opcional)</label>
+                <div class="report-search-row">
+                    <input type="text" id="reportSearchInput" placeholder="Digite pra buscar...">
+                    <div class="maf-chip-group" id="reportSearchFieldGroup">
+                        <button type="button" class="maf-chip active" data-field="artist">Artista</button>
+                        <button type="button" class="maf-chip" data-field="playlist">Playlist</button>
+                        <button type="button" class="maf-chip" data-field="contenido">Álbum</button>
+                    </div>
+                </div>
+                <span class="report-hint">Busca dentro do recorte ao lado — escolha "Todas" em Semana pra buscar no período inteiro.</span>
             </div>
 
         </div>

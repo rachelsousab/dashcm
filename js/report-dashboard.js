@@ -27,7 +27,9 @@ const ReportDashboard = {
         gravadora: "",
         idioma: "pt",
         includeCountry: false,
-        includeHeader: true
+        includeHeader: true,
+        busca: "",
+        buscaCampo: "artist"
 
     },
 
@@ -98,7 +100,7 @@ const ReportDashboard = {
 
         const weeksDesc = [...HighlightsData.getSemanas()].reverse();
 
-        this.fillSelect("reportWeek", weeksDesc);
+        this.fillSelect("reportWeek", weeksDesc, true);
 
         if (weeksDesc.length) {
 
@@ -152,6 +154,30 @@ const ReportDashboard = {
         if (this.filtersBound) return;
 
         this.filtersBound = true;
+
+        document.getElementById("reportSearchInput").addEventListener("input", (event) => {
+
+            this.filters.busca = this.normalizeText(event.target.value);
+
+            this.refresh();
+
+        });
+
+        document.getElementById("reportSearchFieldGroup").querySelectorAll(".maf-chip").forEach(chip => {
+
+            chip.addEventListener("click", () => {
+
+                document.querySelectorAll("#reportSearchFieldGroup .maf-chip").forEach(c => c.classList.remove("active"));
+
+                chip.classList.add("active");
+
+                this.filters.buscaCampo = chip.dataset.field;
+
+                this.refresh();
+
+            });
+
+        });
 
         document.getElementById("reportWeek").addEventListener("change", (event) => {
 
@@ -315,6 +341,14 @@ const ReportDashboard = {
             if (this.filters.territorio === "Brasil" && row.pais !== "Brasil") return false;
 
             if (this.filters.territorio === "LatAm" && row.pais === "Brasil") return false;
+
+            if (this.filters.busca) {
+
+                const valor = this.normalizeText(row[this.filters.buscaCampo] || "");
+
+                if (!valor.includes(this.filters.busca)) return false;
+
+            }
 
             return true;
 

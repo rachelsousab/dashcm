@@ -4387,6 +4387,22 @@ table.data-table{
 
     flex-wrap:wrap;
 
+    justify-content:space-between;
+
+    align-items:flex-start;
+
+}
+
+.report-filters-main{
+
+    display:flex;
+
+    gap:20px;
+
+    flex-wrap:wrap;
+
+    flex:0 1 auto;
+
 }
 
 .report-filters .filter{
@@ -4429,6 +4445,8 @@ table.data-table{
 
     font-family:inherit;
 
+    max-width:190px;
+
 }
 
 .report-hint{
@@ -4439,7 +4457,69 @@ table.data-table{
 
     line-height:1.4;
 
+    max-width:190px;
+
+}
+
+.filter-search{
+
+    min-width:220px;
+
     max-width:260px;
+
+    flex:0 0 auto;
+
+    opacity:.85;
+
+}
+
+.filter-search label{
+
+    font-weight:500;
+
+}
+
+.report-search-row{
+
+    display:flex;
+
+    gap:6px;
+
+    flex-wrap:wrap;
+
+    align-items:center;
+
+}
+
+.report-search-row input[type="text"]{
+
+    border:1px solid var(--border);
+
+    border-radius:8px;
+
+    padding:5px 8px;
+
+    font-size:.74rem;
+
+    font-family:inherit;
+
+    flex:1 1 110px;
+
+    min-width:110px;
+
+}
+
+.filter-search .maf-chip-group{
+
+    gap:5px;
+
+}
+
+.filter-search .maf-chip{
+
+    padding:2px 8px;
+
+    font-size:.66rem;
 
 }
 
