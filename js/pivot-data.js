@@ -42,6 +42,13 @@ const PivotData = {
                 header: true,
                 skipEmptyLines: true,
 
+                // Tira espaço sobrando do nome da coluna (ex.: "ID
+                // Playlist " com espaço no fim, que às vezes aparece
+                // dependendo de como o cabeçalho foi digitado na
+                // planilha) — sem isso, row["ID Playlist"] nunca
+                // bate com a chave real e a linha some.
+                transformHeader: (header) => header.trim(),
+
                 complete: (results) => {
 
                     this.historico = results.data
