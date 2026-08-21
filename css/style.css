@@ -4677,6 +4677,16 @@ tr.pivot-row-destaque td{
 
 }
 
+.pivot-history-iframe-hint{
+
+    font-size:.72rem;
+
+    color:#666;
+
+    margin-bottom:8px;
+
+}
+
 .pivot-history-iframe{
 
     width:100%;

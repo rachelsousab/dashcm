@@ -88,7 +88,13 @@ const PivotData = {
             driveFileId: this.toString(row["Drive File ID"]),
             driveUrl: this.toString(row["Drive File URL"]),
 
-            criadoEm: this.toString(row["Criado em"])
+            criadoEm: this.toString(row["Criado em"]),
+
+            dadosGid: this.toString(row["Dados GID"]),
+            pivotGid: this.toString(row["Tabela Dinâmica GID"]),
+
+            variacaoDestaque: this.toString(row["Variação Destaque (%)"]),
+            variacaoPosDestaque: this.toString(row["Variação Pós-Destaque (%)"])
 
         };
 

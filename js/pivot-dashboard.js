@@ -82,8 +82,6 @@ const PivotDashboard = {
 
         });
 
-        document.getElementById("pivotHistoryTabDados").addEventListener("click", () => this.switchHistoryTab("dados"));
-        document.getElementById("pivotHistoryTabPivot").addEventListener("click", () => this.switchHistoryTab("pivot"));
 
     },
 
@@ -493,13 +491,23 @@ const PivotDashboard = {
         document.getElementById("pivotHistoryKpiTotal").textContent = Math.round(row.consumoTotal).toLocaleString("pt-BR");
         document.getElementById("pivotHistoryKpiDestaque").textContent = Math.round(row.consumoDestaque).toLocaleString("pt-BR");
 
+        document.getElementById("pivotHistoryKpiVariacaoDestaque").textContent = this.formatVariacaoValue(row.variacaoDestaque);
+        document.getElementById("pivotHistoryKpiVariacaoPosDestaque").textContent = this.formatVariacaoValue(row.variacaoPosDestaque);
+
         document.getElementById("pivotHistoryOpenDrive").href = row.driveUrl || "#";
 
         document.getElementById("pivotHistoryDownload").href = row.driveFileId
             ? `https://docs.google.com/spreadsheets/d/${row.driveFileId}/export?format=xlsx`
             : "#";
 
-        this.switchHistoryTab("dados");
+        // A troca de aba via URL (#gid=...) não é confiável dentro
+        // de um iframe já carregado do Sheets — em vez de tentar
+        // forçar isso, mostramos a planilha completa (com as
+        // próprias abas do Sheets visíveis) e quem usa troca de
+        // aba clicando direto nelas, dentro do embed mesmo.
+        document.getElementById("pivotHistoryIframe").src = row.driveFileId
+            ? `https://docs.google.com/spreadsheets/d/${row.driveFileId}/edit?rm=minimal`
+            : "";
 
         document.getElementById("pivotHistoryModal").classList.add("open");
 
@@ -513,26 +521,15 @@ const PivotDashboard = {
 
     },
 
-    /**
-     * Aba "Dados originais" = gid 0 (primeira aba criada na
-     * Sheet). Aba "Tabela dinâmica" = segunda aba — como o gid
-     * dela não é previsível (o Sheets gera automaticamente),
-     * usamos #gid=1 como padrão; se a Rachel notar que abre a
-     * aba errada, é só ajustar esse número.
-     */
-    switchHistoryTab(tab) {
+    formatVariacaoValue(value) {
 
-        const row = this._activeHistoryRow;
+        const numero = Number(value);
 
-        if (!row || !row.driveFileId) return;
+        if (value === "" || value === undefined || value === null || isNaN(numero)) return "—";
 
-        const gid = tab === "pivot" ? "1" : "0";
+        const sinal = numero > 0 ? "+" : "";
 
-        document.getElementById("pivotHistoryIframe").src =
-            `https://docs.google.com/spreadsheets/d/${row.driveFileId}/edit?rm=minimal#gid=${gid}`;
-
-        document.getElementById("pivotHistoryTabDados").classList.toggle("active", tab === "dados");
-        document.getElementById("pivotHistoryTabPivot").classList.toggle("active", tab === "pivot");
+        return `${sinal}${numero.toLocaleString("pt-BR", { maximumFractionDigits: 1 })}%`;
 
     },
 

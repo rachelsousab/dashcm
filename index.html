@@ -1834,7 +1834,7 @@
             <section class="kpi-grid pivot-kpi-grid">
 
                 <article class="kpi-card kpi-highlight">
-                    <span>Consumo total da playlist</span>
+                    <span>Consumo da playlist no período enviado</span>
                     <h2 id="pivotHistoryKpiTotal">0</h2>
                 </article>
 
@@ -1843,12 +1843,19 @@
                     <h2 id="pivotHistoryKpiDestaque">0</h2>
                 </article>
 
+                <article class="kpi-card">
+                    <span>% variação no consumo (destaque vs. dias anteriores)</span>
+                    <h2 id="pivotHistoryKpiVariacaoDestaque">—</h2>
+                </article>
+
+                <article class="kpi-card">
+                    <span>% variação após término do destaque</span>
+                    <h2 id="pivotHistoryKpiVariacaoPosDestaque">—</h2>
+                </article>
+
             </section>
 
-            <div class="pivot-history-tabs">
-                <button type="button" class="pivot-history-tab active" id="pivotHistoryTabDados" data-gid="0">Dados originais</button>
-                <button type="button" class="pivot-history-tab" id="pivotHistoryTabPivot" data-gid="">Tabela dinâmica</button>
-            </div>
+            <p class="pivot-history-iframe-hint">Use as abas dentro da própria planilha (embaixo) para trocar entre "Dados" e "Tabela Dinâmica".</p>
 
             <iframe id="pivotHistoryIframe" class="pivot-history-iframe" src="" title="Planilha"></iframe>
 
