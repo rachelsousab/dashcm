@@ -4725,6 +4725,22 @@ table.data-table{
 
 }
 
+.pivot-upload-item-period-row{
+
+    display:flex;
+
+    gap:20px;
+
+    flex-wrap:wrap;
+
+    padding:0 14px 14px;
+
+    border-top:1px solid var(--border);
+
+    padding-top:12px;
+
+}
+
 .pivot-upload-item-body{
 
     padding:0 14px 16px;

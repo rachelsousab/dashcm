@@ -117,6 +117,9 @@ const PivotDashboard = {
             if (event.target.classList.contains("pivot-upload-item-check")) {
 
                 entry.selected = event.target.checked;
+
+                if (this._compareVisible) this.renderComparison();
+
                 return;
 
             }
@@ -438,6 +441,23 @@ const PivotDashboard = {
 
         container.innerHTML = this._uploads.map(entry => this.buildUploadItemHtml(entry)).join("");
 
+        // O innerHTML acima troca os elementos de tabela/gráfico por
+        // uns novos (vazios) — pras playlists que já estavam
+        // expandidas, "detailRendered" ficaria com um valor antigo
+        // que não reflete mais o DOM atual, então precisa forçar o
+        // redesenho aqui (senão fica em branco até fechar e abrir
+        // de novo).
+        this._uploads.forEach(entry => {
+
+            if (!entry.expanded) return;
+
+            entry.chart = null;
+            entry.detailRendered = false;
+
+            this.renderEntryDetail(entry);
+
+        });
+
         if (this._compareVisible) this.renderComparison();
 
     },
@@ -451,7 +471,7 @@ const PivotDashboard = {
         const kpis = this.computeKpis(entry.rows, entry.grouped, entrada, saida);
 
         const periodFieldsHtml = samePeriod ? "" : `
-            <div class="pivot-upload-row">
+            <div class="pivot-upload-item-period-row">
                 <div class="filter">
                     <label>Entrada do destaque (opcional)</label>
                     <input type="date" class="pivot-upload-item-entrada" value="${this.formatDateInput(entry.entrada)}">
@@ -488,9 +508,9 @@ const PivotDashboard = {
 
                 </div>
 
-                <div class="pivot-upload-item-body" style="${entry.expanded ? "" : "display:none;"}">
+                ${periodFieldsHtml}
 
-                    ${periodFieldsHtml}
+                <div class="pivot-upload-item-body" style="${entry.expanded ? "" : "display:none;"}">
 
                     <div class="pivot-grid">
 
@@ -719,8 +739,30 @@ const PivotDashboard = {
     renderComparison() {
 
         const tableContainer = document.getElementById("pivotCompareTableContainer");
+        const chartWrap = document.getElementById("pivotCompareChart").closest(".pivot-chart-canvas-wrap");
 
-        const rowsHtml = this._uploads.map(entry => {
+        // Compara só as marcadas (checkbox de "enviar pro Drive") —
+        // desmarcar uma tira ela da análise comparativa também.
+        const selected = this._uploads.filter(entry => entry.selected);
+
+        if (selected.length < 2) {
+
+            tableContainer.innerHTML = `<p class="analises-empty">Marque pelo menos 2 playlists (checkbox à esquerda) pra comparar.</p>`;
+
+            if (chartWrap) chartWrap.style.display = "none";
+
+            if (this._compareChart) {
+                this._compareChart.destroy();
+                this._compareChart = null;
+            }
+
+            return;
+
+        }
+
+        if (chartWrap) chartWrap.style.display = "";
+
+        const rowsHtml = selected.map(entry => {
 
             const { entrada, saida } = this.getEntryEntradaSaida(entry);
 
@@ -757,7 +799,7 @@ const PivotDashboard = {
 
         const dateKeys = new Set();
 
-        this._uploads.forEach(entry => entry.grouped.forEach(item => dateKeys.add(item.dateKey)));
+        selected.forEach(entry => entry.grouped.forEach(item => dateKeys.add(item.dateKey)));
 
         const sortedKeys = [...dateKeys].sort();
 
@@ -765,7 +807,7 @@ const PivotDashboard = {
 
         const palette = ["#E30613", "#1F6FEB", "#2EA043", "#D29922", "#8957E5", "#DB6D28", "#39C5CF", "#F778BA"];
 
-        const datasets = this._uploads.map((entry, index) => {
+        const datasets = selected.map((entry, index) => {
 
             const map = new Map(entry.grouped.map(item => [item.dateKey, item.total]));
 
